@@ -253,9 +253,9 @@ function deletePhoto(id, path){
 		var filename = path.substring(path.lastIndexOf("/"));
 		var folderPath = path.substring(0,path.lastIndexOf("/"));
 		var foldername = folderPath.substring(folderPath.lastIndexOf("/"));
-		var onoStoMiTreba = foldername+filename;
+		var filePath = foldername+filename;
 		
-		var response = ajaxCall_prod("deletePhoto","../Products/imagesProducts"+onoStoMiTreba, "AJAXFrontEndControllerProducts.php");
+		var response = ajaxCall_prod("deletePhoto","../Products/imagesProducts"+filePath, "AJAXFrontEndControllerProducts.php");
 		if(response == "1"){
 			document.getElementById(id).style.display = "none";
 			document.getElementById(id+"_ico").style.display = "none";

@@ -13,14 +13,14 @@ if(isset($_POST['LoginFormBtt'])){
 	
 	if($user->getLocked()==0 || $user->getLocked() === 0){
 		include "BackEnd.html";
-		echo "<script>document.getElementById('errMail').innerHTML = 'Korisnicki nalog je zakljucan'</script>";
+		echo "<script>document.getElementById('errMail').innerHTML = 'User account is locked'</script>";
 	}elseif($user->getErrKod()=="n"){
 		include "BackEnd.html";
-		echo "<script>document.getElementById('errMail').innerHTML = 'Korisnicki nalog ne postoji u bazi'</script>";
+		echo "<script>document.getElementById('errMail').innerHTML = 'User account doesn't exist.'</script>";
 	}elseif($user->getErrKod()=="pass"){
 		include "BackEnd.html";
 		$brPokusaja = $user->getLocked();
-		echo "<script>document.getElementById('errMail').innerHTML = 'Pogresna lozinka. Imate jos $brPokusaja pokusaj/a.'</script>";
+		echo "<script>document.getElementById('errMail').innerHTML = 'Wrong username or password. You can try $br times more .'</script>";
 	}else{	
 		
         $_SESSION['username'] = $user->getUsername();
@@ -79,7 +79,7 @@ public static function loginUser(){
 			$pass = BackEndFormController::test_input($_POST['password']);
 			//$pass = $_POST['password'];
 		}else{
-			echo "Unesite password<br>";
+			echo "Insert password<br>";
 			return;
 			}	
 		
@@ -173,7 +173,6 @@ public static function createNewUser(){
 	if($user->newUser()){
 		$msg = new MyMSG('');
 		BackEndFormController::photoUpload("images/","submit_newBtt", $user->getID(), "profilePhoto_new", $msg);
-		echo '<script>alert("'.$msg->printOut().'");</script>';			
 	}else{
 		echo "<script>alert('Greska kod unosa korisnicke slike. ".$user->getErrPoruka()."');</script>";		
 	}
