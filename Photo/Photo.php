@@ -41,15 +41,14 @@ class Photo{
 			//	...	UPLOAD PHOTO ...
 			if($sgn){
 				if(move_uploaded_file($tmpFilePath, $destinationFileName)){
-					$sgn = chmod($destinationFileName, 0777);
-					$msgOut = "Fajl je uspesno uploadovan. ".$sgn;
+					$msgOut = "File is uploaded. ";
 					return TRUE;
 				}else{
-					$msgOut = "Greska 1: File nije uploadovan.";
+					$msgOut = "ERROR 1: File is not uploaded.";
 					return FALSE;
 				}
 			}else{
-				$msgOut = "Greska 2: Fajl nije upload-ovan.";
+				$msgOut = "ERROR 2:: File is not uploaded.";
 				return FALSE;
 			}
 	}
@@ -60,7 +59,7 @@ class Photo{
 					return ($formatCheck !== FALSE) ? TRUE : FALSE;
 					
 				}catch(Exception $e){
-					echo "Greska: ".$e->getMessage();
+					echo "ERROR: ".$e->getMessage();
 					return FALSE;
 				}				
 	}

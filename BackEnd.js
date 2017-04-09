@@ -142,12 +142,12 @@ function deleteUser(input){
 				if(odg == "1"){
 					//obrisi sliku iz foldera
 					odg = ajaxPoziv("PHOTO_DEL", input);
-					alert("User je obrisan iz baze\n"+odg);
+					alert("User is deleted.\n"+odg);
 					loadUsers();
 				}else if(odg == "2"){
 					alert("You can not erase yourself from user registry");
 				}else{
-					alert("Greska kod brisanja usera.");
+					alert("ERROR: Deleting user failed.");
 					loadUsers();
 				}
 		}
@@ -213,7 +213,7 @@ function emailCheck(inputMail, txtField, errP){
 				newUser.email = false;
 				return false;
 		}else {
-				document.getElementById(errP).innerHTML = "GRESKA: "+response;
+				document.getElementById(errP).innerHTML = "ERROR: "+response;
 				newUser.email = false;
 				return false;
 			}	
@@ -264,7 +264,7 @@ function usernameCheck(input, txtField, errp){
 				newUser.username = false;
 				return false;				
 		}else {
-				document.getElementById(errp).innerHTML = "GRESKA: "+response;
+				document.getElementById(errp).innerHTML = "ERROR: "+response;
 				newUser.username = false;
 				return false;
 			}
@@ -275,7 +275,7 @@ function usernameCheck(input, txtField, errp){
 function passwordCompexityCheck(input, txtField, errP, errRetypedPassword){
 	br = ch = 0;
 	if(input.length == 0){
-		document.getElementById(errP).innerHTML = "Unesite lozinku";
+		document.getElementById(errP).innerHTML = "Insert password";
 		newUser.pass1 = false;
 		return false;
 	}
@@ -309,7 +309,7 @@ function passwordCompexityCheck(input, txtField, errP, errRetypedPassword){
 			return false;
 		}
 	}else{
-		document.getElementById(errP).innerHTML = "Minimalna du&#382;ina lozinke 6 karaktera";
+		document.getElementById(errP).innerHTML = "Password has to be at least 6 characters long.";
 		document.getElementById(txtField).focus();
 		document.getElementById(txtField).value = "";
 		newUser.pass1 = false;
@@ -335,7 +335,7 @@ function passwordRetypeCheck(input, txtField, errP){
 			return false;
 		}
 	}else{
-			document.getElementById(errP).innerHTML  = "Unesite obe lozinke";
+			document.getElementById(errP).innerHTML  = "Please, fiel";
 			newUser.pass2 = input;
 	}
 	
