@@ -244,7 +244,7 @@ public static function editUserData(){
 	if(!empty($_POST['password_edit'])){
 			$password = BackEndFormController::test_input($_POST['password_edit']);
 			if($password != "no change"){
-				if (!preg_match('/[A-Z]+[a-z]+[0-9]+/', $password)){
+				if (!preg_match('/([A-Z]|[a-z])+[0-9]+/', $password)){
     				echo 'Password is not secure enough.';
     				return FALSE;
 				}

@@ -291,7 +291,7 @@ function passwordCompexityCheck(input, txtField, errP, errRetypedPassword){
 			document.getElementById(errP).innerHTML = "";
 			newUser.pass1 = input;
                         if(newUser.pass2 !== false){
-                            if(newUser.pass1 == newUser.pass2){
+                            if(newUser.pass1 == newUser.pass2 || newUser.pass2 === true){
                                     document.getElementById(errRetypedPassword).innerHTML = "";
                                     return true;
                             }else{
