@@ -4,7 +4,7 @@ if(!isset($_SESSION)){
 	    }
 	    
 include "User.php";
-include "/Photo/Photo.php";
+include "Photo/Photo.php";
 
 
 
