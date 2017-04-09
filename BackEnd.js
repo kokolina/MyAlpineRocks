@@ -102,8 +102,8 @@ function editUserData(input){
 		document.getElementById("lastname_edit").value = userEdit.lastname;
 		document.getElementById("email_edit").value = userEdit.email;
 		document.getElementById("username_edit").value = userEdit.username;
-		document.getElementById("password_edit").value = "";
-		document.getElementById("password_edit_1").value = "";
+		document.getElementById("password_edit").value = "no change";
+		document.getElementById("password_edit_1").value = "no change";
 		if(userEdit.accessRights == "A"){
 			document.getElementById("access_rights_edit").value = "Administrator";
 		}else if(userEdit.accessRights == "W"){

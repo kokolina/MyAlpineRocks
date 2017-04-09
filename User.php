@@ -133,6 +133,9 @@ class User{
 			if($this->getLocked() == 3 && $testUser->getLocked() != 0){		//ovo je provera za slucaj kada korisnik kog menjam ima locked=1 ili 2, pa da to ostane nepromenjeno u bazi ako vec nisam odlucila da ga zakljucam namerno
 				$this->setLocked($testUser->getLocked());
 			}
+			if($this->getPassword() == "no change"){
+				$this->setPassword($testUser->getPassword());
+			}
 			if($this->uRepository->editUser($this, $testUser)){
 				$this->uRepository->closeDataBaseConnection();	
 				return TRUE;

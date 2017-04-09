@@ -1,4 +1,3 @@
-
 <?php
 
 if(!isset($_SESSION)){
@@ -7,6 +6,7 @@ if(!isset($_SESSION)){
 
 
 require_once "User.php";
+require_once "Photo/Photo.php";
 
 if(isset($_POST['LoginFormBtt'])){
 	$user = BackEndFormController::loginUser();	
@@ -46,7 +46,6 @@ if(isset($_POST['LoginFormBtt'])){
 			link.setAttributeNode(attCls);
 			users.appendChild(link);
 			</script>";
-			//   <a href='BackEnd_Users.php' class='Menu'>Users</a>
 		}
 	}
 }elseif(isset($_POST['submit_newBtt'])){
@@ -171,92 +170,13 @@ public static function createNewUser(){
 	$user->setPassword($password);
 		
 	if($user->newUser()){
-		$msg = new MyMSG('');
-		BackEndFormController::photoUpload("images/","submit_newBtt", $user->getID(), "profilePhoto_new", $msg);
+		$msg = "";
+		Photo::photoUpload("profilePhoto_new", "images/", $user->getId(),$msg, "single" );
 	}else{
-		echo "<script>alert('Greska kod unosa korisnicke slike. ".$user->getErrPoruka()."');</script>";		
+		echo "<script>alert('Greska kod unosa korisnicke slike. ".$msg."');</script>";		
 	}
 }
 
-//funkcija koja vrsi upload fajlova, ulaz joj je folder u koji se smesta fajl
-//submitBtt, photoName, fileInputName,
-//"submit_new", 'username_new', 'profilePhoto_new'
-public static function photoUpload($targetFolder, $submitBtt, $photoName, $fileInputName, $msgOut){
-		if(isset($_POST[$submitBtt])){
-			$sgn = TRUE;
-			$targetFileName = $targetFolder.$photoName.".jpg";
-			$tmpFilePath = $_FILES[$fileInputName]['tmp_name'];
-			
-			//proveri velicinu fajla
-			if($_FILES[$fileInputName]['size'] > 5000000){
-				$msgOut->dodaj("Velicina slike premasuje dozvoljenih 5MB.");
-				$sgn = FALSE;
-				return FALSE;
-			}
-			
-			//provera formata
-			if(isset($_FILES)){
-				try{
-					$formatCheck = getimagesize($tmpFilePath);
-					if($formatCheck !== false){
-						$msgOut->dodaj("Fajl je odgovarajuceg formata.<br>");
-					}else{
-						$msgOut->dodaj("Fajl nije slika. Pokusajte upload drugog fajla.");
-						$sgn = FALSE;
-						return FALSE;
-					}
-				}catch(Exception $e){
-					echo "Greska: ".$e->getMessage();
-					$sgn = FALSE;
-					return FALSE;
-				}					
-			}else{
-				$msgOut->dodaj("Fajl nije uploadovan iz nekog razloga. Verovatno velicina. ");
-				$sgn = FALSE;
-				return FALSE;
-			}
-						
-			//provera da li fajl vec postoji kod unosa novog; brisanje prethodne profilne slike kod izmene
-			if($submitBtt == "submit_new"){
-				if(file_exists($targetFileName)){
-					$msgOut->dodaj("Fajl je vec uploadovan.<br>");
-					$sgn = false;
-					return FALSE;
-				}	
-			}elseif($submitBtt == "submit_editBtt"){
-				if(file_exists($targetFileName)){
-					//OBRISI FILE
-					if(!unlink($targetFileName)){
-						$msgOut->dodaj("Prethodna profilna slika nije izbrisana.");
-					}
-				}
-			}
-				
-			
-			//provera da li je slika odgovarajuceg formata: JPG, JPEG, PNG, GIF
-			$fileType = pathinfo($targetFileName, PATHINFO_EXTENSION);
-			if($fileType != "jpg" && $fileType != "jpeg" && $fileType != "png" && $fileType != "gif"){
-				$msgOut->dodaj("Slika nije odgovarajuceg formata: JPG, JPEG, PNG, GIF.");
-				$sgn = FALSE;
-				return FALSE;
-			}
-			
-			//			UPLOADUJ ...
-			if($sgn){
-				if(move_uploaded_file($tmpFilePath, $targetFileName)){
-$sgn = chmod($targetFileName, 0766);
-					$msgOut->dodaj("Fajl je uspesno uploadovan. ".$sgn);
-					return TRUE;
-				}else{
-					$msgOut->dodaj("Greska 1: File nije uploadovan.");
-					return FALSE;
-				}
-			}else{
-				$msgOut->dodaj("Greska 2: Fajl nije upload-ovan.");
-				return FALSE;
-			}
-		}
-}
 
 public static function deletePhoto($targetFolder, $fileName){
 	//sve profilne slike su mi jpg format jer ih tako namestim kod uploada
@@ -323,6 +243,12 @@ public static function editUserData(){
 			}
 	if(!empty($_POST['password_edit'])){
 			$password = BackEndFormController::test_input($_POST['password_edit']);
+			if($password != "no change"){
+				if (!preg_match('/[A-Z]+[a-z]+[0-9]+/', $password)){
+    				echo 'Password is not secure enough.';
+    				return FALSE;
+				}
+			}
 		}else{
 			echo "<script>document.getElementById('errPassword1_edit').innerHTML = 'Insert password';
 			document.getElementById('editUserDIV').style.display = 'inline';</script>";
@@ -374,31 +300,13 @@ public static function editUserData(){
 	if($user->editUser() || $_FILES['profilePhoto_edit']['name']){
 		if($_FILES['profilePhoto_edit']['name'] != "" ){
 		$msg = new MyMSG("");
-		echo BackEndFormController::photoUpload("images/","submit_editBtt", $ID, "profilePhoto_edit", $msg) ? "" : "PORUKA BEFC :: ".$msg->printOut();
+		echo Photo::photoUpload("profilePhoto_edit","images/",$ID,$msg,"single") ? "" : "ERROR MSG BEFC :: ".$msg->printOut();
 		}
 	}else{
 		echo "PORUKA BEFC::40 ".$user->getErrMsg();
 	}
 }
 
-/**
-public static function loadUsers(){
-    $resultOut = "<table><tr><th>ID</th><th>Ime</th><th>Prezime</th><th>Username</th><th>E-mail</th><th>Prava_pristupa</th><th>Locked</th><th>Izmeni</th><th>Obrisi</th></tr>";
-    $editImg = "<a href = '#izmenaKorisnika'><img class = 'Ikonica' src = 'images/edit.png'/></a>";
-    $deleteImg = "<a href = '#brisanjeKorisnika'><img class = 'Ikonica' src = 'images/delete.ico'/></a>";
-    
-    $user = new User($_SESSION['email']);
-    $userArray = $user->getUsers();
-    for($i = 0;$i<count($userArray);$i++){
-        $row = $userArray[$i];	
-        echo $row->getID()."<br>";			
-	$resultOut = $resultOut."<tr><td>".$row->getID()."</td><td>".$row->getName()."</td><td>".$row->getLastname()."</td><td>".$row->getUsername()."</td><td>".$row->getEmail()."</td><td>".$row->getAccessRights()."</td><td>".$row->getLocked().
-				"</td><td onclick = editUserData('".$row->getID()."')>".$editImg."</td><td onclick = deleteUser('".$row->getID()."')>".$deleteImg."</td></tr>";
-				
-    }    
-    return $resultOut;
-}
-*/
 }
 
 class MyMSG{

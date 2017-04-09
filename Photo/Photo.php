@@ -2,12 +2,26 @@
 
 class Photo{
 	private $path, $name = "";
-	
-	//funkcija uploaduje jedan od selektovanih fajlova u <input type=file>; promenjiva $selectFileNo je redni br. fajla u $_FILES nizu.
+	/**
+	* 
+	* @param undefined $fileInputTagName  name of file inut tag <input type=file>
+	* @param undefined $destinationFolder destination folder
+	* @param undefined $photoName  name of the photo (without extension)
+	* @param undefined $msgOut  some string variable to keep error messages
+	* @param undefined $selectedFileNo  order no of input file in array -if file input tag allows multiple file selection;
+	* 									insert "000" if file input tag does NOT allow multiple file selection
+	* 
+	* @return TRUE/FALSE
+	*/
 	public static function photoUpload($fileInputTagName, $destinationFolder, $photoName, $msgOut, $selectedFileNo){
 			$sgn = TRUE;
 			$destinationFileName = $destinationFolder.$photoName.".jpg";
-			$tmpFilePath = $_FILES[$fileInputTagName]['tmp_name'][$selectedFileNo];
+			
+			if($selectedFileNo === "single"){ 
+				$tmpFilePath = $_FILES[$fileInputTagName]['tmp_name'];
+			}else{
+				$tmpFilePath = $_FILES[$fileInputTagName]['tmp_name'][$selectedFileNo];
+			}
 			
 			//proveri velicinu fajla
 			$size = $_FILES[$fileInputTagName]['size'][$selectedFileNo];
@@ -41,14 +55,14 @@ class Photo{
 			//	...	UPLOAD PHOTO ...
 			if($sgn){
 				if(move_uploaded_file($tmpFilePath, $destinationFileName)){
-					$msgOut = "File is uploaded. ";
+					$msgOut = "Fajl je uspesno uploadovan.";
 					return TRUE;
 				}else{
-					$msgOut = "ERROR 1: File is not uploaded.";
+					$msgOut = "Greska 1: File nije uploadovan.";
 					return FALSE;
 				}
 			}else{
-				$msgOut = "ERROR 2:: File is not uploaded.";
+				$msgOut = "Greska 2: Fajl nije upload-ovan.";
 				return FALSE;
 			}
 	}
@@ -59,7 +73,7 @@ class Photo{
 					return ($formatCheck !== FALSE) ? TRUE : FALSE;
 					
 				}catch(Exception $e){
-					echo "ERROR: ".$e->getMessage();
+					echo "Greska: ".$e->getMessage();
 					return FALSE;
 				}				
 	}
@@ -91,16 +105,16 @@ class Photo{
 	
 	public static function deletePhotoP($path){	
 		if(file_exists($path)){
-			//OBRISI FILE
-			if(unlink($path)){
-				return TRUE;
-			}else{
-				return FALSE;
-			}
-		}else{
-			echo "PRVI USLOV";
-			return FALSE;
-		}
+					//OBRISI FILE
+					if(unlink($path)){
+						return TRUE;
+					}else{
+						return FALSE;
+					}
+				}else{
+					echo "PRVI USLOV";
+					return FALSE;
+				}
 	}
 	
 	public function getPath(){
