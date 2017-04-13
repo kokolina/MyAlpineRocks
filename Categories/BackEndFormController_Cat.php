@@ -40,7 +40,8 @@ public static function insertCategory(){
 	if($category->insertCategory($category)){
 		include "BackEnd_Categories.php";
 	}else{
-		echo "No good!:44";
+		echo "Data is not inserted. ERR:44";
+		include "BackEnd_Categories.php";
 	}		
 	}
 

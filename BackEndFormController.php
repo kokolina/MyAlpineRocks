@@ -4,11 +4,10 @@ if(!isset($_SESSION)){
 	    $s = session_start();
 	    }
 
-
 require_once "User.php";
 require_once "Photo/Photo.php";
 
-if(isset($_POST['LoginFormBtt'])){
+if(isset($_POST['email'])){
 	$user = BackEndFormController::loginUser();	
 	
 	if($user->getLocked()==0 || $user->getLocked() === 0){
@@ -48,10 +47,10 @@ if(isset($_POST['LoginFormBtt'])){
 			</script>";
 		}
 	}
-}elseif(isset($_POST['submit_newBtt'])){
+}elseif(isset($_POST['name_new'])){
 	include "BackEnd_Users.php";
 	BackEndFormController::createNewUser();
-}elseif(isset($_POST['submit_editBtt'])){
+}elseif(isset($_POST['name_edit'])){
 	include "BackEnd_Users.php";
 	BackEndFormController::editUserData();
 }
