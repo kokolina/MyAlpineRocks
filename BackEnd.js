@@ -99,7 +99,7 @@ function editUserData(input){
 		userEdit = JSON.parse(response);
 		document.getElementById("UserID_edit").value = input;		//!!! nije iz baze nego input
 		document.getElementById("name_edit").value = userEdit.name;
-		document.getElementById("lastname_edit").value = userEdit.lastname;
+		document.getElementById("lastname_edit").value = userEdit.lastName;
 		document.getElementById("email_edit").value = userEdit.email;
 		document.getElementById("username_edit").value = userEdit.username;
 		document.getElementById("password_edit").value = "no change";

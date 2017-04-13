@@ -36,8 +36,8 @@ public function loadUsers(){
 
 public function loadUser($userID){
 	$testUser = new User($_SESSION['email']);
-	if($testUser->getUser($testUser, "ID", $userID)){	
-	echo '{"name":"'.$testUser->getName().'","lastname":"'.$testUser->getLastName().'","email":"'.$testUser->getEmail().'","accessRights":"'.$testUser->getAccessRights().'","username":"'.$testUser->getUsername().'","locked":"'.$testUser->getLocked().'"}'; //vracam jason
+	if($testUser->getUser($testUser, "ID", $userID)){
+		echo json_encode($testUser);	
 		}else{	
 			echo "*2";			//email ne postoji u bazi
 		}

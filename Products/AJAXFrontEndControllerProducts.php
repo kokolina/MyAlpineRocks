@@ -13,26 +13,12 @@ require_once "../Photo/Photo.php";
 			$str = $p->getProducts();
 			echo '{"user":"'.$_SESSION['user_rights'].'",'. $str.'}';
 		}
-	public function vratiValute(){
-		$p = new Product();
-		$str = $p->vratiValute();
-		echo $str;
-	}
+	
 	public function loadProduct($id){
 		$product = new Product();
 		$product->setID($id);
-		$product->getProduct("ID",$id);
-		
-		$str = '{"Name":"'.$product->getName().'","Description":"'.$product->getDescription().'","Price":"'.$product->getPrice().'","Categories":[';
-		$katArray = $product->getCategories();
-		for($i = 0;$i<count($katArray);$i++){
-			$str = $str.'{"ID":"'.$katArray[$i]->getID().'","Name":"'.$katArray[$i]->getName().'"}';
-			if($i<count($katArray)-1){
-				$str = $str.',';
-			}
-		}
-		$str = $str.']}';
-		echo $str; 
+		$product->getProduct("ID",$id);		
+		echo json_encode($product);
 	}
 	
 	public function deleteProduct($productID){

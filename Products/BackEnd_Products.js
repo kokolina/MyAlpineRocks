@@ -37,7 +37,7 @@ function loadProducts(){
 			var katNiz = k.Products[i].Categories;
 			for(j = 0;j<katNiz.length;j++){
 				var categories = document.createElement("P"); 
-				var categoriesTxt = document.createTextNode(katNiz[j].n+" "+katNiz[j].Name);
+				var categoriesTxt = document.createTextNode(katNiz[j].ID_category+" "+katNiz[j].Name);
 				categories.appendChild(categoriesTxt);
 				c8.appendChild(categories);
 			}			
@@ -46,10 +46,10 @@ function loadProducts(){
 			var c7 = document.createElement("td");
 			c7.setAttribute("class", "tableFieldPhotos");
 			var sl = k.Products[i].photos; 	//niz slika	
-			if(sl[0].n != ""){					
-				for(j = 0;j<sl.length;j++){
+			if(sl[0] != null){					
+				for(j = 0;j<sl.length;j++){					
 					var photo = document.createElement("img");
-					photo.src = sl[j].n;
+					photo.src = sl[j];
 					photo.setAttribute("class","productPhotoSmall");
 					var deleteIco = document.createElement("img");
 					deleteIco.src = "../images/delete.ico";
@@ -150,13 +150,13 @@ function editProduct(id){
 	var response = ajaxCall_prod("editProduct", id, "AJAXFrontEndControllerProducts.php");
 	var pr = JSON.parse(response);  //returns product data, without data about categroies of product
 	
-	document.getElementById("IDProduct_edit").value = id;
-	document.getElementById("productName_edit").value = pr.Name;
-	document.getElementById("productDescription_edit").value = pr.Description;
-	document.getElementById("productPrice_edit").value = pr.Price;
+	document.getElementById("IDProduct_edit").value = pr.id;
+	document.getElementById("productName_edit").value = pr.name;
+	document.getElementById("productDescription_edit").value = pr.description;
+	document.getElementById("productPrice_edit").value = pr.price;
 	
 	var response = ajaxCall_prod("load",true,"../Categories/AJAXFrontEndControllerCategories.php");
-	var katArray = JSON.parse(response).Categories;   
+	katArray = JSON.parse(response).Categories;   
 	
 	nadKtSelectTab = document.getElementById("categoryOfProduct_edit");
 	nadKtSelectTab.innerHTML = "";
@@ -164,8 +164,8 @@ function editProduct(id){
 		var opt = document.createElement("option");
 		opt.setAttribute("value",katArray[i].ID);
 		opt.innerHTML = katArray[i].ID+" "+katArray[i].Name;
-		for(j = 0; j<pr.Categories.length; j++){
-			if(katArray[i].ID == pr.Categories[j].ID){
+		for(j = 0; j<pr.categories.length; j++){
+			if(katArray[i].ID == pr.categories[j].ID){
 				opt.setAttribute("selected",true);
 			}
 		}

@@ -47,15 +47,7 @@ class ProductsRepository extends DBController{
 				$stmt->execute();
 				$result = $stmt->fetchAll();
 				if(count($result)>0){
-					$str = '"Categories":[';
-					for($i = 0; $i<count($result);$i++){
-						$kat = $result[$i]; //primer rezultata: 2=>women's; Name=>women's; 1=>1; ID_category=>1; 0=>1; ID_product=>1  (sa navodnicima) 
-						$str = $str.'{"n":"'.$kat["ID_category"].'", "Name":"'.$kat["Name"].'"}';
-						if($i<count($result)-1){
-							$str = $str.",";
-						}
-					}					
-					$str = $str."]";
+					$str = '"Categories":'.json_encode($result);
 					return $str;
 				}else{
 					return '"Categories":[{"n":"*1"}]'; //Tabela je prazna
@@ -100,14 +92,14 @@ class ProductsRepository extends DBController{
 			
 	public function getPicturesOfProduct($productID){
 		$slike = Photo::getPhotosFromFolder("imagesProducts/".$productID."_/");		
-		$str = '"photos":[';
-		for($i = 0; $i<count($slike);$i++){			
+		$str = '"photos":'.json_encode($slike);
+		/*for($i = 0; $i<count($slike);$i++){			
 				$str = $str.'{"n":"'.$slike[$i].'"}';
 				if($i<count($slike)-1){
 					$str = $str.",";
 				}			
 		}
-		$str = $str."]";
+		$str = $str."]";*/
 		return $str;
 
 		}
