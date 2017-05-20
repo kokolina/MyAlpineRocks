@@ -5,10 +5,8 @@ class DBController {
 	
 public function openDataBaseConnection(){
 	try{
-		$this->connection = new PDO("mysql:host = myalpine.rocks; dbname = onlineshop", "root", "2110qwas");
-		$this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-		//echo "Konektovali smo se na bazu $db_name";
-		
+		$this->connection = new PDO("mysql:host = myalpine.rocks; dbname = onlineshop", "...", "...");
+		$this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);		
 	}catch(PDOException $e){
 		echo "<br>Greska u konekciji sa bazom: " . $e->getMessage();
 		}
