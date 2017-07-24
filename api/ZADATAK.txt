@@ -1,0 +1,22 @@
+
+
+Potrebno je omoguciti da aplikacija poseduje REST servise. 
+Slanjem zahteva na odgovarajuci url, aplikacija je potrebno da vrati rezultat u JSON ili XML formatu. 
+
+
+
+Potrebno je kreirati dva servisa. Jedan ce biti zadužen za kategorije (url: domainname/api/category/*), a jedan za proizvode (url: domainname/api/product/*). 
+
+
+
+Svaki servis treba da omoguci       pregled GET,       kreiranje POST,        ažuriranje PATCH     i     brisanje podataka DELETE. 
+
+
+
+Autentikacija se radi preko header-a zahteva gde se šalje email i API kljuc korisnika. Prava pristupa treba da budu ista kao i za backend deo. Ako korisnik nema prava pristupa odredenoj funkciji (na primer writer pošalje zahtev za menjanjem podataka) server treba da vrati HTTP status 403. 
+
+
+
+
+Za citanje podataka koristiti GET,       za kreiranje koristiti POST,      za ažuriranje PATCH       i       za brisanje DELETE request.
+

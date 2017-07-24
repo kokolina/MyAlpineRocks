@@ -249,7 +249,7 @@ function photoCheck_product(idFile){
 }
 
 function deletePhoto(id, path){
-	if(confirm("Da li zelite da obrisete sliku?")){		
+	if(confirm("Delete this photo?")){		
 		var filename = path.substring(path.lastIndexOf("/"));
 		var folderPath = path.substring(0,path.lastIndexOf("/"));
 		var foldername = folderPath.substring(folderPath.lastIndexOf("/"));
