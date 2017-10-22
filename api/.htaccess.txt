@@ -1,0 +1,7 @@
+# Turn rewrite engine on
+Options +FollowSymlinks
+RewriteEngine on
+
+# map neat URL to internal URL
+RewriteRule ^api/category/list/$   api/RestController.php?view=all [nc,qsa]
+RewriteRule ^api/category/list/([0-9]+)/$   api/RestController.php?view=single&id=$1 [nc,qsa]

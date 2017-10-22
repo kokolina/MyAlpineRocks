@@ -131,6 +131,12 @@ img.deleteIco{
 	display: inline;
 	visibility: hidden;
 }
+img.Ikonica {
+	width:20px; height:20px;
+}
+img.micro{
+	width:10px; height:10px;
+}
 span.User {
 	float: right;
 	display: inline;
@@ -152,9 +158,28 @@ td, th {
 td.tableFieldPhotos {
 	padding-left: 10px;
 }
-img.Ikonica {
-	width:20px; height:20px;
-}
+
 fieldset {
 	border-color: black; border-style: solid;border-width: 1px;
+}
+div.pw_prompt{
+	position: fixed;
+	left: 50%;
+    top:50%;
+    margin-left:-100px;
+    padding:15px;
+    width:200px;
+    border:3px solid black;
+    background-color: #fbfdff;
+}
+
+.pw_prompt label {
+    display:block; 
+    margin-bottom:5px;
+}
+.pw_prompt input {
+    margin-bottom:10px;
+}
+p.hover_pointer{
+	cursor: pointer;
 }

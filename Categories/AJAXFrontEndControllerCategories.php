@@ -2,9 +2,11 @@
 	if(!isset($_SESSION)){
 	    $s = session_start();
 	    }
-	require "Category.php";
-
-	class AJAXFrontEndControllerCategories{
+	include_once "../db/DBController.php";
+	include_once "CategoryRepository.php";	
+	include_once "Category.php";
+	
+class AJAXFrontEndControllerCategories{
 		
 	public function getCategories(){
 		$k = new Category();
@@ -28,6 +30,7 @@
 	public function deleteCategory($id){
 		$category = new Category();
 		$category->setID($id);
+		$category->setID_user($_SESSION["user_ID"]);
 		if($category->deleteCategory()){
 			echo "*1";
 		}else{
@@ -43,7 +46,7 @@
   		 $data = htmlspecialchars($data);
   		 $data = addslashes($data);
   	return $data;
-}
+	}
 	
 	function test_input($data) {
  		 $data = trim($data);  
@@ -52,8 +55,11 @@
   	return $data;
 	}
 	
+	public function getAPIKey(){
+		
+	}	
 	
-	}
+}
 	
 	$AJAXCategories = new AJAXFrontEndControllerCategories();
 	
@@ -66,5 +72,7 @@
 	}elseif(isset($_REQUEST['delete'])){
 		$del = $AJAXCategories->test_input_KAT($_REQUEST['delete']);
 		$AJAXCategories->deleteCategory($del);
+	}elseif(isset($_REQUEST['apiKey'])){
+		$AJAXCategories->getAPIKey();
 	}
 ?>

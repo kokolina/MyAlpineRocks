@@ -1,17 +1,21 @@
 <?php
 if(!isset($_SESSION)){
-	    $s = session_start();
-	    }
-require "Product.php";
-require_once "../Categories/Category.php";
-require_once "../Photo/Photo.php";
+	    $s = session_start();	    
+}
+	include_once "../Photo/Photo.php";
+	include_once "../db/DBController.php";
+	include_once "ProductsRepository.php";
+	include_once "../Categories/CategoryRepository.php";
+	include_once "../Categories/Category.php";
+	include_once "Product.php";
+	include_once "BackEndControllerProducts.php";  
 
 	class AJAXFrontEndControllerProducts{
 		
 	public function getProducts(){
 			$p = new Product();
 			$str = $p->getProducts();
-			echo '{"user":"'.$_SESSION['user_rights'].'",'. $str.'}';
+			echo '{"user":"'.$_SESSION['user_rights'].'",'. substr($str,1);
 		}
 	
 	public function loadProduct($id){
@@ -45,7 +49,13 @@ require_once "../Photo/Photo.php";
 	}elseif(isset($_REQUEST['deleteProduct'])){
 		$ulaz = $_REQUEST['deleteProduct'];
 		$AJAXproduct->deleteProduct($ulaz);
-	}
+	}elseif(isset($_REQUEST['logout'])) {
+	session_start();
+	session_unset();
+	session_destroy();
+	return true;
+	
+}
 	
 	
 ?>

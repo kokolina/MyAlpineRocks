@@ -1,43 +1,4 @@
 
-function evaluateEmail(input){
-	if(isEmailFormatOk(input, "email", "errMail")){	
-		return isEmailRegistered(input,"email","errMail");
-	}else{		
-		return false;
-		}
-}
-
-function logIn(){
-	var input = document.getElementById("email").value;
-	if(isEmailFormatOk(input, "email", "errMail")){
-		if(isEmailRegistered(input, "email", "errMail")){
-			document.getElementById("logInForm").submit();
-			return true;
-		}else{
-		return false;	
-		}		
-	}else{
-		return false;
-	}
-}
-//PROBATI URADITI PREKO REGULARNIH EXPRESIJA
-function isEmailFormatOk(email, txtField, errPTab){
-	if(email.indexOf("@")>0 && email.indexOf("@") == email.lastIndexOf("@")
-		&& email.lastIndexOf("@")+1 < email.length
-		&& email.indexOf(".")>0 && email.lastIndexOf(".") > email.indexOf("@") 
-		&& email.lastIndexOf(".")+1 < email.length){
-			document.getElementById(errPTab).innerHTML = "";
-	return true;
-		}else{
-			document.getElementById(errPTab).innerHTML = 
-									"Enter email in format: <br><i>example@mydomain.com<i>";
-			document.getElementById(txtField).focus();
-			document.getElementById(txtField).value = "";
-			
-	return false;
-		}
-}
-//   AJAX - Glavna funkcija koja proverava da li nesto postoji ili ne postoji u bazi. 
 function ajaxPoziv(requestKeyName, requestKeyValue){
 	var ajax = null;
 	var response = "";
@@ -57,9 +18,35 @@ function ajaxPoziv(requestKeyName, requestKeyValue){
 		}catch(e){
 			return false;
 		}
-		ajax.open("POST", "AJAXDBController.php?"+requestKeyName+"="+requestKeyValue, false);
+		ajax.open("POST", "Users/AJAXDBController.php?"+requestKeyName+"="+requestKeyValue, false);
 		ajax.send();
 		return response;
+}
+
+function evaluateEmail(input){
+	if(isEmailFormatOk(input, "email", "errMail")){	
+		return isEmailRegistered(input,"email","errMail");
+	}else{		
+		return false;
+		}
+}
+
+
+function isEmailFormatOk(email, txtField, errPTab){
+	if(email.indexOf("@")>0 && email.indexOf("@") == email.lastIndexOf("@")
+		&& email.lastIndexOf("@")+1 < email.length
+		&& email.indexOf(".")>0 && email.lastIndexOf(".") > email.indexOf("@") 
+		&& email.lastIndexOf(".")+1 < email.length){
+			document.getElementById(errPTab).innerHTML = "";
+	return true;
+		}else{
+			document.getElementById(errPTab).innerHTML = 
+									"Enter email in format: <br><i>example@mydomain.com<i>";
+			document.getElementById(txtField).focus();
+			document.getElementById(txtField).value = "";
+			
+	return false;
+		}
 }
 
 function isEmailRegistered(input, txtField, errPTab){
@@ -74,12 +61,32 @@ function isEmailRegistered(input, txtField, errPTab){
 				document.getElementById(errPTab).innerHTML = "";
 				return true;								
 		}else {
-				document.getElementById(errPTab).innerHTML = "ERROR: "+response;
+				document.getElementById(errPTab).innerHTML = "Error: "+response;
 				return false;
 			}
 }
 
-//koristim je za popunjavanje tabele sa svim korisnicima, pali se na dogadjaj onload strane BCKND_Korisnici
+function logIn(){
+	var input = document.getElementById("email").value;
+	if(isEmailFormatOk(input, "email", "errMail")){
+		if(isEmailRegistered(input, "email", "errMail")){
+			document.getElementById("logInForm").submit();
+			return true;
+		}else{
+		return false;	
+		}		
+	}else{
+		return false;
+	}
+}
+
+function logout(){
+var response = ajaxPoziv("logout", true);
+return response;
+}
+
+
+
 function loadUsers(){
         var response = ajaxPoziv("loadUsers", true);
 		document.getElementById("usersDIV").innerHTML = response;
@@ -133,7 +140,6 @@ function editUserData(input){
 }
 //funkcija prihvata ID usera i brise ga iz baze zajedno sa profilnom slikom; ako admin zeli da obrise sam sebe to ne dozvoljava
 function deleteUser(input){
-	//proveri da li postoji u bazi prema 
 	var response = ajaxPoziv("ID", input);
 	var user  = JSON.parse(response);
 	if(response != "*2"){
@@ -271,7 +277,7 @@ function usernameCheck(input, txtField, errp){
 	}
 	
 }
-//mislim da ne mogu puno koda da ustedim ako je napravim univerzalnom
+
 function passwordCompexityCheck(input, txtField, errP, errRetypedPassword){
 	br = ch = 0;
 	if(input.length == 0){
@@ -301,7 +307,7 @@ function passwordCompexityCheck(input, txtField, errP, errRetypedPassword){
                             }
                         }
 		}else{
-			//document.getElementById("pracenje").innerHTML = "Bla bla";
+			
 			document.getElementById(errP).innerHTML = "Password must contain numbers and characters";
 			document.getElementById(txtField).focus();
 			document.getElementById(txtField).value = "";
@@ -318,7 +324,7 @@ function passwordCompexityCheck(input, txtField, errP, errRetypedPassword){
 }
 
 function passwordRetypeCheck(input, txtField, errP){
-	//var pass1 = document.getElementById(txtField).value;
+	
 	if(input.length == 0){
 		document.getElementById(errP).innerHTML = "Insert password";
 		newUser.pass2 = false;
@@ -459,7 +465,65 @@ function submit_editUser(){
 	}
 }
 
-
+function getAPI(){
+	var psw_prompt = document.createElement("div");
+	psw_prompt.className = "pw_prompt";
+	
+	var msg_prompt = document.createElement("label");
+	msg_prompt.textContent = "Insert password";
+	psw_prompt.appendChild(msg_prompt);
+	
+	var txtField_prompt = document.createElement("input");
+	txtField_prompt.setAttribute("type", "password");
+	psw_prompt.appendChild(txtField_prompt);
+	
+	var errMsg = document.createElement("label");
+	psw_prompt.appendChild(errMsg);
+	
+	var apiMsg = document.createElement("label");	
+	var apiKey = document.createElement("label");
+	
+	var submit = function(){
+		if (txtField_prompt.value != "") {	
+			a = ajaxPoziv("apigen", txtField_prompt.value)	
+			response = JSON.parse(a);
+				psw_prompt.removeChild(msg_prompt);
+				psw_prompt.removeChild(txtField_prompt);
+				psw_prompt.removeChild(errMsg);
+				psw_prompt.removeChild(button);
+				
+				apiMsg.textContent = response.msg;
+				apiKey.textContent = response.key;
+				psw_prompt.appendChild(apiMsg);
+				psw_prompt.appendChild(apiKey);
+				psw_prompt.appendChild(OKbutton);
+				psw_prompt.setAttribute("style","left: 35%");			
+				psw_prompt.setAttribute("style","width: 600px");
+				
+		}else {
+			errMsg.textContent = "Insert your password";		
+		}		
+	};
+	
+	var quit = function () {
+		document.body.removeChild(psw_prompt);
+	};
+	var button = document.createElement("button");
+    button.textContent = "Get API";
+    button.addEventListener("click", submit, false);
+    button.setAttribute("class", "MyButton");
+    psw_prompt.appendChild(button);	
+	
+	
+	var OKbutton = document.createElement("button");
+    OKbutton.textContent = "OK";
+    OKbutton.addEventListener("click", quit, false);
+    OKbutton.setAttribute("class", "MyButton");
+    
+	document.body.appendChild(psw_prompt);
+	
+	
+}
 
 
 //koristim je za pracenje izvrsenja programa. treba je se otarasiti!

@@ -1,9 +1,12 @@
 <?php
 
-class DBController {
-	public $connection = NULL;
+abstract class DBController {
+	protected $connection = NULL;
 	
-public function openDataBaseConnection(){
+
+abstract protected function getTableName();
+
+public final function openDataBaseConnection(){
 	try{
 		$this->connection = new PDO("mysql:host = myalpine.rocks; dbname = onlineshop", "root", "2110qwas");
 		$this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

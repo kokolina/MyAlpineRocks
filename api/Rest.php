@@ -57,7 +57,7 @@ class Rest {
 			401 => 'Unauthorized',  
 			402 => 'Payment Required',  
 			403 => 'Forbidden',  
-			404 => 'Nije nadjen',  
+			404 => 'Not found',  
 			405 => 'Method Not Allowed',  
 			406 => 'Not Acceptable',  
 			407 => 'Proxy Authentication Required',  
@@ -78,6 +78,14 @@ class Rest {
 			504 => 'Gateway Timeout',  
 			505 => 'HTTP Version Not Supported');
 		return ($httpStatus[$statusCode]) ? $httpStatus[$statusCode] : $status[500];
+	}
+	
+	public function test_input($data){
+		$data = trim($data);  
+  		 $data = stripslashes($data); 
+  		 $data = htmlspecialchars($data);
+  		 $data = addslashes($data);
+  	return $data;
 	}
 }
 ?>

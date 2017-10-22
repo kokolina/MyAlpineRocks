@@ -1,5 +1,4 @@
 <?php
-require_once "../DBController.php";
 
 class CategoryRepository extends DBController{
 
@@ -32,14 +31,14 @@ class CategoryRepository extends DBController{
 		return TRUE;
 	}
 
-	public function editCategory($novacategorija, $testcategorija){
-$c = $novacategorija->getParentCategory()=='default' ? 0 : "'".$novacategorija->getParentCategory()."'";
-		$query1 = "UPDATE onlineshop.categories SET Name = '".$novacategorija->getName()."', Description = '".$novacategorija->getDescription()."', Parent_category = ".$c." WHERE ID = '".$novacategorija->getID()."'";
+	public function editCategory($newCategory){ 
+		$c = $newCategory->getParentCategory()=='default' ? 0 : "'".$newCategory->getParentCategory()."'";
+		$query1 = "UPDATE onlineshop.categories SET Name = '".$newCategory->getName()."', Description = '".$newCategory->getDescription()."', Parent_category = ".$c." WHERE ID = '".$newCategory->getID()."'";
 
 		$query2 = "INSERT INTO onlineshop.categories_log (ID_category, Name, Description, Parent_category, Status, ID_admin) 
 					SELECT K.ID, K.Name, K.Description, K.Parent_category, K.Status, KO.ID
 					FROM onlineshop.categories K, onlineshop.users KO
-					 WHERE K.ID = '".$novacategorija->getID()."' AND KO.ID = '".$_SESSION['user_ID']."'";
+					 WHERE K.ID = '".$newCategory->getID()."' AND KO.ID = '".$newCategory->getID_user()."'";
 
 		$this->openDataBaseConnection();
 		$this->connection->beginTransaction();
@@ -53,7 +52,7 @@ $c = $novacategorija->getParentCategory()=='default' ? 0 : "'".$novacategorija->
 			$this->connection->commit();
 		}catch(PDOException $e){
 			$this->connection->rollback();
-			$novacategorija->setErr("Database problem ".$e->getMessage());
+			$newCategory->setErr("Database problem ".$e->getMessage());
 			$this->closeDataBaseConnection();
 			return FALSE;
 		}
@@ -65,7 +64,7 @@ $c = $novacategorija->getParentCategory()=='default' ? 0 : "'".$novacategorija->
 		$query1 =  "INSERT INTO onlineshop.categories_log (ID_category, Name, Description, Parent_category, Status, ID_admin) 
 					SELECT K.ID, K.Name, K.Description, K.Parent_category, K.Status, KO.ID
 					FROM onlineshop.categories K, onlineshop.users KO
-					 WHERE K.ID = '".$k->getID()."' AND KO.ID = '".$_SESSION['user_ID']."'";
+					 WHERE K.ID = '".$k->getID()."' AND KO.ID = '".$k->getID_user()."'";
 		
 		$query2 = "UPDATE onlineshop.categories SET Status = '0' WHERE ID = '".$k->getID()."'";
 		
@@ -74,7 +73,7 @@ $c = $novacategorija->getParentCategory()=='default' ? 0 : "'".$novacategorija->
 		$query4 =  "INSERT INTO onlineshop.categories_log (ID_category, Name, Description, Parent_category, Status, ID_admin) 
 					SELECT K.ID, K.Name, K.Description, K.Parent_category, K.Status, KO.ID
 					FROM onlineshop.categories K, onlineshop.users KO
-					 WHERE K.Parent_category = '".$k->getID()."' AND KO.ID = '".$_SESSION['user_ID']."'";
+					 WHERE K.Parent_category = '".$k->getID()."' AND KO.ID = '".$k->getID_user()."'";
 		
 		$this->openDataBaseConnection();
 		$this->connection->beginTransaction();
@@ -102,21 +101,18 @@ $c = $novacategorija->getParentCategory()=='default' ? 0 : "'".$novacategorija->
 		
 	}
 	
-	public function getCategory($category, $polje, $vrednost){   
-		
+	public function getCategory($category, $polje, $vrednost){   		
 		$query = "SELECT * FROM onlineshop.categories WHERE ".$polje." = '".$vrednost."' AND Status = '1'";
 		
 		$this->openDataBaseConnection();
 		$stmt = $this->connection->prepare($query);
 		
 		try{
-			$stmt->execute();
-			
+			$stmt->execute();			
 		}catch(PDOException $e){
 			$category->setErr("Database error: ".$e->getMessage());
 			return FALSE;
-		}
-		
+		}		
 		$stmt->setFetchmode(PDO::FETCH_ASSOC);
 		$result = $stmt->fetchAll();
 		
@@ -130,8 +126,7 @@ $c = $novacategorija->getParentCategory()=='default' ? 0 : "'".$novacategorija->
 			
 			$this->closeDataBaseConnection();
 			return TRUE;		
-		}elseif(count($result) > 1){
-			//echo "<br>KorisnikRepository greska 4! Broj u resultsetu:".count($result);
+		}elseif(count($result) > 1){			
 			$category->setErr("Vise od jednog u bazi: ".count($result));
 			$this->closeDataBaseConnection();
 			return FALSE;
@@ -192,38 +187,42 @@ $c = $novacategorija->getParentCategory()=='default' ? 0 : "'".$novacategorija->
 	}
 	
 	public function editCategoryGeneral($conditionColumnsArray,$conditionValuesArray, $updColumnsArray, $updValuesArray){
-	$query1 =  "INSERT INTO onlineshop.categories_log (ID_category, Name, Description, Parent_category, Status, ID_admin) 
-					SELECT K.ID, K.Name, K.Description, K.Parent_category, K.Status, KO.ID
-					FROM onlineshop.categories K, onlineshop.users KO
-					 WHERE K.ID = '";
-	for($i = 0; $i < count($conditionColumnsArray); $i++){
-		$query2 = $query2.$conditionColumnsArray[$i]." = '".$conditionValuesArray."'";
-			if($i < count($conditionColumnsArray)){ 
-			$query2 = $query2." AND ";
-			}
-	}
-					 
-					 
-	$query1 = $query1."' AND KO.ID = '".$_SESSION['user_ID']."'";
-					 
-	$query2 = "UPDATE onlineshop.categories SET ";
-	for ($i = 0; $i<count($updColumnsArray); $i++){
-		$query2 = $query2.$updColumnsArray[$i]." = '".$updValuesArray[$i]."'";
-		if($i < count($$updColumnsArray)){ 
-			$query2 = $query2.",";
-			}else{
-				$query2 = $query2." ";
-			}
-	}
-	$query2 = $query2."WHERE ";
-	for($i = 0; $i < count($conditionColumnsArray); $i++){
-		$query2 = $query2.$conditionColumnsArray[$i]." = '".$conditionValuesArray."'";
-			if($i < count($conditionColumnsArray)){ 
-			$query2 = $query2." AND ";
-			}
+		$query1 =  "INSERT INTO onlineshop.categories_log (ID_category, Name, Description, Parent_category, Status, ID_admin) 
+						SELECT K.ID, K.Name, K.Description, K.Parent_category, K.Status, KO.ID
+						FROM onlineshop.categories K, onlineshop.users KO
+						 WHERE K.ID = '";
+		for($i = 0; $i < count($conditionColumnsArray); $i++){
+			$query2 = $query2.$conditionColumnsArray[$i]." = '".$conditionValuesArray."'";
+				if($i < count($conditionColumnsArray)){ 
+				$query2 = $query2." AND ";
+				}
+		}
+						 
+						 
+		$query1 = $query1."' AND KO.ID = '".$_SESSION['user_ID']."'";
+						 
+		$query2 = "UPDATE onlineshop.categories SET ";
+		for ($i = 0; $i<count($updColumnsArray); $i++){
+			$query2 = $query2.$updColumnsArray[$i]." = '".$updValuesArray[$i]."'";
+			if($i < count($$updColumnsArray)){ 
+				$query2 = $query2.",";
+				}else{
+					$query2 = $query2." ";
+				}
+		}
+		$query2 = $query2."WHERE ";
+		for($i = 0; $i < count($conditionColumnsArray); $i++){
+			$query2 = $query2.$conditionColumnsArray[$i]." = '".$conditionValuesArray."'";
+				if($i < count($conditionColumnsArray)){ 
+				$query2 = $query2." AND ";
+				}
+		}	
 	}
 	
-}
+	public function getTableName()
+	{
+       return "Categories";	
+	}
 }
 
 

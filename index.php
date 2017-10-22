@@ -1,19 +1,27 @@
+<?php
+	if(!isset($_SESSION)){
+	    $s = session_start();
+	    $_SESSION['username'] = null;
+	    }
+	
+?>
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
 <head>
 <title>My Alpine Rocks</title>
 <meta name="" content="">
-<link rel="icon" href="images/sheep-icon-16-23819.png" type="image/x-icon"/>
-<link rel="stylesheet" href="WebShopKostaDesign.css"/>
-<script src="BackEnd.js"></script>
+<link rel="icon" href= "images/sheep-icon-16-23819.png" type="image/x-icon"/>
+<link rel="stylesheet" href= "design/WebShopKostaDesign.css"/>
+<script src="Users/BackEnd.js"></script>
 </head>
 <body>
 <h1><img id="logo" src="images/mountain-line-2.bmp"/></h1>
 <hr />
 <div class="Menu">
-<form method="post" target="_self" id="logInForm"  action="BackEndFormController.php">
+<form method="post" target="_self" id="logInForm"  action='main.php'>
 	Email address:<br />
-	<input type="text" name="email" class="MyTextfield" id="email" maxlength="40" onchange="evaluateEmail(this.value)" required/><br />
+	<input type="text" name="email" class="MyTextfield" id="email" value="" maxlength="40" onchange="evaluateEmail(this.value)" required/><br />
 	<p class="err" id="errMail"></p>
 	<br />
 	Password:<br />

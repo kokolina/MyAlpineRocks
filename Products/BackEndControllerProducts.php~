@@ -131,7 +131,7 @@ class BackEndControllerProducts{
 			}			
 			if($_FILES["productPhoto_edit"]['tmp_name'][0] != ""){
 				//dodaj sliku u folder
-				$destinationFolder = "Products/imagesProducts/".$product->getID()."_/";
+				$destinationFolder = "imagesProducts/".$product->getID()."_/";
 				$msgOut = "";
 				//prebrojati vec postojece slike u folderu
 				if(!file_exists($destinationFolder)){

@@ -1,18 +1,21 @@
 <?php
-require_once "CategoryRepository.php";
 
-class Category{
+class Category
+{
 	public $ID, $name, $description, $parentCategory, $ID_user, $date, $status,$repository, $err = "";
 	
-	function __construct(){
+	function __construct()
+	{
 		$this->repository = new CategoryRepository();
 	}
 	
-	public function getCategories($catArray){
+	public function getCategories($catArray)
+	{
 		return $this->repository->getCategories($catArray);
 	}
 	
-	public function getCategory($param, $value){
+	public function getCategory($param, $value)
+	{
 		return $this->repository->getCategory($this, $param, $value);
 	}
 	
@@ -20,21 +23,20 @@ class Category{
 		return $this->repository->insertCategory($category);
 	}
 	
-	public function editCategory(){
-		$testCategory = new Category();
-		$testCategory->setID($this->getID());		
-		if($this->repository->getCategory($testCategory, "ID", $testCategory->getID())){
-			if($this->areCategoriesEqual($testCategory, $this)){
+	public function editCategory()
+	{
+		$oldCategory = new Category();
+				
+		if ($this->repository->getCategory($oldCategory, "ID", $this->getID())) {
+			if($this->areCategoriesEqual($oldCategory, $this)){
 				$this->setErr("No data has been changed.");
 				return FALSE;
-			}else{
-				return $this->repository->editCategory($this,$testCategory);
+			} else {
+				return $this->repository->editCategory($this);
 			}
-		}else{
+		} else {
 			return FALSE;
-		}
-		
-		
+		}		
 	}
 	
 	public function deleteCategory(){
@@ -50,59 +52,78 @@ class Category{
 		}
 	
 	}
-	public function areCategoriesEqual($cat1, $cat2){	
-		return (BackEndFormController_Cat::test_input_KAT($cat1->getID()) == $cat2->getID() && 
-		BackEndFormController_Cat::test_input_KAT($cat1->getName()) == $cat2->getName() && 
-		BackEndFormController_Cat::test_input_KAT($cat1->getDescription())== $cat2->getDescription() && 
-		BackEndFormController_Cat::test_input_KAT($cat1->getParentCategory())== $cat2->getParentCategory()) ? TRUE : FALSE;
+	public function areCategoriesEqual($cat1, $cat2)
+	{	
+		return (
+		    BackEndFormController_Cat::test_input_KAT($cat1->getID()) == $cat2->getID() && 
+		    BackEndFormController_Cat::test_input_KAT($cat1->getName()) == $cat2->getName() && 
+		    BackEndFormController_Cat::test_input_KAT($cat1->getDescription())== $cat2->getDescription() && 
+		    BackEndFormController_Cat::test_input_KAT($cat1->getParentCategory())== $cat2->getParentCategory()
+		    ) ? TRUE : FALSE;
 	}
 		
-	function getID(){
+	function getID()
+	{
 		return $this->ID;
 	}
-	function getName(){
+	function getName()
+	{
 		return $this->name;
 	}
-	function getDescription(){
+	function getDescription()
+	{
 		return $this->description;
 	}
-	function getParentCategory(){
+	function getParentCategory()
+	{
 		return $this->parentCategory;
 	}
-	function getID_user(){
+	function getID_user()
+	{
 		return $this->ID_user;
 	}
-	function getDate(){
+	function getDate()
+	{
 		return $this->date;
 	}
-	function getStatus(){
+	function getStatus()
+	{
 		return $this->status;
 	}
-	function setID($i){
+	function setID($i)
+	{
 		$this->ID = $i;
 	}
-	function getErr(){
+	function getErr()
+	{
 		return $this->err;
 	}
-	function setName($i){
+	function setName($i)
+	{
 		$this->name = $i;
 	}
-	function setDescription($i){
+	function setDescription($i)
+	{
 		$this->description = $i;
 	}
-	function setParentCategory($i){
+	function setParentCategory($i)
+	{
 		$this->parentCategory = $i;
 	}
-	function setID_user($i){
+	function setID_user($i)
+	{
 		$this->ID_user = $i;
 	}
-	function setDate($i){
+	function setDate($i)
+	{
 		$this->date = $i;
 	}
-	function setStatus($i){
+	function setStatus($i)
+	{
 		$this->status = $i;
 	}
-	function setErr($i){
+	function setErr($i)
+	{
 		$this->err = $this->err." ".$i;
 	}
 }

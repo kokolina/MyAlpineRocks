@@ -1,7 +1,19 @@
 <?php
-if(!isset($_SESSION)){
-	    $s = session_start();
-	    }
+	if(!isset($_SESSION)){
+	    $s = session_start();	    
+	}
+	
+	if(!isset($_SESSION['username'])){
+				session_start();
+				session_destroy();
+				header("Location: /WebShopX/index.php");
+   				exit;
+	}	
+	include_once "db/DBController.php";
+	include_once "Users/UserRepository.php";
+	include_once "Users/User.php";	
+	require_once "Photo/Photo.php";
+	include_once "Users/BackEndFormController.php";
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
@@ -9,44 +21,19 @@ if(!isset($_SESSION)){
 	<title>Online Shop</title>
 	<meta name="" content=""/>
 	<link rel="icon" href="images/sheep-icon-16-23819.png" type="image/x-icon"/>
-	<link rel="stylesheet" href="WebShopKostaDesign.css"/>
-    <script type="text/javascript" src="BackEnd.js"></script>
+	<link rel="stylesheet" href="design/WebShopKostaDesign.css"/>
+    <script type="text/javascript" src="Users/BackEnd.js"></script>
 </head>
 <body onload="loadUsers()">
-	<div >
-		<h1><img id="logo" src="images/mountain-line-2.bmp"/></h1>
-		<span style="display: inline; float: left;">
-			<ul id = "Home" class="HorizontalMeny" >
-				<li>
-				<a href="Categories/BackEnd_Categories.php">Categories</a>
-				</li>
-				<li>
-				<a href="Products/BackEnd_Products.php">Products</a>
-				</li>
-				<li>
-				<a href="BackEnd_Users.php">Users</a>
-				</li>
-			</ul>
-		</span>	
-		<span class="User">
-			<span><p style="display: inline; margin-right: 5px;"><?php echo $_SESSION['username']; ?></p>
-			<img class="UserProfilePicture" src= "<?php echo $_SESSION['imgPath'];?>"/>	
-		</span>
-		</span>	
-		<hr style="clear: both; margin-bottom: 0px;" />
-		<span class="User">
-			<a style="text-decoration: none"  href="BackEnd.html">
-			<p style="font-size: 0.75em; font-style: italic; color: black; margin: 0px;">Log Out</p>
-			</a>
-		</span>
-		<br style="clear: both"/>
-	</div>
+	<?php
+		include "headerPage.php";
+	?>
 	<div id = "userAdministration" style="padding: 10px;margin-left: 20px;">
 	
 		<div id="createNewUser" style="display: none;">
 			<fieldset>
 			<legend>CREATE USER</legend>
-				<form id="createNewUserFRM" method="post" target="_self" action="BackEndFormController.php" enctype="multipart/form-data">
+				<form id="createNewUserFRM" method="post" target="_self" action="main_users.php" enctype="multipart/form-data">
 					<span style="display: inline; float: left; margin-left: 20px;">
 						Name:<br />
 						<input type="text" name="name_new" id="name_new" class="MyTextfield" maxlength="20" onchange="nameCheck(this.value, 'errName_new')" required><br />
@@ -91,7 +78,7 @@ if(!isset($_SESSION)){
 		<div id="editUserDIV" style="display: none;">
 		<fieldset>
 		<legend>EDIT USER DATA</legend>
-			<form id = "editUserFRM" method="post" target="_self" action="BackEndFormController.php" enctype="multipart/form-data">
+			<form id = "editUserFRM" method="post" target="_self" action="main_users.php" enctype="multipart/form-data">
 				<span style="display: inline; float: left; margin-left: 20px;">
 				Name:<br />
 				<input type="text" name="name_edit" id="name_edit" class="MyTextfield" maxlength="20" onchange="nameCheck(this.value,'errName_edit')" required><br />

@@ -52,7 +52,7 @@ function loadCategories(){
 				c51.href = '#editCategory';
 				var c511 = document.createElement("img");
 				c511.setAttribute("class", "Ikonica");
-				c511.src = '../images/edit.png';
+				c511.src = 'images/edit.png';
 				c51.appendChild(c511);
 				c5.appendChild(c51);
 				red.appendChild(c5);
@@ -64,7 +64,7 @@ function loadCategories(){
 				c61.href = '#kategorijeDIV';
 				var c611 = document.createElement("img");
 				c611.setAttribute("class", "Ikonica");    //class = "Ikonica";
-				c611.src = '../images/delete.ico';
+				c611.src = 'images/delete.ico';
 				c61.appendChild(c611);
 				c6.appendChild(c61);
 				red.appendChild(c6);
@@ -182,7 +182,7 @@ function ajaxPoziv_kat(requestKeyName, requestKeyValue){
 		}catch(e){
 			return false;
 		}
-		ajax.open("POST", "AJAXFrontEndControllerCategories.php?"+requestKeyName+"="+requestKeyValue, false);
+		ajax.open("POST", "Categories/AJAXFrontEndControllerCategories.php?"+requestKeyName+"="+requestKeyValue, false);
 		ajax.send();
 		return response;
 }
@@ -203,3 +203,5 @@ function check_categoryTitle(name){
 function dodajKatPracenje(str){
 	document.getElementById("err_cat").innerHTML = document.getElementById("err_cat").innerHTML+"\n"+str;
 }
+
+

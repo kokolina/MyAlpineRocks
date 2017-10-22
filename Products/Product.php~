@@ -97,7 +97,8 @@ class Product{
 	
 	public function deleteProduct(){
 		$queryArray = new ArrayObject();
-		$this->repository->prepareStatement_deleteProduct($this, $queryArray);		
+		$this->repository->prepareStatement_deleteProduct($this, $queryArray);
+		
 		$this->repository->openDataBaseConnection();
 		$sgn = $this->repository->executeTransaction($queryArray);	
 		$this->repository->closeDataBaseConnection();

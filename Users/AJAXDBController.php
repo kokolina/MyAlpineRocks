@@ -2,13 +2,14 @@
 if(!isset($_SESSION)){
 	    $s = session_start();
 	    }
-	    
-include "User.php";
-include "Photo/Photo.php";
+	include_once "../db/DBController.php";
+	include_once "UserRepository.php";
+	include_once "User.php";	
+	require_once "../Photo/Photo.php";
+	
 
-
-
-class AJAXDBController extends DBController{	
+class AJAXDBController 
+{	
 
 public function isEmailRegistered($email){
 	$testUser = new User($email);
@@ -65,7 +66,23 @@ public function test_input_KAT($data) {
   		 $data = addslashes($data);
   	return $data;
 }
+
+public function askForAPI($passwordAPI) {
+	$user = new User($_SESSION['email']);
+	$q = $user->validatePassword($passwordAPI);
+	if($q){
+		if($user->generateAPIKey()) {	
+				echo '{"code": "OK", "msg":"Your new API key is:", "key":"'.$user->getAPIKey().'"}';
+		}else {
+				echo '{"code": "err", "msg":"Error while generating API key in DB!", "key":"'.null.'"}';
+		}			
+	}else{
+		echo '{"code": "err", "msg":"Wrong password!", "key":"'.null.'"}';
+	}
+	$code = $q ? "OK" : "err";
 	
+	
+}
 }
 
 
@@ -78,7 +95,7 @@ if(isset($_REQUEST['email'])){			//JS provera da li je mail registrovan prilikom
 elseif(isset($_REQUEST['loadUsers'])){			//ucitavanje korisnika u tabelu 
 	$KB->loadUsers();
 }
-elseif(isset($_REQUEST['ID'])){		//vraca korisnika po ID-u u obliku JSON za use case izmena korisnika
+elseif(isset($_REQUEST['ID'])){		//vraca korisnika po ID-u u obliku JSON za usecase izmena korisnika
 	$inputValue = $KB->test_input_KAT($_REQUEST['ID']);
 	$KB->loadUser($inputValue);
 }
@@ -88,7 +105,7 @@ elseif(isset($_REQUEST['DEL'])){
 }
 elseif(isset($_REQUEST['PHOTO_DEL'])){
 	$photoName = $_REQUEST['PHOTO_DEL'];
-$sgn = Photo::deletePhotoP("images/".$photoName.".jpg");
+$sgn = Photo::deletePhotoP("../images/".$photoName.".jpg");
 	if($sgn == TRUE){
 		echo "Profile photo deleted";
 	}else{
@@ -99,8 +116,18 @@ elseif(isset($_REQUEST['username'])){
 	$username = $KB->test_input_KAT($_REQUEST['username']);
 	$KB->isUsernameAvailable($username);
 }
+elseif(isset($_REQUEST['apigen'])){
+	$KB->askForAPI($_REQUEST['apigen']);
+}elseif(isset($_REQUEST['logout'])) {
+	session_start();
+	session_unset();
+	session_destroy();
+	return true;
+	
+}
+
 
 // http://php.net/manual/en/language.oop5.php 
 
 
-?>
+

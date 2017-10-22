@@ -1,17 +1,5 @@
 <?php
 
-if(!isset($_SESSION)){
-	    $s = session_start();
-	    }
- 
-if(isset($_POST['submit_newCategory'])){
-	BackEndFormController_Cat::insertCategory();
-}elseif(isset($_POST['submit_editCategory'])){
-	BackEndFormController_Cat::editCategory();
-}
-
-
-
 class BackEndFormController_Cat{
 	
 public static function insertCategory(){
@@ -38,10 +26,11 @@ public static function insertCategory(){
 	$category->setParentCategory($nadK);
 	$category->setID_user($_SESSION['user_ID']);
 	
-	if(!$category->insertCategory($category)){
-		
+	if($category->insertCategory($category)){
+		include "BackEnd_Categories.php";
+	}else{
 		echo "Data is not inserted. ERR:44";
-		include "main_categories.php";
+		include "BackEnd_Categories.php";
 	}		
 	}
 
@@ -78,10 +67,12 @@ public static function editCategory(){
 	$category->setName($n);
 	$category->setDescription($o);
 	$category->setParentCategory($nadK);
-	$category->setID_user($_SESSION['user_ID']);
 	
 	
-	if(!$category->editCategory($category)){
+	if($category->editCategory($category)){
+		include "BackEnd_Categories.php";
+	}else{		
+		include "BackEnd_Categories.php";
 		$msg = $category->getErr();
 		echo "<script>alert('$msg');</script>";	
 	}
@@ -95,6 +86,3 @@ public static function editCategory(){
   	return $data;
 }
 }
-
-
-?>

@@ -1,27 +1,18 @@
 <?php
 
-if(!isset($_SESSION)){
-	    $s = session_start();
-	    }
-
-require_once "User.php";
-require_once "Photo/Photo.php";
-
 if(isset($_POST['email'])){
 	$user = BackEndFormController::loginUser();	
-	
 	if($user->getLocked()==0 || $user->getLocked() === 0){
-		include "BackEnd.html";
+		include "index.php";
 		echo "<script>document.getElementById('errMail').innerHTML = 'User account is locked'</script>";
 	}elseif($user->getErrKod()=="n"){
-		include "BackEnd.html";
-		echo "<script>document.getElementById('errMail').innerHTML = 'User account doesn't exist.'</script>";
-	}elseif($user->getErrKod()=="pass"){
-		include "BackEnd.html";
-		$brPokusaja = $user->getLocked();
-		echo "<script>document.getElementById('errMail').innerHTML = 'Wrong username or password. You can try $br times more .'</script>";
+		include "index.php";
+		echo "<script>document.getElementById('errMail').innerHTML = 'User account is not registered.'</script>";
+   	}elseif($user->getErrKod()=="pass"){
+		include "index.php";
+		$noAttempts = $user->getLocked();
+		echo "<script>document.getElementById('errMail').innerHTML = 'Wrong username or password. You have $noAttempts attempts more.'</script>";
 	}else{	
-		
         $_SESSION['username'] = $user->getUsername();
         $_SESSION['email'] = $user->getEmail();
         $_SESSION['user_rights'] = $user->getAccessRights();
@@ -30,32 +21,17 @@ if(isset($_POST['email'])){
 			$_SESSION['imgPath'] = "images/".$user->getID().".jpg";	
 		}else{
 			$_SESSION['imgPath'] = "images/noPhoto.jpg";
-		}
-		include "BackEndMenu.html";
-		if($_SESSION['user_rights'] == 'A'){
-			echo "<script>
-			var users = document.getElementById('BackEnd_Users');
-			var link = document.createElement('a');
-			link.innerHTML = 'Users';
-			var att = document.createAttribute('href');
-			att.value = 'BackEnd_Users.php';
-			link.setAttributeNode(att);
-			var attCls = document.createAttribute('class');
-			attCls.value = 'Menu';
-			link.setAttributeNode(attCls);
-			users.appendChild(link);
-			</script>";
-		}
+		}	
+		
+		include "mainPage.php";	
 	}
 }elseif(isset($_POST['name_new'])){
-	include "BackEnd_Users.php";
 	BackEndFormController::createNewUser();
 }elseif(isset($_POST['name_edit'])){
-	include "BackEnd_Users.php";
 	BackEndFormController::editUserData();
 }
 
-//echo "<script>window.close();</script>";
+
 
 class BackEndFormController{
 	
@@ -75,15 +51,14 @@ public static function loginUser(){
 		
 	if(!empty($_POST['password'])){
 			$pass = BackEndFormController::test_input($_POST['password']);
-			//$pass = $_POST['password'];
 		}else{
 			echo "Insert password<br>";
 			return;
 			}	
 		
 	$user = new User($email);
-	$user->setPassword($pass);
-	$user->logIn();	
+	$user->setPassword(hash("sha256", $pass, $raw_output = false));
+	$user->logIn();
 	return $user;
 	}
 	

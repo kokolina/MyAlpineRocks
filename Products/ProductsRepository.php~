@@ -91,7 +91,7 @@ class ProductsRepository extends DBController{
 		$slike = Photo::getPhotosFromFolder(dirname(__FILE__)."/imagesProducts/".$productID."_/");	
 		//"http://".$_SERVER['SERVER_NAME']."WebShop/Products
 		for($i = 0; $i<count($slike); $i++){
-			if($slike[$i] !== NULL) $slike[$i] = "http://".$_SERVER['SERVER_NAME']."/Products/".substr($slike[$i],25);	//26 or 31
+			if($slike[$i] !== NULL) $slike[$i] = "http://".$_SERVER['SERVER_NAME']."/WebShopX/Products".substr($slike[$i],26);	//26 or 31
 						}	
 		$str = '"photos":'.json_encode($slike);
 		return $str;

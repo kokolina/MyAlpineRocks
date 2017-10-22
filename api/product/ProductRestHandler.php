@@ -1,6 +1,6 @@
 <?php
 require_once("../Rest.php");
-require_once("../../Products/Product.php");
+
 		
 class ProductRestHandler extends Rest {
 
@@ -97,9 +97,80 @@ class ProductRestHandler extends Rest {
 		}
 	}
 	
+	public function insertProduct($data){
+		$product = new Product();
+		
+		foreach($data as $key => $value){
+			if($key === "addCategory"){
+				for($i = 0; $i<count($value); $i++){
+					$cat = new Category();
+					$cat->getCategory("ID", $value[$i]);
+					$product->$key($cat);
+				}
+			}else{
+				$product->$key($value);
+			}			
+		}
+		if($product->insertProduct()){
+			$this->serverRespond(array("ok"=>"Product saved. "), 200);
+		}else{
+			$this->serverRespond(array("error"=>"Unsuccessful insert. ".$product->getErr()), 400);
+		}
+	}
+	
+	public function editProduct($data){
+		
+		$product = new Product();
+		$product->getProduct("ID", $data["setID"]);
+		$product->setCategoryToNull();
+		
+		foreach($data as $key => $value){
+			if($key === "addCategory"){
+				for($i = 0; $i<count($value); $i++){
+					$cat = new Category();
+					$cat->getCategory("ID", $value[$i]);
+					$product->$key($cat);
+				}
+			}else{
+				$product->$key($value);
+			}			
+		}
+		if($product->editProduct()){			
+			$this->serverRespond(array("ok"=>"Product saved. "), 200);
+		}else{
+			$this->serverRespond(array("error"=>"Unsuccessful insert. ".$product->getErr()), 400);
+		}
+	}
+	
+	public function deleteProduct($data){
+		$product = new Product();
+		$product->setID($data['id']);
+		if($product->getProduct("ID", $data['id']))
+		{
+			if($product->deleteProduct()) 
+			{
+				$this->serverRespond(array('ok'=>"Product deleted."), 200);	
+			}
+			else 
+			{
+				$this->serverRespond(array('error'=>"Product is not deleted.".$product->getErr()), 500);		
+			}
+		
+		}
+		else 
+		{
+			$this->serverRespond(array('error'=>"No such product in database."), 400);		
+		}
+		
+		
+		
+		
+		
+		
+	}
+	
 	//RESPONSE DATA HAS TO BE AN ARRAY
 	public function encodeHtml($responseData) {		
-		//var_dump($responseData);
 		$htmlResponse = "<table border='1'><tr><td>Rb</td><td>ID</td><td>Name</td><td>Description</td>
 						<td>Price</td><td>Parent</td><td>Photos</td></tr>";
 		for($i = 0; $i<count($responseData);$i++){
@@ -124,6 +195,22 @@ class ProductRestHandler extends Rest {
 			$xml->addChild($key, $value);
 		}
 		return $xml->asXML();
+	}
+	
+	public function serverRespond($rawData, $statusCode){
+		$requestContentType = $_SERVER['HTTP_ACCEPT'];
+		$this ->setHttpHeaders($requestContentType, $statusCode);
+				
+		if(strpos($requestContentType,'application/json') !== false){
+			$response = $this->encodeJson($rawData);
+			echo $response;
+		} else if(strpos($requestContentType,'text/html') !== false){
+			$response = $this->encodeHtml($rawData);
+			echo $response;
+		} else if(strpos($requestContentType,'application/xml') !== false){
+			$response = $this->encodeXml($rawData);
+			echo $response;
+		}
 	}
 	
 	

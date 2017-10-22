@@ -257,7 +257,7 @@ function deletePhoto(id, path){
 		var foldername = folderPath.substring(folderPath.lastIndexOf("/"));
 		var filePath = foldername+filename;
 		
-		var response = ajaxCall_prod("deletePhoto","imagesProducts"+filePath, "Products/AJAXFrontEndControllerProducts.php");
+		var response = ajaxCall_prod("deletePhoto","Products/imagesProducts"+filePath, "Products/AJAXFrontEndControllerProducts.php");
 		if(response == "1"){
 			document.getElementById(id).style.display = "none";
 			document.getElementById(id+"_ico").style.display = "none";

@@ -1,9 +1,8 @@
 <?php
-require "UserRepository.php";
 
 class User{
 	
-	public $ID, $name, $lastName, $username, $email, $password, $locked, $accessRights, $status = "";
+	public $ID, $name, $lastName, $username, $email, $password, $locked, $accessRights, $status, $APIKey = "";
 	private $uRepository;
 	public $err = "";
 	
@@ -167,9 +166,31 @@ class User{
 			return FALSE;
 		}
 		
-	}  
-	     
-    
+	}
+	
+	public function validatePassword($password){
+		$this->getUser($this, "Email",$this->getEmail());
+		
+		if($this->getPassword() === hash("sha256", $password, $raw_output = false)) {
+			return true;		
+		}else {
+			return false;		
+		}		
+	}
+	
+	public function generateAPIKey(){
+		if($this->getUser($this, "Email", $this->getEmail())){
+			$this->uRepository->openDataBaseConnection();
+			$sgn = $this->uRepository->generateAPIKey($this);
+			$this->uRepository->closeDataBaseConnection();
+			return $sgn;
+		}else{
+			return FALSE;
+		}
+	}
+	
+	
+	
     public function setID($i){
 		$this->ID = $i;
 	}
@@ -195,6 +216,9 @@ class User{
 	}
 	public function setAccessRights($i){
 		$this->accessRights = $i;
+	}
+	public function setAPIKey($ak){
+		$this->APIKey = $ak;
 	}
 	public function setERRStatus($i, $p){
 		$this->err->kod = $i;
@@ -228,6 +252,9 @@ class User{
 	}
 	public function getAccessRights(){
 		return $this->accessRights;
+	}
+	public function getAPIKey(){
+		return $this->APIKey;
 	}
 	public function getERRStatus(){
 		return $this->err;

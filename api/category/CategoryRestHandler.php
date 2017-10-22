@@ -1,6 +1,9 @@
 <?php
 require_once("../Rest.php");
+require_once "../../db/DBController.php";
+require_once "../../Categories/CategoryRepository.php";
 require_once("../../Categories/Category.php");
+
 		
 class CategoryRestHandler extends Rest {
 
@@ -19,19 +22,8 @@ class CategoryRestHandler extends Rest {
 			}
 			$rawData = $categoriesArray;
 		}
-		$requestContentType = $_SERVER['HTTP_ACCEPT'];  //proveri koji format je klijent zatrazio
-		$this ->setHttpHeaders($requestContentType, $statusCode); //napravi header povratne poruke
-				
-		if(strpos($requestContentType,'application/json') !== false){
-			$response = $this->encodeJson($rawData);
-			echo $response;
-		} else if(strpos($requestContentType,'text/html') !== false){			
-			$response = $this->encodeHtml($rawData);
-			echo $response;
-		} else if(strpos($requestContentType,'application/xml') !== false){
-			$response = $this->encodeXml($rawData);
-			echo $response;
-		}
+		//SEND RESPONSE
+		$this->serverRespond($rawData, $statusCode);
 	}
 	
 	public function getCategory($id) {
@@ -45,19 +37,58 @@ class CategoryRestHandler extends Rest {
 			$statusCode = 200;
 			$rawData[0] = array("ID" => $category->getID(), "name" => $category->getName(), "description" => $category->getDescription());
 		}
-
-		$requestContentType = $_SERVER['HTTP_ACCEPT'];
-		$this ->setHttpHeaders($requestContentType, $statusCode);
-				
-		if(strpos($requestContentType,'application/json') !== false){
-			$response = $this->encodeJson($rawData);
-			echo $response;
-		} else if(strpos($requestContentType,'text/html') !== false){
-			$response = $this->encodeHtml($rawData);
-			echo $response;
-		} else if(strpos($requestContentType,'application/xml') !== false){
-			$response = $this->encodeXml($rawData);
-			echo $response;
+		//SEND RESPONSE
+		$this->serverRespond($rawData, $statusCode);
+		
+	}
+	
+	public function insertCategory($data){
+					$category = new Category();
+					
+					if($category->getCategory('ID',$data['ParentCategory']) || $data['ParentCategory'] === "0") {
+							$category->setParentCategory($data['ParentCategory']);
+					}else{
+							$this->serverRespond(array('error' => 'Parent category is not valid.'), 400);
+							exit;
+					}					
+					$category->setID_user($data['ID_user']);
+					$category->setName($data['Name']);
+					$category->setDescription($data["Description"]);
+					
+					if($category->insertCategory($category)) {
+							$this->serverRespond(array('ok' => 'Category saved.'), 200);
+					}else {
+							$this->serverRespond(array('error' => 'Category was not saved. '.$category->getErr()), 400); exit;
+					}
+	}	
+	
+	public function editCategory($data){
+			$category = new Category();
+			if(!$category->getCategory("ID", $data['ID'])) {
+									$this->serverRespond(array('error' => 'No such category.'), 400); exit;
+							}	
+			foreach($data as $key => $value)
+			{
+ 				 $method = 'set'.$key;
+ 				 $category->$method($value);
+ 			}	
+			if($category->editCategory()) {
+									$this->serverRespond(array('ok' => 'Category saved.'), 200);
+						}else{
+									$this->serverRespond(array('error' => 'Category was not saved. '.$category->getErr()), 400); exit;
+						}				
+	}	
+	
+	public function deleteCategory($data){
+		$category = new Category();
+		$category->setID($data['ID']);
+		$category->setID_user($data['ID_user']);
+		$sgn = $category->deleteCategory();
+		if ($sgn){
+			return TRUE;
+		}else{
+			$this->serverRespond(array('error' => 'Category was not deleted. '.$category->getErr()), 400); exit;
+			return FALSE;
 		}
 	}
 	
@@ -68,13 +99,6 @@ class CategoryRestHandler extends Rest {
 			$htmlResponse .= "<tr><td>".($i+1)."</td>";
 			foreach($responseData[$i] as $j => $value)
 				$htmlResponse .= "<td>". $value . "</td>";
-			/**
-			* 
-			* @var 
-			* 
-			for($j=0; $j<count($responseData[$i]); $j++){
-				$htmlResponse .= "<td>". $responseData[$i][$j] . "</td>";
-			}*/
 			$htmlResponse .= "</tr>";
 		}		
 		$htmlResponse .= "</table>";
@@ -93,6 +117,22 @@ class CategoryRestHandler extends Rest {
 			$xml->addChild($key, $value);
 		}
 		return $xml->asXML();
+	}
+	
+	public function serverRespond($rawData, $statusCode){
+		$requestContentType = $_SERVER['HTTP_ACCEPT'];
+		$this ->setHttpHeaders($requestContentType, $statusCode);
+				
+		if(strpos($requestContentType,'application/json') !== false){
+			$response = $this->encodeJson($rawData);
+			echo $response;
+		} else if(strpos($requestContentType,'text/html') !== false){
+			$response = $this->encodeHtml($rawData);
+			echo $response;
+		} else if(strpos($requestContentType,'application/xml') !== false){
+			$response = $this->encodeXml($rawData);
+			echo $response;
+		}
 	}
 	
 	
