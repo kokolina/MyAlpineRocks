@@ -8,7 +8,7 @@ abstract protected function getTableName();
 
 public final function openDataBaseConnection(){
 	try{
-		$this->connection = new PDO("mysql:host = myalpine.rocks; dbname = onlineshop", "root", "2110qwas");
+		$this->connection = new PDO("mysql:host = myalpine.rocks; dbname = onlineshop", "root", "");
 		$this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		//echo "Konektovali smo se na bazu $db_name";
 		
