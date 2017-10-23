@@ -63,8 +63,8 @@ input.MyTextfield {
 }
 .MyButton {
 	background-color: red;
-	color: white;
-	border-color: black;
+	color: black;
+	border-color: green;
 	border-collapse: collapse;
 	padding: 3px;
 	margin-bottom: 10px;
