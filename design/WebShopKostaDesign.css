@@ -62,15 +62,9 @@ input.MyTextfield {
 	margin-bottom: 0px;
 }
 .MyButton {
-<<<<<<< HEAD
 	background-color: black;
-	color: black;
+	color: white;
 	border-color: black;
-=======
-	background-color: red;
-	color: black;
-	border-color: green;
->>>>>>> testing
 	border-collapse: collapse;
 	padding: 3px;
 	margin-bottom: 10px;
