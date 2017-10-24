@@ -11,7 +11,6 @@ public final function openDataBaseConnection(){
 		$this->connection = new PDO("mysql:host = myalpine.rocks; dbname = onlineshop", "root", "");
 		$this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		//echo "Konektovali smo se na bazu $db_name";
-		
 	}catch(PDOException $e){
 		echo "<br>Greska u konekciji sa bazom: " . $e->getMessage();
 		}
