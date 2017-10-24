@@ -1,6 +1,7 @@
 <?php
 
-class Photo{
+class Photo
+{
 	private $path, $name = "";
 	/**
 	* 
@@ -13,7 +14,8 @@ class Photo{
 	* 
 	* @return TRUE/FALSE
 	*/
-	public static function photoUpload($fileInputTagName, $destinationFolder, $photoName, $msgOut, $selectedFileNo){
+	public static function photoUpload($fileInputTagName, $destinationFolder, $photoName, $msgOut, $selectedFileNo)
+	{
 			$sgn = TRUE;
 			$destinationFileName = $destinationFolder.$photoName.".jpg";
 			
@@ -67,7 +69,8 @@ class Photo{
 			}
 	}
 	
-	public function isPhoto($tmpFilePath){
+	public function isPhoto($tmpFilePath)
+	{
 		try{
 					$formatCheck = getimagesize($tmpFilePath);
 					return ($formatCheck !== FALSE) ? TRUE : FALSE;
@@ -79,7 +82,8 @@ class Photo{
 	}
 	//funkciju koristim za nalazenje slike proizvoda koja je obelezena najvecim brojem, da bih dodala sledecu.
 	//Slike proizvoda obelezavam brojevima
-	public static function getLastPhotoNumber($destinationFolder){
+	public static function getLastPhotoNumber($destinationFolder)
+	{
 		$filesArray = scandir($destinationFolder);
 		$number = 0;
 		for($i = 0; $i<count($filesArray); $i++){
@@ -91,7 +95,8 @@ class Photo{
 		return $number;
 	}
 	//source folder uneti obavezno sa "/" na kraju
-	public static function getPhotosFromFolder($sourceFolder){
+	public static function getPhotosFromFolder($sourceFolder)
+	{
 		$photoNamesArray[] = NULL;		
 		$allFiles = glob($sourceFolder."*.*");   // ".$id."_
 		//napravi samo cist niz slika, jer ako u nizu nisu samo slike, pravi mi problem kod pravljenja JSON-a..da li treba zagrada ili zarez itd.
@@ -103,7 +108,8 @@ class Photo{
 		return $photoNamesArray;
 	}
 	
-	public static function deletePhotoP($path){	
+	public static function deletePhotoP($path)
+	{
 		if(file_exists($path)){
 					//OBRISI FILE
 					if(unlink($path)){
@@ -117,17 +123,21 @@ class Photo{
 				}
 	}
 	
-	public function getPath(){
+	public function getPath()
+	{
 		return $this->path;
 	}
-	public function getName(){
+	public function getName()
+	{
 		return $this->name;
 	}
 	
-	public function setPath($i){
+	public function setPath($i)
+	{
 		$this->path = $i;
 	}
-	public function setName($i){
+	public function setName($i)
+	{
 		$this->name = $i;
 	}
 }
