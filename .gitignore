@@ -1,5 +1,5 @@
 # ignore DBController.php because of login credentials
-db/*.php
+/db/
 
 # ignore temp files made by BlueFish editor on sherpa
 *~
