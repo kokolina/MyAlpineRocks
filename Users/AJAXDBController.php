@@ -2,6 +2,8 @@
 if(!isset($_SESSION)){
 	    $s = session_start();
 	    }
+	
+	include_once "../db/db_config.php";    
 	include_once "../db/DBController.php";
 	include_once "UserRepository.php";
 	include_once "User.php";	

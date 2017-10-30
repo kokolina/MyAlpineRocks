@@ -6,8 +6,10 @@ abstract class DBController {
 abstract protected function getTableName();
 
 public final function openDataBaseConnection(){
+	//var_dump($dbUser); var_dump($dbPass);
 	try{
-		$this->connection = new PDO("mysql:host = myalpine.rocks; dbname = onlineshop", "root", "2110qwas");
+		$s = $GLOBALS['serverName'];
+		$this->connection = new PDO("mysql:host = $s; dbname = onlineshop", $GLOBALS['dbUser'], $GLOBALS['dbPass']);
 		$this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		//echo "Konektovali smo se na bazu $db_name";
 	}catch(PDOException $e){

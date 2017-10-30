@@ -9,7 +9,9 @@ if(!isset($_SESSION['username'])){
 				session_destroy();
 				header("Location: /WebShopX/index.php");
    				exit;
-			}	
+			}
+			
+include_once "db/db_config.php";    	
 include_once "db/DBController.php";
 include_once "Categories/CategoryRepository.php";	
 include_once "Categories/Category.php";
