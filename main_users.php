@@ -2,13 +2,14 @@
 	if(!isset($_SESSION)){
 	    $s = session_start();	    
 	}
-	
-	if(!isset($_SESSION['username'])){
+	if(!isset($_SESSION['username']) || !isset($_REQUEST['token']) || $_REQUEST['token'] != $_SESSION['token']){
 				session_start();
 				session_destroy();
-				header("Location: /WebShopX/index.php");
+				header("Location: /myalpine.rocks/myhome/index.php");
    				exit;
 	}	
+	output_add_rewrite_var("token", $_SESSION['token']);
+	
 	include_once "db/db_config.php";
 	include_once "db/DBController.php";
 	include_once "Users/UserRepository.php";
@@ -23,7 +24,6 @@
 	<meta name="" content=""/>
 	<link rel="icon" href="images/sheep-icon-16-23819.png" type="image/x-icon"/>
 	<link rel="stylesheet" href="design/WebShopKostaDesign.css"/>
-    <script type="text/javascript" src="Users/BackEnd.js"></script>
 </head>
 <body onload="loadUsers()">
 	<?php
@@ -133,6 +133,6 @@
 	</div>
 	<hr style="clear: both;" />
 	<p id="pracenje"></p>
-	
+	 <script type="text/javascript" src="Users/BackEnd.js"></script>
 </body>
 </html>

@@ -13,6 +13,7 @@ if(isset($_POST['email'])){
 		$noAttempts = $user->getLocked();
 		echo "<script>document.getElementById('errMail').innerHTML = 'Wrong username or password. You have $noAttempts attempts more.'</script>";
 	}else{	
+	    session_start();
         $_SESSION['username'] = $user->getUsername();
         $_SESSION['email'] = $user->getEmail();
         $_SESSION['user_rights'] = $user->getAccessRights();
@@ -22,6 +23,10 @@ if(isset($_POST['email'])){
 		}else{
 			$_SESSION['imgPath'] = "images/noPhoto.jpg";
 		}	
+		$tokenstr = strval(date('W')).$_SESSION['username'];
+		$token = md5($tokenstr);
+		$_SESSION['token'] = $token;
+		output_add_rewrite_var("token", $token);
 		
 		include "mainPage.php";	
 	}
