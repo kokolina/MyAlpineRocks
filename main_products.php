@@ -23,7 +23,7 @@
 <head>
 	<title>Online shop</title>
 	<meta name="" content="">
-	<link rel="icon" href="../images/sheep-icon-16-23819.png" type="image/x-icon"/>
+	<link rel="icon" href="images/sheep-icon-16-23819.png" type="image/x-icon"/>
 	<link rel="stylesheet" href="design/WebShopKostaDesign.css"/>
 	<script type="text/javascript" src="Products/BackEnd_Products.js"></script>
 	<script type="text/javascript" src="Users/BackEnd.js"></script>	
