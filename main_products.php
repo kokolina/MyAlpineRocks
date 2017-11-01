@@ -2,15 +2,15 @@
 	if(!isset($_SESSION)){
 	    $s = session_start();
 	}
+include_once "db/db_config.php";
 	if(!isset($_SESSION['username']) || !isset($_REQUEST['token']) || $_REQUEST['token'] != $_SESSION['token']){
 				session_start();
 				session_destroy();
-				header("Location: /myalpine.rocks/myhome/index.php");
+				header("Location: ".$GLOBALS['indexPage']);
    			exit;
 	}	
 	output_add_rewrite_var("token", $_SESSION['token']);
-	
-	include_once "db/db_config.php";    
+   
 	include_once "db/DBController.php";
 	include_once "Products/ProductsRepository.php";
 	include_once "Categories/CategoryRepository.php";
