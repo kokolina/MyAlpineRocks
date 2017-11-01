@@ -23,6 +23,10 @@ if(isset($_POST['email'])){
 		}else{
 			$_SESSION['imgPath'] = "images/noPhoto.jpg";
 		}	
+		$tokenstr = strval(date('W')).$_SESSION['username'];
+		$token = md5($tokenstr);
+		$_SESSION['token'] = $token;
+		output_add_rewrite_var("token", $token);
 		
 		include "mainPage.php";	
 	}
