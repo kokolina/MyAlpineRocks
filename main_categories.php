@@ -1,13 +1,9 @@
 <?php
-if(!isset($_SESSION)){
-	    $s = session_start();
-	    //var_dump($_SESSION['username']);
-	    }
-	    
+session_start();	    
 if(!isset($_SESSION['username'])){
 				session_start();
 				session_destroy();
-				header("Location: /WebShopX/index.php");
+				header("Location: /myalpine.rocks/myhome/index.php");
    				exit;
 			}
 			

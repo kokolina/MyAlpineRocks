@@ -6,7 +6,7 @@
 	if(!isset($_SESSION['username'])){
 				session_start();
 				session_destroy();
-				header("Location: /WebShopX/index.php");
+				header("Location: /myalpine.rocks/myhome/index.php");
    				exit;
 	}	
 	include_once "db/db_config.php";
