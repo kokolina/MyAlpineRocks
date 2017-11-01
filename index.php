@@ -13,7 +13,6 @@
 <meta name="" content="">
 <link rel="icon" href= "images/sheep-icon-16-23819.png" type="image/x-icon"/>
 <link rel="stylesheet" href= "design/WebShopKostaDesign.css"/>
-<script src="Users/BackEnd.js"></script>
 </head>
 <body>
 <h1><img id="logo" src="images/mountain-line-2.bmp"/></h1>
@@ -32,5 +31,6 @@
 </form>
 
 </div>
+<script src="Users/BackEnd.js"></script>
 </body>
 </html>

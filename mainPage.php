@@ -5,7 +5,6 @@
 	<meta name="" content="">
 	<link rel="icon" href="myhome/images/sheep-icon-16-23819.png" type="image/x-icon"/>
 	<link rel="stylesheet" href="design/WebShopKostaDesign.css"/>
-	<script src="Users/BackEnd.js"></script>
 </head>
 <body >
 	<?php include "headerPage.php";?>
@@ -36,5 +35,6 @@
 			?>		
 		</div>
 	</div>
+	<script src="Users/BackEnd.js"></script>
 </body>
 </html>

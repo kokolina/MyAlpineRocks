@@ -2,7 +2,6 @@
 	if(!isset($_SESSION)){
 	    $s = session_start();
 	}
-	echo $_REQUEST['token'];
 	if(!isset($_SESSION['username']) || !isset($_REQUEST['token']) || $_REQUEST['token'] != $_SESSION['token']){
 				session_start();
 				session_destroy();
@@ -27,8 +26,6 @@
 	<meta name="" content="">
 	<link rel="icon" href="images/sheep-icon-16-23819.png" type="image/x-icon"/>
 	<link rel="stylesheet" href="design/WebShopKostaDesign.css"/>
-	<script type="text/javascript" src="Products/BackEnd_Products.js"></script>
-	<script type="text/javascript" src="Users/BackEnd.js"></script>	
 </head>
 <body onload="loadProducts()" >
 	<?php
@@ -121,5 +118,7 @@
 		</div>
     </div>
     <p id="err_pro"></p>
+    <script type="text/javascript" src="Products/BackEnd_Products.js"></script>
+	<script type="text/javascript" src="Users/BackEnd.js"></script>	
 </body>
 </html>

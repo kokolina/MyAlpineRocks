@@ -1,6 +1,5 @@
 <?php
 session_start();	
-echo $_REQUEST['token'];
 	if(!isset($_SESSION['username']) || !isset($_REQUEST['token']) || $_REQUEST['token'] != $_SESSION['token']){
 				session_start();
 				session_destroy();
@@ -23,8 +22,6 @@ include_once "Categories/BackEndFormController_Cat.php";
 	<meta name="" content="">
 	<link rel="icon" href="images/sheep-icon-16-23819.png" type="image/x-icon"/>
 	<link rel="stylesheet" href="design/WebShopKostaDesign.css"/>
-	<script type="text/javascript" src="Categories/Category.js"></script>
-	<script type="text/javascript" src="Users/BackEnd.js"></script>
 </head>
 <body onload="loadCategories()">
 	<?php
@@ -95,5 +92,7 @@ include_once "Categories/BackEndFormController_Cat.php";
 	    </div>';
 	?>
     </div>
+    <script type="text/javascript" src="Categories/Category.js"></script>
+	<script type="text/javascript" src="Users/BackEnd.js"></script>
 </body>
 </html>
