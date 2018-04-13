@@ -5,7 +5,7 @@ require_once "../../Users/UserRepository.php";
 require_once "../../Users/User.php";
 require_once "../../Categories/CategoryRepository.php";
 require_once "../../Categories/Category.php";
-require_once "../../Categories/BackEndFormController_Cat.php";
+require_once "../../Categories/CategoriesFrontEndController.php";
 
 
 //01240c8a54f91dd57c6a1d485a3c766526f3446331f469eedc302169019295c1
