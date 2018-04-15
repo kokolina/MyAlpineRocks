@@ -3,7 +3,7 @@
 class ProductsRepository extends DBController{	
 	
 	public function getProducts(){
-			$katArray = "";
+			$katArray = array();
 			$k = new Category();
 			$k->getCategories($katArray);
 			

@@ -88,7 +88,7 @@ public static function test_input_KAT($data) {
 
 public static function getCategories(){
 		$k = new Category();
-		$katArray = "";
+		$katArray = array();
 		echo '{"user":"'.$_SESSION['user_rights'].'",'.$k->getCategories($katArray).'}';
 		
 	}
