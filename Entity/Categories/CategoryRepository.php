@@ -159,7 +159,7 @@ class CategoryRepository extends DBController
 						$k->setDescription($cat["Description"]);
 						$k->setParentCategory($cat["Parent_category"]);
 						$k->setStatus($cat["Status"]);
-						$catArray[$i] = $k;
+						$catArray[] = $k;
 					}
 				return $str;
 				}else{

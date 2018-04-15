@@ -2,7 +2,7 @@
 if(!isset($_SESSION)){
 	    $s = session_start();	    
     }
-    output_add_rewrite_var("token", $_SESSION['token']);    
+    //output_add_rewrite_var("token", $_SESSION['token']);    
     
     include_once "../db/db_config.php";
     include_once "../db/DBController.php";
@@ -26,7 +26,6 @@ if(isset($_POST['email'])){
         $noAttempts = $user->getLocked();
         $_SESSION['msg'] = "Wrong username or password. You have $noAttempts attempts left.";
     }else{	
-        session_start();
         $_SESSION['username'] = $user->getUsername();
         $_SESSION['email'] = $user->getEmail();
         $_SESSION['user_rights'] = $user->getAccessRights();
@@ -46,6 +45,6 @@ if(isset($_POST['email'])){
     }
 }
 elseif(isset($_REQUEST['email'])){			//AJAX calls ::::  JS provera da li je mail registrovan prilikom logovanja
-	$inputValue = UsersFrontEndController::test_input_KAT($_REQUEST['email']);
+	$inputValue = UsersFrontEndController::test_input($_REQUEST['email']);
 	UsersFrontEndController::isEmailRegistered($inputValue);
 }

@@ -36,6 +36,7 @@ public static function test_input($data)
  	$data = trim($data);  
   	$data = stripslashes($data); 
   	$data = htmlspecialchars($data);
+  	$data = addslashes($data);
   	return $data;
 }
 
@@ -308,14 +309,6 @@ public static function isUsernameAvailable($username)
 {
 	$testUser = new User($_SESSION['email']);
 	echo $testUser->getUser($testUser, "Username", $username) ? "*1" : "*2";
-}
-public function test_input_KAT($data) 
-{
- 		 $data = trim($data);  
-  		 $data = stripslashes($data); 
-  		 $data = htmlspecialchars($data);
-  		 $data = addslashes($data);
-  	return $data;
 }
 
 public static function askForAPI($passwordAPI) 
