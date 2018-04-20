@@ -77,7 +77,7 @@ function loadProducts(){
 					photo.src = sl[j];
 					photo.setAttribute("class","productPhotoSmall");
 					var deleteIco = document.createElement("img");
-					deleteIco.src = "images/delete.ico";
+					deleteIco.src = "../public/images/delete.ico";
 					deleteIco.setAttribute("class", "deleteIco");
 					deleteIco.setAttribute("id", (i+1)+"_/"+(j+1)+"_ico");	
 					photo.setAttribute("id", (i+1)+"_/"+(j+1));
