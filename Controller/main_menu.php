@@ -21,10 +21,9 @@ if(isset($_POST['email'])){
         header("Location: ".$GLOBALS['indexPage']);
         $_SESSION['msg'] = "User account is not registered.";
     }elseif($user->getErrKod()=="pass"){
-    	include "../index.php";
-        header("Location: ".$GLOBALS['indexPage']);
         $noAttempts = $user->getLocked();
         $_SESSION['msg'] = "Wrong username or password. You have $noAttempts attempts left.";
+        header("Location: ".$GLOBALS['indexPage']);
     }else{	
         $_SESSION['username'] = $user->getUsername();
         $_SESSION['email'] = $user->getEmail();
