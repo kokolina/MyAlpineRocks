@@ -94,7 +94,7 @@ class ProductsRepository extends DBController{
 		//var_dump($slike);
 		//die('123');
 		for($i = 0; $i<count($slike); $i++){
-			if($slike[$i] !== NULL) $slike[$i] = $GLOBALS['homeDirectory'].substr($slike[$i],2);	//26 or 31
+			if($slike[$i] !== NULL) $slike[$i] = "../".substr($slike[$i],2);	//26 or 31
 						}	
 		$str = '"photos":'.json_encode($slike);
 		return $str;
