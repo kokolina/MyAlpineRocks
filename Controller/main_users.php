@@ -25,7 +25,7 @@ if(isset($_POST['name_new'])){
     UsersFrontEndController::editUserData();
     include_once "../templates/users_template.php";	
 }elseif(isset($_REQUEST['email'])){			//AJAX calls ::::  JS provera da li je mail registrovan prilikom logovanja
-	$inputValue = UsersFrontEndController::test_input_KAT($_REQUEST['email']);
+	$inputValue = UsersFrontEndController::test_input($_REQUEST['email']);
 	UsersFrontEndController::isEmailRegistered($inputValue);
 }
 elseif(isset($_REQUEST['loadUsers'])){			//ucitavanje korisnika u tabelu 
@@ -33,11 +33,11 @@ elseif(isset($_REQUEST['loadUsers'])){			//ucitavanje korisnika u tabelu
     UsersFrontEndController::loadUsers();
 }
 elseif(isset($_REQUEST['ID'])){		//vraca korisnika po ID-u u obliku JSON za usecase izmena korisnika
-	$inputValue = UsersFrontEndController::test_input_KAT($_REQUEST['ID']);
+	$inputValue = UsersFrontEndController::test_input($_REQUEST['ID']);
 	UsersFrontEndController::loadUser($inputValue);
 }
 elseif(isset($_REQUEST['DEL'])){
-	$userID = UsersFrontEndController::test_input_KAT($_REQUEST['DEL']);
+	$userID = UsersFrontEndController::test_input($_REQUEST['DEL']);
 	UsersFrontEndController::deleteUser($userID);	
 }
 elseif(isset($_REQUEST['PHOTO_DEL'])){
@@ -50,7 +50,7 @@ $sgn = Photo::deletePhotoP("../public/images/".$photoName.".jpg");
 	}	
 }
 elseif(isset($_REQUEST['username'])){
-	$username = UsersFrontEndController::test_input_KAT($_REQUEST['username']);
+	$username = UsersFrontEndController::test_input($_REQUEST['username']);
 	UsersFrontEndController::isUsernameAvailable($username);
 }
 elseif(isset($_REQUEST['apigen'])){
