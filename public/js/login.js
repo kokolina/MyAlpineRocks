@@ -85,3 +85,63 @@ var response = ajaxCall("../Controller/main_users.php", "logout", true);
 return response;
 }
 
+function getAPI(){
+	var psw_prompt = document.createElement("div");
+	psw_prompt.className = "pw_prompt";
+	
+	var msg_prompt = document.createElement("label");
+	msg_prompt.textContent = "Insert password";
+	psw_prompt.appendChild(msg_prompt);
+	
+	var txtField_prompt = document.createElement("input");
+	txtField_prompt.setAttribute("type", "password");
+	psw_prompt.appendChild(txtField_prompt);
+	
+	var errMsg = document.createElement("label");
+	psw_prompt.appendChild(errMsg);
+	
+	var apiMsg = document.createElement("label");	
+	var apiKey = document.createElement("label");
+	
+	var submit = function(){
+		if (txtField_prompt.value != "") {	
+			a = ajaxCall("main_users.php","apigen", txtField_prompt.value)	
+			response = JSON.parse(a);
+				psw_prompt.removeChild(msg_prompt);
+				psw_prompt.removeChild(txtField_prompt);
+				psw_prompt.removeChild(errMsg);
+				psw_prompt.removeChild(button);
+				
+				apiMsg.textContent = response.msg;
+				apiKey.textContent = response.key;
+				psw_prompt.appendChild(apiMsg);
+				psw_prompt.appendChild(apiKey);
+				psw_prompt.appendChild(OKbutton);
+				psw_prompt.setAttribute("style","left: 35%");			
+				psw_prompt.setAttribute("style","width: 600px");
+				
+		}else {
+			errMsg.textContent = "Insert your password";		
+		}		
+	};
+	
+	var quit = function () {
+		document.body.removeChild(psw_prompt);
+	};
+	var button = document.createElement("button");
+    button.textContent = "Get API";
+    button.addEventListener("click", submit, false);
+    button.setAttribute("class", "MyButton");
+    psw_prompt.appendChild(button);	
+	
+	
+	var OKbutton = document.createElement("button");
+    OKbutton.textContent = "OK";
+    OKbutton.addEventListener("click", quit, false);
+    OKbutton.setAttribute("class", "MyButton");
+    
+	document.body.appendChild(psw_prompt);
+	
+	
+}
+
