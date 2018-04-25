@@ -17,8 +17,9 @@ class ProductsRepository extends DBController{
 					$str = '{"Products":[';
 					for($i = 0; $i<count($result);$i++){
 						$pro = $result[$i];
-						$str = $str.'{"ID":"'.$pro["ID"].'","Name":"'.$pro["Name"].'","Description":"'.$pro["Description"].'","Price":"'.$pro["Price"].	
-						'","Status":"'.$pro["Status"].'",'.$this->getPicturesOfProduct($pro['ID']).','.$this->getCategoriesOfProduct($pro['ID']).'}';
+						$str = $str.'{"ID":"'.$pro["ID"].'","Name":"'.$pro["Name"].'","Description":"'.$pro["Description"].
+						'","Price":"'.$pro["Price"].'","Status":"'.$pro["Status"].'",'.
+						$this->getPicturesOfProduct($pro['ID']).','.$this->getCategoriesOfProduct($pro['ID']).'}';
 						if($i<count($result)-1){
 							$str = $str.",";
 						}

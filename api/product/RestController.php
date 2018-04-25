@@ -1,20 +1,23 @@
 <?php
+require_once("../Rest.php");
 require_once "ProductRestHandler.php";
-
+require_once "../../db/db_config.php";
 require_once "../../db/DBController.php";
-require_once("../../Products/ProductsRepository.php");
-require_once "../../Users/UserRepository.php";
-require_once "../../Categories/CategoryRepository.php";
-require_once "../../Users/User.php";
-require_once("../../Products/Product.php");
-require_once "../../Categories/Category.php";
-require_once "../../Photo/Photo.php";
+require_once "../../Entity/Photo/Photo.php";
+require_once("../../Entity/Products/ProductsRepository.php");
+require_once "../../Entity/Users/UserRepository.php";
+require_once "../../Entity/Categories/CategoryRepository.php";
+require_once "../../Entity/Users/User.php";
+require_once("../../Entity/Products/Product.php");
+require_once "../../Entity/Categories/Category.php";
+
 
 // n@gmail.com       809d63855877f0b801e633a1464d7e41d414be87e31886da079bbe5e496c65dd
 
 
 $headers = apache_request_headers();
-
+print_r($_SERVER);
+exit();
 $clientEmail = isset($headers["from"]) ? $headers["from"] : NULL;
 $clientAPI = isset($headers["authkey"]) ? $headers["authkey"] : NULL;
 
@@ -30,7 +33,7 @@ if($user->getUser($user, 'Email',$clientEmail))
 				//	VIEW
 				if(strtolower($_SERVER['REQUEST_METHOD']) === 'get')
 				{
-					$view = $_GET["view"];
+					$view = strtolower($_GET["view"]);
 	
 					switch($view){
 					case "all":
