@@ -5,8 +5,8 @@ abstract class DBController {
 
 abstract protected function getTableName();
 
-public final function openDataBaseConnection(){
-	//var_dump($dbUser); var_dump($dbPass);
+public final function openDataBaseConnection()
+{
 	try{
 		$s = $GLOBALS['serverName'];
 		$this->connection = new PDO("mysql:host = $s; dbname = onlineshop", $GLOBALS['dbUser'], $GLOBALS['dbPass']);
@@ -17,16 +17,17 @@ public final function openDataBaseConnection(){
 		}
 }
 
-public function closeDataBaseConnection(){
+public function closeDataBaseConnection()
+{
 	try{
 		$this->connection=NULL;
-		//echo "<br>Zatvorili smo konekciju";
 	}catch(PDOException $e){
 		echo "<br>Greska u zatvaranju konekcije: " . $e->getMessage();
 	}
 }
 
-public function vratiIDPoslednjegSloga($table){
+public function vratiIDPoslednjegSloga($table)
+{
 	$query = "SELECT * FROM onlineshop.".$table." ORDER BY ID DESC LIMIT 1";
 	$this->openDataBaseConnection();
 	try{
@@ -46,12 +47,8 @@ public function vratiIDPoslednjegSloga($table){
 	}
 }
 
-
-public function executeQuery($query){
-	
-}
-
-public function executeTransaction($queryArray){
+public function executeTransaction($queryArray)
+{
 	try{
 		$this->connection->beginTransaction();
 			for($i=0; $i<count($queryArray);$i++){
@@ -65,12 +62,7 @@ public function executeTransaction($queryArray){
 			return FALSE;
 		}	
 }
-
 	
 }
-
-
-
-
 
 ?>

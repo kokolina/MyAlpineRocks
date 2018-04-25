@@ -1,9 +1,4 @@
 <?php
-require_once("../Rest.php");
-require_once "../../db/DBController.php";
-require_once "../../Categories/CategoryRepository.php";
-require_once("../../Categories/Category.php");
-
 		
 class CategoryRestHandler extends Rest {
 
@@ -106,8 +101,8 @@ class CategoryRestHandler extends Rest {
 	}
 	
 	public function encodeJson($responseData) {
-		$jsonResponse = json_encode($responseData);
-		return $jsonResponse;		
+		return json_encode($responseData);
+		
 	}
 	
 	public function encodeXml($responseData) {

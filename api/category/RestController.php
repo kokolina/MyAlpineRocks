@@ -1,11 +1,13 @@
 <?php
+require_once("../Rest.php");
 require_once "CategoryRestHandler.php";
+require_once "../../db/db_config.php";
 require_once "../../db/DBController.php";
-require_once "../../Users/UserRepository.php";
-require_once "../../Users/User.php";
-require_once "../../Categories/CategoryRepository.php";
-require_once "../../Categories/Category.php";
-require_once "../../Categories/CategoriesFrontEndController.php";
+require_once "../../Entity/Users/UserRepository.php";
+require_once "../../Entity/Users/User.php";
+require_once "../../Entity/Categories/CategoryRepository.php";
+require_once "../../Entity/Categories/Category.php";
+//require_once "../../Controller/CategoriesFrontEndController.php";
 
 
 //01240c8a54f91dd57c6a1d485a3c766526f3446331f469eedc302169019295c1
@@ -27,7 +29,7 @@ if($user->getUser($user, 'Email',$clientEmail)) {
 			$view = "";	
 			//  GET
 			if(strtolower($_SERVER['REQUEST_METHOD']) === 'get' ){
-				$view = $_GET["view"];		
+				$view = strtolower($_GET["view"]);	
 				switch($view){
 					case "all":
 						$categoryRestHandler->getAllCategories();
