@@ -7,6 +7,7 @@ class ProductsRepository extends DBController{
 			$k = new Category();
 			$k->getCategories($katArray);
 			
+			$products = array();
 			$this->openDataBaseConnection();			
 			$query = "SELECT * FROM onlineshop.products WHERE Status='1'";
 			$stmt = $this->connection->prepare($query);
@@ -14,50 +15,69 @@ class ProductsRepository extends DBController{
 				$stmt->execute();
 				$result = $stmt->fetchAll();
 				if(count($result)>0){
-					$str = '{"Products":[';
+					//$str = '{"Products":[';
 					for($i = 0; $i<count($result);$i++){
 						$pro = $result[$i];
+						$obj = new Product();
+						$obj->setID($pro["ID"]);
+						$obj->setName($pro["Name"]);
+						$obj->setPrice($pro["Price"]);
+						$obj->setDescription($pro["Description"]);
+						$obj->setStatus($pro["Status"]);
+						$obj->setPhotos($this->getPicturesOfProduct($pro['ID']));
+						$this->getCategoriesOfProduct($obj);
+						$products[] = $obj;
+						/*
 						$str = $str.'{"ID":"'.$pro["ID"].'","Name":"'.$pro["Name"].'","Description":"'.$pro["Description"].
 						'","Price":"'.$pro["Price"].'","Status":"'.$pro["Status"].'",'.
 						$this->getPicturesOfProduct($pro['ID']).','.$this->getCategoriesOfProduct($pro['ID']).'}';
 						if($i<count($result)-1){
-							$str = $str.",";
+							$str = $str.",";*/
 						}
-					}					
-					$str = $str."]}";
-					return $str;
+										
+					//$str = $str."]}";
+					return $products;
 				}else{
-					return '{"Products":"*1"}'; //Tabela je prazna
+					$products[] = "Empty table";
+					return $products; //Tabela je prazna
 				}
 				
 			}catch(PDOException $e){
-				return '{"Products":"*2"}'; //greska 
+				$products[] = $e->getMessage();
+				return $products; //greska 
 			}
 			$this->closeDataBaseConnection();
 		}
 		
-	public function getCategoriesOfProduct($productID){			
+	public function getCategoriesOfProduct_stara($productID){			
 			$query = "SELECT KP.ID_product, KP.ID_category, K.Name FROM onlineshop.product_category AS KP 
 			INNER JOIN onlineshop.categories AS K
 					ON KP.ID_category=K.ID WHERE KP.ID_product='".$productID."' AND KP.Status = '1' AND K.Status = '1'";
 			$stmt = $this->connection->prepare($query);
+			$catArray = array();
 			try{
 				$stmt->execute();
 				$result = $stmt->fetchAll();
 				if(count($result)>0){
-					$str = '"Categories":'.json_encode($result);
-					return $str;
+					for($i = 0; $i<count($result); $i++){
+						$cat = new Category();
+					    $cat->setID($result[$i]['ID_category']);
+					    $cat->setName($result[$i]["Name"]);
+					    $catArray[] = $cat;
+					}					
+					return $catArray;
 				}else{
-					return '"Categories":[{"n":"*1"}]'; //Tabela je prazna
+					$catArray["Empty result. No categories"];
+					return $catArray; //Tabela je prazna
 				}
 				
 			}catch(PDOException $e){
-				echo $e->getMessage();
-				return '"Categories":[{"n":"*2"}]'; //greska 
+				$catArray[] = $e->getMessage();
+				return $catArray; //greska 
 			}
 	}
 	
-	public function getCategoriesOfProduct_variation($product){
+	public function getCategoriesOfProduct($product){
 				
 			$query = "SELECT KP.ID_product, KP.ID_category, K.Name 
 					FROM onlineshop.product_category AS KP 
@@ -88,17 +108,19 @@ class ProductsRepository extends DBController{
 			
 	}
 	//domenske klase treba samo da rade sa objektima te klase a ne sa JSON ili html!!!! ovo je lose		
-	public function getPicturesOfProduct($productID){
-		//$slike = Photo::getPhotosFromFolder(dirname(__FILE__)."../public/images/imagesProducts/".$productID."_/");	
-		$slike = Photo::getPhotosFromFolder($GLOBALS['path_to_home']."public/images/imagesProducts/".$productID."_/");
-		//"http://".$_SERVER['SERVER_NAME']."WebShop/Products
-		//var_dump($slike);
-		//die('123');
-		for($i = 0; $i<count($slike); $i++){
-			if($slike[$i] !== NULL) $slike[$i] = "../".substr($slike[$i],2);	//26 or 31
-						}	
-		$str = '"photos":'.json_encode($slike);
-		return $str;
+	public function getPicturesOfProduct($productID){	
+		$photosArray = Photo::getPhotosFromFolder($GLOBALS['path_to_home']."public/images/imagesProducts/".$productID."_/");
+		//var_dump($photosArray);
+		//die();
+		/**
+		* 
+		* @var 
+		* 
+		for($i = 0; $i<count($photosArray); $i++){
+			if($photosArray[$i] !== NULL) $photosArray[$i] = "../".substr($photosArray[$i],2);	//26 or 31
+						}*/	
+		//$str = '"photos":'.json_encode($photosArray);
+		return $photosArray;
 
 		}
 	

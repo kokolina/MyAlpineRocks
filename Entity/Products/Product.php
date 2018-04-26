@@ -4,6 +4,7 @@ class Product{
 	
 	public $repository = "";
 	public $id, $name, $description, $price, $valuta, $status, $categories, $ID_admin, $err = ""; 
+	public $photos = array();
 	
 	function __construct(){
 		$this->repository = new ProductsRepository();
@@ -92,7 +93,8 @@ class Product{
 	}
 	
 	public function getPhotosOfProduct(){
-		return $this->repository->getPicturesOfProduct($this->getID());
+		$this->setPhotos($this->repository->getPicturesOfProduct($this->getID()));
+		return TRUE;
 	}
 	
 	public function deleteProduct(){
@@ -131,6 +133,9 @@ class Product{
 	function getErr(){
 		return $this->err;
 	}
+	function getPhotos(){
+		return $this->photos;
+	}
 	
 	public function setID($i){
 		$this->id = $i;
@@ -152,7 +157,7 @@ class Product{
 	}
 	public function addCategory($i){	
 		if(is_a($i, "Category")){
-			$this->categories[count($this->categories)] = $i;
+			$this->categories[] = $i;
 			return TRUE;
 		}else{
 			return FALSE;
@@ -166,6 +171,13 @@ class Product{
 	}
 	function setErr($i){
 		$this->err = $this->err."\n".$i;
+	}
+	function setPhotos($i){
+		$this->photos = $i;
+	}
+	function addPhoto($i)
+	{
+		$this->photos[] = $i;
 	}
 }
 ?>
