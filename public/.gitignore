@@ -1,4 +1,4 @@
-# ignore DBController.php because of login credentials
+# ignore images/ folder because it suppose to change as app functionality
 images/
 
 # ignore temp files made by BlueFish editor on sherpa
