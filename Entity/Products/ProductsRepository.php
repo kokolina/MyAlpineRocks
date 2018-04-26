@@ -90,7 +90,7 @@ class ProductsRepository extends DBController{
 	//domenske klase treba samo da rade sa objektima te klase a ne sa JSON ili html!!!! ovo je lose		
 	public function getPicturesOfProduct($productID){
 		//$slike = Photo::getPhotosFromFolder(dirname(__FILE__)."../public/images/imagesProducts/".$productID."_/");	
-		$slike = Photo::getPhotosFromFolder("../public/images/imagesProducts/".$productID."_/");
+		$slike = Photo::getPhotosFromFolder($GLOBALS['path_to_home']."public/images/imagesProducts/".$productID."_/");
 		//"http://".$_SERVER['SERVER_NAME']."WebShop/Products
 		//var_dump($slike);
 		//die('123');

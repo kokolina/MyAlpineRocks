@@ -11,7 +11,8 @@ if(!isset($_SESSION)){
 	include_once "../Entity/Products/ProductsRepository.php";
 	include_once "../Entity/Products/Product.php";
 	include_once "ProductsFrontEndController.php";    
-    
+
+$GLOBALS['path_to_home'] = '../';    
 if(isset($_POST['submit_newProduct'])){
     ProductsFrontEndController::insertProduct();
     include_once	"../templates/products_template.php";

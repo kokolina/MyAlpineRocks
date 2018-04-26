@@ -14,7 +14,7 @@ require_once "../../Entity/Categories/Category.php";
 
 // n@gmail.com       809d63855877f0b801e633a1464d7e41d414be87e31886da079bbe5e496c65dd
 
-
+$GLOBALS['path_to_home'] = "../../";
 $headers = apache_request_headers();
 print_r($_SERVER);
 exit();
