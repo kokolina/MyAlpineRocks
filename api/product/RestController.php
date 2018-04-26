@@ -16,8 +16,7 @@ require_once "../../Entity/Categories/Category.php";
 
 $GLOBALS['path_to_home'] = "../../";
 $headers = apache_request_headers();
-print_r($_SERVER);
-exit();
+
 $clientEmail = isset($headers["from"]) ? $headers["from"] : NULL;
 $clientAPI = isset($headers["authkey"]) ? $headers["authkey"] : NULL;
 
