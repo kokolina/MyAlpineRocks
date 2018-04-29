@@ -29,40 +29,48 @@ function ajaxCall_prod(requestKeyName, requestKeyValue, PHPfile){
 function loadProducts(){
 	var response = ajaxCall_prod("load", true, "main_products.php");
 	var k = JSON.parse(response)
-	if(k.Products == "*1"){
+	if(k.Products[0] == "*1"){
 		//tabela je prazna
-	}else if(k.Products == "*2"){
+		var p = document.createElement("p");
+		p.innerHTML = "No products in depository.";
+		p.setAttribute("class","err");
+		document.getElementById("productsDIV").appendChild(p);
+	}else if(k.Products[0] == "*2"){
 		//neka greska sa bazom
+		var p = document.createElement("p");
+		p.innerHTML = "Call the admin.  "+k.Products[1];
+		p.setAttribute("class","err");
+		document.getElementById("productsDIV").appendChild(p);
 	}else{
 		var tab = document.getElementById("productsTable");
 		for(i = 0; i<k.Products.length; i++){
 			var red = document.createElement("tr");
 			
 			var c1 = document.createElement("td");
-			var id = document.createTextNode(k.Products[i].ID);
+			var id = document.createTextNode(k.Products[i].id);
 			c1.appendChild(id);
 			red.appendChild(c1);
 			
 			var c2 = document.createElement("td");
-			var name = document.createTextNode(k.Products[i].Name);
+			var name = document.createTextNode(k.Products[i].name);
 			c2.appendChild(name);
 			red.appendChild(c2);
 			
 			var c3 = document.createElement("td");
-			var description = document.createTextNode(k.Products[i].Description);
+			var description = document.createTextNode(k.Products[i].description);
 			c3.appendChild(description);
 			red.appendChild(c3);
 			
 			var c4 = document.createElement("td");
-			var price = document.createTextNode(k.Products[i].Price);
+			var price = document.createTextNode(k.Products[i].price);
 			c4.appendChild(price);
 			red.appendChild(c4);
 			
 			var c8 = document.createElement("td");
-			var katNiz = k.Products[i].Categories;
+			var katNiz = k.Products[i].categories;
 			for(j = 0;j<katNiz.length;j++){
 				var categories = document.createElement("P"); 
-				var categoriesTxt = document.createTextNode(katNiz[j].ID_category+" "+katNiz[j].Name);
+				var categoriesTxt = document.createTextNode(katNiz[j].ID+" "+katNiz[j].name);
 				categories.appendChild(categoriesTxt);
 				c8.appendChild(categories);
 			}			
@@ -98,7 +106,7 @@ function loadProducts(){
 			red.appendChild(c7);
 			if(k.user != "R"){
 				var c5 = document.createElement("td");
-				c5.setAttribute("id",k.Products[i].ID);
+				c5.setAttribute("id",k.Products[i].id);
 				c5.addEventListener("click", function(){editProduct(this.id);});
 				var c51 = document.createElement("a");
 				c51.href = '#editProduct';
@@ -110,7 +118,7 @@ function loadProducts(){
 				red.appendChild(c5);		
 			
 				var c6 = document.createElement("td");
-				c6.setAttribute("id", k.Products[i].ID);
+				c6.setAttribute("id", k.Products[i].id);
 				c6.addEventListener("click",function(){deleteProduct(this.id)});
 				var c61 = document.createElement("a");
 				c61.href = '#proizvodiDIV';
@@ -255,9 +263,9 @@ function deletePhoto(id, path){
 		var filename = path.substring(path.lastIndexOf("/"));
 		var folderPath = path.substring(0,path.lastIndexOf("/"));
 		var foldername = folderPath.substring(folderPath.lastIndexOf("/"));
-		var filePath = foldername+filename;
+		var filePath = "../public/images/imagesProducts"+foldername+filename;
 		
-		var response = ajaxCall_prod("deletePhoto","imagesProducts"+filePath, "main_products.php");
+		var response = ajaxCall_prod("deletePhoto", filePath, "main_products.php");
 		if(response == "1"){
 			document.getElementById(id).style.display = "none";
 			document.getElementById(id+"_ico").style.display = "none";

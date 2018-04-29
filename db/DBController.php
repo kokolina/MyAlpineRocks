@@ -59,6 +59,8 @@ public function executeTransaction($queryArray)
 			return TRUE;				
 		}catch(PDOException $e){
 			$this->connection->rollback();
+			var_dump($e);
+			die("123");
 			return FALSE;
 		}	
 }

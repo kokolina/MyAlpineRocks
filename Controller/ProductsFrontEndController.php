@@ -153,21 +153,9 @@ class ProductsFrontEndController
 	public static function getProducts(){
 			$p = new Product();
 			$result = $p->getProducts();
-			$str = '{"user":"'.$_SESSION['user_rights'].'","Products":'.json_encode($result);
-			echo $str;
-			/*
-			for($i = 0; $i<count($result);$i++){
-				$pro = $result[$i];
-				$str = $str.'{"ID":"'.$pro->getID().'","Name":"'.$pro->getName().'","Description":"'.$pro->getDescription().
-						'","Price":"'.$pro->getPrice().'","Status":"'.$pro->getStatus().'",';
-						
-						
-						$this->getPicturesOfProduct($pro['ID']).','.$this->getCategoriesOfProduct($pro['ID']).'}';
-						if($i<count($result)-1){
-							$str = $str.",";
-			}*/
-			//echo '{"user":"'.$_SESSION['user_rights'].'",'. substr($str,1);
-		}
+			$str = '{"user":"'.$_SESSION['user_rights'].'","Products":'.json_encode($result).'}';
+			echo $str;			
+	}
 	
 	public static function loadProduct($id){
 		$product = new Product();
@@ -179,6 +167,7 @@ class ProductsFrontEndController
 	public static function deleteProduct($productID){
 		$product = new Product();
 		$product->setID($productID);
+		$product->setID_admin($_SESSION['user_ID']);
 		echo $product->deleteProduct() ? "1" : "0";
 	}
 	

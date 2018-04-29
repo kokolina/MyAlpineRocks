@@ -14,8 +14,7 @@ class ProductsRepository extends DBController{
 			try{
 				$stmt->execute();
 				$result = $stmt->fetchAll();
-				if(count($result)>0){
-					//$str = '{"Products":[';
+				if(count($result) > 0){
 					for($i = 0; $i<count($result);$i++){
 						$pro = $result[$i];
 						$obj = new Product();
@@ -27,55 +26,21 @@ class ProductsRepository extends DBController{
 						$obj->setPhotos($this->getPicturesOfProduct($pro['ID']));
 						$this->getCategoriesOfProduct($obj);
 						$products[] = $obj;
-						/*
-						$str = $str.'{"ID":"'.$pro["ID"].'","Name":"'.$pro["Name"].'","Description":"'.$pro["Description"].
-						'","Price":"'.$pro["Price"].'","Status":"'.$pro["Status"].'",'.
-						$this->getPicturesOfProduct($pro['ID']).','.$this->getCategoriesOfProduct($pro['ID']).'}';
-						if($i<count($result)-1){
-							$str = $str.",";*/
 						}
-										
-					//$str = $str."]}";
 					return $products;
 				}else{
-					$products[] = "Empty table";
+					$products[] = "*1";
 					return $products; //Tabela je prazna
 				}
 				
 			}catch(PDOException $e){
-				$products[] = $e->getMessage();
+				$products[0] = "*2";
+				$products[1] = $e->getMessage();
 				return $products; //greska 
 			}
 			$this->closeDataBaseConnection();
 		}
 		
-	public function getCategoriesOfProduct_stara($productID){			
-			$query = "SELECT KP.ID_product, KP.ID_category, K.Name FROM onlineshop.product_category AS KP 
-			INNER JOIN onlineshop.categories AS K
-					ON KP.ID_category=K.ID WHERE KP.ID_product='".$productID."' AND KP.Status = '1' AND K.Status = '1'";
-			$stmt = $this->connection->prepare($query);
-			$catArray = array();
-			try{
-				$stmt->execute();
-				$result = $stmt->fetchAll();
-				if(count($result)>0){
-					for($i = 0; $i<count($result); $i++){
-						$cat = new Category();
-					    $cat->setID($result[$i]['ID_category']);
-					    $cat->setName($result[$i]["Name"]);
-					    $catArray[] = $cat;
-					}					
-					return $catArray;
-				}else{
-					$catArray["Empty result. No categories"];
-					return $catArray; //Tabela je prazna
-				}
-				
-			}catch(PDOException $e){
-				$catArray[] = $e->getMessage();
-				return $catArray; //greska 
-			}
-	}
 	
 	public function getCategoriesOfProduct($product){
 				
@@ -131,18 +96,18 @@ class ProductsRepository extends DBController{
 		$query1 = "INSERT INTO onlineshop.products(Name, Description, Price) VALUES ('".$product->getName()."','".$product->getDescription()."','".$product->getPrice()."')";  
 		$query2 = "INSERT INTO onlineshop.products_log(ID_product,Name, Description, Price,Status,ID_admin) VALUES 
 		('".$product->getID()."','".$product->getName()."','".$product->getDescription()."','".$product->getPrice()."','1','".$product->getID_admin()."')";
-		$queryiNiz = "";
+		$queryArr = array();
 		$br = 0;
 		$kat = $product->getCategories();
 		for($i = 0; $i<count($kat);$i++){
 						
 				$query3 = "INSERT INTO onlineshop.product_category (ID_category, ID_product) VALUES ('".$kat[$i]->getID()."','".$product->getID()."')";  
 				$idKP = $this->vratiIDPoslednjegSloga("product_category")+1+$i;
-				$queryiNiz[$br] = $query3;
+				$queryArr[$br] = $query3;
 				$br++;
 				
 				$query4 = "INSERT INTO onlineshop.product_category_log (ID_CP,ID_category, ID_product, Status, ID_admin) VALUES ('".$idKP."','".$kat[$i]->getID()."','".$product->getID()."','1','".$product->getID_admin()."')";
-				$queryiNiz[$br] = $query4;
+				$queryArr[$br] = $query4;
 				$br++;
 		}
 		
@@ -151,8 +116,8 @@ class ProductsRepository extends DBController{
 			$this->openDataBaseConnection();
 			$this->connection->beginTransaction();
 			
-			for($i = 0; $i<count($queryiNiz);$i++){
-				$stmt = $this->connection->prepare($queryiNiz[$i]);
+			for($i = 0; $i<count($queryArr);$i++){
+				$stmt = $this->connection->prepare($queryArr[$i]);
 				$stmt ->execute();
 			}
 			$stmt = $this->connection->prepare($query1);
@@ -193,7 +158,7 @@ class ProductsRepository extends DBController{
 				echo $e->getMessage();
 				return FALSE; //greska 
 			}
-		if($this->getCategoriesOfProduct_variation($product)){
+		if($this->getCategoriesOfProduct($product)){
 			return TRUE;
 		}else{
 			return FALSE;
@@ -248,7 +213,8 @@ class ProductsRepository extends DBController{
 		}			
 	}
 
-	public function prepareStatement_deleteProduct($product, $queryArray){
+	public function prepareStatement_deleteProduct($product, $queryArray)
+	{
 		$queryArray[] = "INSERT INTO onlineshop.products_log (ID_product,Name, Description, Price,Status,ID_admin) 
 			SELECT P.ID, P.Name, P.Description, P.Price, P.Status, Kor.ID FROM onlineshop.products P, onlineshop.users Kor
 			WHERE P.ID = '".$product->getID()."' AND Kor.ID = '".$product->getID_admin()."'";
