@@ -6,7 +6,8 @@ One method is used to construct the response and another method is to hold the d
 HTTP status code and its respective messages. Such common methods can be added to this class 
 and this can be made a base class for all RESTful handler classes.
 */
-class Rest {
+class Rest 
+{
 	
 	private $httpVersion = "HTTP/1.1";
 	
@@ -15,7 +16,8 @@ class Rest {
 	it should set the Request header parameter �Accept� and send it. The values can be like 
 	�application/json� or �application/xml� or �text/html�
 	*/
-	public function setHttpHeaders($contentType, $statusCode){		
+	public function setHttpHeaders($contentType, $statusCode)
+	{		
 		$statusMessage = $this -> getHttpStatusMessage($statusCode);
 		/*
 		The header() function sends a raw HTTP header to a client.It is important to notice that header()
@@ -34,7 +36,8 @@ class Rest {
 		
 	}
 	
-	public function getHttpStatusMessage($statusCode){
+	public function getHttpStatusMessage($statusCode)
+	{
 		$httpStatus = array(
 			100 => 'Continue',  
 			101 => 'Switching Protocols',  
@@ -80,11 +83,12 @@ class Rest {
 		return ($httpStatus[$statusCode]) ? $httpStatus[$statusCode] : $status[500];
 	}
 	
-	public function test_input($data){
+	public function test_input($data)
+	{
 		$data = trim($data);  
-  		 $data = stripslashes($data); 
-  		 $data = htmlspecialchars($data);
-  		 $data = addslashes($data);
+  		$data = stripslashes($data); 
+  		$data = htmlspecialchars($data);
+  		$data = addslashes($data);
   	return $data;
 	}
 }

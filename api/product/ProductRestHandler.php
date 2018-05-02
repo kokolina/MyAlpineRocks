@@ -1,34 +1,40 @@
 <?php
 		
-class ProductRestHandler extends Rest {
+class ProductRestHandler extends Rest 
+{
 
-	function getAllProducts() {
+	function getAllProducts() 
+	{
 		$product = new Product();
 		$rawData = $product->getProducts();	
-		if(empty($rawData)) {
+		var_dump($rawData);
+		    exit;
+		if (empty($rawData)) {
 			$statusCode = 404;
 			$rawData = array('error' => 'No products found!');		
 		} else {
 			$statusCode = 200;
 			$responseObject = json_decode($rawData)->Products;
+			var_dump($responseObject);
+		    exit;
+		
 			$productsArray = new ArrayObject();
 			// **   CATEGORIES  **
-			for($i = 0; $i<count($responseObject); $i++){				
+			for ($i = 0; $i<count($responseObject); $i++) {				
 				$categories = $responseObject[$i]->Categories;
 				$categoriesString = "";
-				for($j = 0; $j<count($categories); $j++){
+				for ($j = 0; $j<count($categories); $j++) {
 					$categoriesString .= $categories[$j]->ID_category." ".$categories[$j]->Name."<br>";
 				}
 			//   **   PHOTOS   **
 				$photosHTML = "";
 				$photoArray = $responseObject[$i]->photos;				
-				if($responseObject[$i]->photos[0] !== null){
-					for($j = 0; $j<count($photoArray); $j++){
+				if ($responseObject[$i]->photos[0] !== null) {
+					for ($j = 0; $j<count($photoArray); $j++) {
 					$photosHTML .= "<img style='width:80px; height:70px; border:1px; margin-left: 
 									2px; margin-right: 2px; position: relative; top:0; right:0;' src = ".$photoArray[$j]."></img>";
 					}
-				}	
-			
+				}			
 				$productsArray[$i] = array($responseObject[$i]->ID, $responseObject[$i]->Name, $responseObject[$i]->Description, 
 				$responseObject[$i]->Price, $categoriesString, $photosHTML );
 			}
@@ -36,12 +42,12 @@ class ProductRestHandler extends Rest {
 		$requestContentType = $_SERVER['HTTP_ACCEPT'];  //proveri koji format je klijent zatrazio
 		$this ->setHttpHeaders($requestContentType, $statusCode); //napravi header povratne poruke
 				
-		if(strpos($requestContentType,'application/json') !== false){
+		if (strpos($requestContentType,'application/json') !== false) {
 			echo $rawData;
-		} else if(strpos($requestContentType,'text/html') !== false){					
+		} else if (strpos($requestContentType,'text/html') !== false) {					
 			$response = $this->encodeHtml($productsArray);
 			echo $response;
-		} else if(strpos($requestContentType,'application/xml') !== false){
+		} else if (strpos($requestContentType,'application/xml') !== false) {
 			$response = $this->encodeXml($rawData);
 			echo $response;
 		}
