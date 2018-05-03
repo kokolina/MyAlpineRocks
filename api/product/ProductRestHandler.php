@@ -7,17 +7,34 @@ class ProductRestHandler extends Rest
 	{
 		$product = new Product();
 		$rawData = $product->getProducts();	
-		var_dump($rawData);
-		    exit;
+		  
 		if (empty($rawData)) {
 			$statusCode = 404;
 			$rawData = array('error' => 'No products found!');		
 		} else {
 			$statusCode = 200;
-			$responseObject = json_decode($rawData)->Products;
-			var_dump($responseObject);
-		    exit;
-		
+			//$responseObject = json_decode($rawData)->Products;
+			for ($i = 0; $i<count($rawData); $i++) {
+				$rawData[$i] = (array)$rawData[$i];
+				unset($rawData[$i]["repository"]);
+				unset($rawData[$i]["valuta"]);
+				unset($rawData[$i]["status"]);
+				unset($rawData[$i]["ID_admin"]);
+				unset($rawData[$i]["err"]);
+				for ($j = 0; $j<count($rawData[$i]["categories"]); $j++) {
+					$rawData[$i]["categories"][$j] = (array)$rawData[$i]["categories"][$j];
+					unset($rawData[$i]["categories"][$j]["description"]);
+					unset($rawData[$i]["categories"][$j]["parentCategory"]);
+					unset($rawData[$i]["categories"][$j]["ID_user"]);
+					unset($rawData[$i]["categories"][$j]["date"]);
+					unset($rawData[$i]["categories"][$j]["status"]);
+					unset($rawData[$i]["categories"][$j]["repository"]);
+					unset($rawData[$i]["categories"][$j]["err"]);
+				}
+				
+			}	
+		}	
+			/*
 			$productsArray = new ArrayObject();
 			// **   CATEGORIES  **
 			for ($i = 0; $i<count($responseObject); $i++) {				
@@ -38,12 +55,12 @@ class ProductRestHandler extends Rest
 				$productsArray[$i] = array($responseObject[$i]->ID, $responseObject[$i]->Name, $responseObject[$i]->Description, 
 				$responseObject[$i]->Price, $categoriesString, $photosHTML );
 			}
-		}
+		}*/
 		$requestContentType = $_SERVER['HTTP_ACCEPT'];  //proveri koji format je klijent zatrazio
 		$this ->setHttpHeaders($requestContentType, $statusCode); //napravi header povratne poruke
 				
 		if (strpos($requestContentType,'application/json') !== false) {
-			echo $rawData;
+			echo json_encode($rawData);
 		} else if (strpos($requestContentType,'text/html') !== false) {					
 			$response = $this->encodeHtml($productsArray);
 			echo $response;
