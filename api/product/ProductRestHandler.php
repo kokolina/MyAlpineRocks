@@ -12,8 +12,7 @@ class ProductRestHandler extends Rest
 			$statusCode = 404;
 			$rawData = array('error' => 'No products found!');		
 		} else {
-			$statusCode = 200;
-			//$responseObject = json_decode($rawData)->Products;
+			$statusCode = 200;			
 			for ($i = 0; $i<count($rawData); $i++) {
 				$rawData[$i] = (array)$rawData[$i];
 				unset($rawData[$i]["repository"]);
@@ -31,39 +30,19 @@ class ProductRestHandler extends Rest
 					unset($rawData[$i]["categories"][$j]["repository"]);
 					unset($rawData[$i]["categories"][$j]["err"]);
 				}
+				for ($j = 0; $j<count($rawData[$i]["photos"]); $j++) {
+				    $rawData[$i]["photos"][$j] = str_replace($GLOBALS["path_to_home"], $GLOBALS["homeDirectory"]."/", $rawData[$i]["photos"][$j]);
+				}
 				
 			}	
-		}	
-			/*
-			$productsArray = new ArrayObject();
-			// **   CATEGORIES  **
-			for ($i = 0; $i<count($responseObject); $i++) {				
-				$categories = $responseObject[$i]->Categories;
-				$categoriesString = "";
-				for ($j = 0; $j<count($categories); $j++) {
-					$categoriesString .= $categories[$j]->ID_category." ".$categories[$j]->Name."<br>";
-				}
-			//   **   PHOTOS   **
-				$photosHTML = "";
-				$photoArray = $responseObject[$i]->photos;				
-				if ($responseObject[$i]->photos[0] !== null) {
-					for ($j = 0; $j<count($photoArray); $j++) {
-					$photosHTML .= "<img style='width:80px; height:70px; border:1px; margin-left: 
-									2px; margin-right: 2px; position: relative; top:0; right:0;' src = ".$photoArray[$j]."></img>";
-					}
-				}			
-				$productsArray[$i] = array($responseObject[$i]->ID, $responseObject[$i]->Name, $responseObject[$i]->Description, 
-				$responseObject[$i]->Price, $categoriesString, $photosHTML );
-			}
-		}*/
+		}
+		
 		$requestContentType = $_SERVER['HTTP_ACCEPT'];  //proveri koji format je klijent zatrazio
-		$this ->setHttpHeaders($requestContentType, $statusCode); //napravi header povratne poruke
-				
+		$this ->setHttpHeaders($requestContentType, $statusCode); //napravi header povratne poruke				
 		if (strpos($requestContentType,'application/json') !== false) {
 			echo json_encode($rawData);
 		} else if (strpos($requestContentType,'text/html') !== false) {					
-			$response = $this->encodeHtml($productsArray);
-			echo $response;
+			echo $this->encodeHtml($rawData);
 		} else if (strpos($requestContentType,'application/xml') !== false) {
 			$response = $this->encodeXml($rawData);
 			echo $response;
@@ -73,48 +52,44 @@ class ProductRestHandler extends Rest
 	public function getProduct($id) {
 		$product = new Product();
 		$product->getProduct("ID", $id);
+		
 		if($product->getID() === NULL) {
 			$statusCode = 404;
 			$rawData[0] = array('error' => 'No products found!');		
 		} else {
-			$statusCode = 200;
-			//   *** CATEGORIES  ***
-			$categoriesArray = $product->getCategories();
-			$categoriesString = "";
-			for($i = 0; $i<count($categoriesArray); $i++)
-				$categoriesString .= $categoriesArray[$i]->ID. " ".$categoriesArray[$i]->name."<br>";
-			
-			//   ***  PHOTOS   ***	
-			$photosHTML = "";
-			$photosJSON = $product->getPhotosOfProduct();
-			$photosArray = json_decode("{".$photosJSON."}");
-			for($i = 0; $i<count($photosArray->photos); $i++)
-				$photosHTML .= "<img style='width:80px; height:70px; border:1px; margin-left: 
-									2px; margin-right: 2px; position: relative; top:0; right:0;' src = "
-									.$photosArray->photos[$i]."></img>";
-				
-				
-
-			$rawDataHTML[0] = array($product->getID(), $product->getName(), $product->getDescription(), 
-					$product->getPrice(),$categoriesString, $photosHTML );	
-					
-			$rawDataJSON[0] = array($product->getID(), $product->getName(), $product->getDescription(), 
-					$product->getPrice(),$categoriesString, $photosArray );
-				
-		}		
+		   $statusCode = 200;
+		   $product = (array)$product;
+		   unset($product["repository"]);
+			unset($product["valuta"]);
+			unset($product["status"]);
+			unset($product["ID_admin"]);
+			unset($product["err"]);
+			for ($j = 0; $j<count($product["categories"]); $j++) {
+				$product["categories"][$j] = (array)$product["categories"][$j];
+				unset($product["categories"][$j]["description"]);
+				unset($product["categories"][$j]["parentCategory"]);
+				unset($product["categories"][$j]["ID_user"]);
+				unset($product["categories"][$j]["date"]);
+				unset($product["categories"][$j]["status"]);
+				unset($product["categories"][$j]["repository"]);
+				unset($product["categories"][$j]["err"]);
+			}
+			for ($j = 0; $j<count($product["photos"]); $j++) {
+			    $product["photos"][$j] = str_replace($GLOBALS["path_to_home"], $GLOBALS["homeDirectory"]."/", $product["photos"][$j]);
+			}		   
+	  }
+	  $response = array();
+	  $response[] = $product;
 		
-		$requestContentType = $_SERVER['HTTP_ACCEPT'];
-		$this ->setHttpHeaders($requestContentType, $statusCode);
+     $requestContentType = $_SERVER['HTTP_ACCEPT'];
+     $this ->setHttpHeaders($requestContentType, $statusCode);
 				
 		if(strpos($requestContentType,'application/json') !== false){
-			$response = $this->encodeJson($rawDataJSON);
-			echo $response;
+			echo json_encode($response);
 		} else if(strpos($requestContentType,'text/html') !== false){
-			$response = $this->encodeHtml($rawDataHTML);
-			echo $response;
+			echo $this->encodeHtml($response);
 		} else if(strpos($requestContentType,'application/xml') !== false){
-			$response = $this->encodeXml($rawDataHTML);
-			echo $response;
+			echo $this->encodeXml($rawDataHTML);
 		}
 	}
 	
@@ -190,19 +165,47 @@ class ProductRestHandler extends Rest
 		
 	}
 	
-	//RESPONSE DATA HAS TO BE AN ARRAY
-	public function encodeHtml($responseData) {		
-		$htmlResponse = "<table border='1'><tr><td>Rb</td><td>ID</td><td>Name</td><td>Description</td>
-						<td>Price</td><td>Parent</td><td>Photos</td></tr>";
-		for($i = 0; $i<count($responseData);$i++){
-			$htmlResponse .= "<tr><td>".($i+1)."</td>";
-			foreach($responseData[$i] as $j => $value)
-				$htmlResponse .= "<td>". $value . "</td>";
+	//RESPONSE DATA IS AN ARRAY OF PRODUCTS
+	public function encodeHtml($responseData) 
+	{		
+		$htmlResponse = "<table border='1'><tr><td>Rb</td><td>ID</td><td>Name</td>
+		                 <td>Description</td><td>Price</td><td>Parent</td><td>Photos</td></tr>";						
+		for ($i = 0; $i<count($responseData);$i++) {
+		    $htmlResponse .= "<tr><td>".($i+1)."</td>";
+		    foreach ($responseData[$i] as $j => $value) {
+              if ($j === "photos") {
+                  if ($value !== null) {
+                	    $photosHTML = "";
+					       for ($k = 0; $k<count($value); $k++) {
+					           //$path = str_replace($GLOBALS["path_to_home"], $GLOBALS["homeDirectory"]."/", $value[$k]);
+					           $photosHTML .= "<img style='width:80px; height:70px; border:1px; margin-left: 
+							 		2px; margin-right: 2px; position: relative; top:0; right:0;' src = ".$value[$k]."></img>";
+					       }
+					       $htmlResponse .= "<td>". $photosHTML . "</td>";
+				      } else { 
+                      $htmlResponse .= "<td></td>";  
+				    }		
+            } else if ($j === "categories") {
+                if ($value !== null) {
+                    $categoriesTxt = "";
+                    for ($k = 0; $k<count($value); $k++) {
+                        $categoriesTxt .= $value[$k]["ID"]. " ". $value[$k]["name"]."<br>";
+                    }
+                    $htmlResponse .= "<td>".$categoriesTxt."</td>"; 
+                } else {
+                    $htmlResponse .= "<td></td>"; 
+                }
+            } else {
+            	
+                $htmlResponse .= "<td>". $value . "</td>";
+            }			
+			} 	
 			$htmlResponse .= "</tr>";
 		}		
 		$htmlResponse .= "</table>";
 		return $htmlResponse;		
 	}
+	
 	
 	public function encodeJson($responseData) {
 		$jsonResponse = json_encode($responseData);
