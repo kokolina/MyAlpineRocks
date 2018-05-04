@@ -24,7 +24,7 @@ class CategoryRestHandler extends Rest {
 	public function getCategory($id) {
 		$category = new Category();
 		$category->getCategory("ID", $id);
-		//var_dump($category->getID());
+		
 		if($category->getID() === NULL) {
 			$statusCode = 404;
 			$rawData[0] = array('error' => 'No categories found!');		
@@ -62,16 +62,15 @@ class CategoryRestHandler extends Rest {
 			if(!$category->getCategory("ID", $data['ID'])) {
 									$this->serverRespond(array('error' => 'No such category.'), 400); exit;
 							}	
-			foreach($data as $key => $value)
-			{
+			foreach ($data as $key => $value)	{
  				 $method = 'set'.$key;
  				 $category->$method($value);
  			}	
-			if($category->editCategory()) {
-									$this->serverRespond(array('ok' => 'Category saved.'), 200);
-						}else{
-									$this->serverRespond(array('error' => 'Category was not saved. '.$category->getErr()), 400); exit;
-						}				
+			if ($category->editCategory()) {
+             $this->serverRespond(array('ok' => 'Category saved.'), 200);
+			}else{
+			    $this->serverRespond(array('error' => 'Category was not saved. '.$category->getErr()), 400); exit;
+			}				
 	}	
 	
 	public function deleteCategory($data){
@@ -119,14 +118,11 @@ class CategoryRestHandler extends Rest {
 		$this ->setHttpHeaders($requestContentType, $statusCode);
 				
 		if(strpos($requestContentType,'application/json') !== false){
-			$response = $this->encodeJson($rawData);
-			echo $response;
+			echo $this->encodeJson($rawData);
 		} else if(strpos($requestContentType,'text/html') !== false){
-			$response = $this->encodeHtml($rawData);
-			echo $response;
+			echo $this->encodeHtml($rawData);
 		} else if(strpos($requestContentType,'application/xml') !== false){
-			$response = $this->encodeXml($rawData);
-			echo $response;
+			echo $this->encodeXml($rawData);
 		}
 	}
 	

@@ -49,7 +49,8 @@ class ProductRestHandler extends Rest
 		}
 	}
 	
-	public function getProduct($id) {
+	public function getProduct($id) 
+	{
 		$product = new Product();
 		$product->getProduct("ID", $id);
 		

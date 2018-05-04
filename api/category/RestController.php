@@ -7,7 +7,7 @@ require_once "../../Entity/Users/UserRepository.php";
 require_once "../../Entity/Users/User.php";
 require_once "../../Entity/Categories/CategoryRepository.php";
 require_once "../../Entity/Categories/Category.php";
-//require_once "../../Controller/CategoriesFrontEndController.php";
+require_once "../../Controller/CategoriesFrontEndController.php";
 
 
 //01240c8a54f91dd57c6a1d485a3c766526f3446331f469eedc302169019295c1
