@@ -28,7 +28,7 @@ class Photo
 			//proveri velicinu fajla
 			$size = $_FILES[$fileInputTagName]['size'][$selectedFileNo];
 			if($size > 5000000){
-				$msgOut = "Velicina slike premasuje dozvoljenih 5MB.";
+				$msgOut = "Photo exceedes allowed 5MB.";
 				$sgn = FALSE;
 				return FALSE;
 			}			
@@ -37,9 +37,9 @@ class Photo
 				try{
 					$formatCheck = getimagesize($tmpFilePath);
 					if($formatCheck !== FALSE){
-						$msgOut = "Fajl je odgovarajuceg formata.<br>";
+						$msgOut = "File format ok.<br>";
 					}else{
-						$msgOut = "Fajl nije slika. Pokusajte upload drugog fajla.";
+						$msgOut = "File format not allowed.";
 						$sgn = FALSE;
 						return FALSE;
 					}
@@ -49,7 +49,7 @@ class Photo
 					return FALSE;
 				}					
 			}else{
-				$msgOut = "Fajl nije uploadovan iz nekog razloga. Verovatno velicina.";
+				$msgOut = "File not uploaded. Size is possible problem.";
 				$sgn = FALSE;
 				return FALSE;
 			}
@@ -57,14 +57,14 @@ class Photo
 			//	...	UPLOAD PHOTO ...
 			if($sgn){
 				if(move_uploaded_file($tmpFilePath, $destinationFileName)){
-					$msgOut = "Fajl je uspesno uploadovan.";
+					$msgOut = "File uploaded successfuly.";
 					return TRUE;
 				}else{
-					$msgOut = "Greska 1: File nije uploadovan.";
+					$msgOut = "Error Photo_1: File is not uploaded.";
 					return FALSE;
 				}
 			}else{
-				$msgOut = "Greska 2: Fajl nije upload-ovan.";
+				$msgOut = "Error Photo_2: File is not uploaded.";
 				return FALSE;
 			}
 	}
@@ -76,7 +76,7 @@ class Photo
 					return ($formatCheck !== FALSE) ? TRUE : FALSE;
 					
 				}catch(Exception $e){
-					echo "Greska: ".$e->getMessage();
+					echo "Error: ".$e->getMessage();
 					return FALSE;
 				}				
 	}
@@ -94,7 +94,7 @@ class Photo
 		}
 		return $number;
 	}
-	//source folder uneti obavezno sa "/" na kraju
+	//sourceFolder parameter has to end with "/" 
 	public static function getPhotosFromFolder($sourceFolder)
 	{
 		$photoNamesArray[] = NULL;		
@@ -111,7 +111,7 @@ class Photo
 	public static function deletePhotoP($path)
 	{
 		if(file_exists($path)){
-					//OBRISI FILE
+					//DELETE FILE
 					if(unlink($path)){
 						return TRUE;
 					}else{
