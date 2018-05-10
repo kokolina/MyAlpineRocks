@@ -149,7 +149,7 @@ class ProductsRepository extends DBController{
 					$product->setDescription($p['Description']);
 					$product->setPrice($p['Price']);
 					$product->setStatus($p['Status']);
-					
+					$product->setPhotos($this->getPicturesOfProduct($p['ID']));
 				}else{
 					return FALSE; //Tabela je prazna
 				}
@@ -163,6 +163,7 @@ class ProductsRepository extends DBController{
 		}else{
 			return FALSE;
 		}
+		
 			
 			
 	}

@@ -16,19 +16,21 @@ require_once "../../Entity/Categories/Category.php";
 
 $GLOBALS['path_to_home'] = "../../";
 $headers = apache_request_headers();
-
 $clientEmail = isset($headers["from"]) ? $headers["from"] : NULL;
 $clientAPI = isset($headers["authkey"]) ? $headers["authkey"] : NULL;
-
-$user = new User($clientEmail);
-
 $productRestHandler = new ProductRestHandler(); 
 
-if($user->getUser($user, 'Email', $clientEmail)) {
+if ($clientEmail != NULL) {
+    $user = new User($clientEmail);
+} else {
+    $productRestHandler->serverRespond(array("error"=>'Bad request. Missing "from" header. (p3)'), 400);
+}
+
+if ($user->getUser($user, 'Email', $clientEmail)) {
     $rights = $user->getAccessRights();
-    if($user->getAPIKey() === $clientAPI){
+    if ($user->getAPIKey() === $clientAPI) {
 	    //	VIEW
-		if(strtolower($_SERVER['REQUEST_METHOD']) === 'get'){
+		if (strtolower($_SERVER['REQUEST_METHOD']) === 'get'){
 		    $view = strtolower($_GET["view"]);
             switch($view){
 			    case "all":
@@ -49,7 +51,7 @@ if($user->getUser($user, 'Email', $clientEmail)) {
 			}
 		}
 		//	INSERT				
-		elseif(strtolower($_SERVER['REQUEST_METHOD']) === 'post'){
+		elseif (strtolower($_SERVER['REQUEST_METHOD']) === 'post') {
 		    if($rights !== "R"){
 			    $data = array();
 				if(isset($_REQUEST['name'])){
