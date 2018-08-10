@@ -1,4 +1,5 @@
 <?php
+namespace Myalpinerocks;
 
 class Category
 {

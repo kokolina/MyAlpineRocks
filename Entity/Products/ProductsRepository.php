@@ -1,12 +1,10 @@
 <?php
+namespace Myalpinerocks;
 
-class ProductsRepository extends DBController{	
-	
-	public function getProducts(){
-			$katArray = array();
-			$k = new Category();
-			$k->getCategories($katArray);
-			
+class ProductsRepository extends DBController
+{	
+	public function getProducts()
+	{
 			$products = array();
 			$this->openDataBaseConnection();			
 			$query = "SELECT * FROM onlineshop.products WHERE Status='1'";
@@ -42,8 +40,8 @@ class ProductsRepository extends DBController{
 		}
 		
 	
-	public function getCategoriesOfProduct($product){
-				
+	public function getCategoriesOfProduct($product)
+	{
 			$query = "SELECT KP.ID_product, KP.ID_category, K.Name 
 					FROM onlineshop.product_category AS KP 
 					INNER JOIN onlineshop.categories AS K
@@ -52,7 +50,7 @@ class ProductsRepository extends DBController{
 			$stmt = $this->connection->prepare($query);
 			try{
 				$stmt->execute();
-				$result = $stmt->fetchAll();
+				$result = $stmt->fetchAll();				
 				if(count($result)>0){
 					for($i = 0; $i<count($result);$i++){
 						$kat = $result[$i]; //primer rezultata: 2=>women's; Name=>women's; 1=>1; ID_category=>1; 0=>1; ID_product=>1  (sa navodnicima) 
@@ -60,6 +58,7 @@ class ProductsRepository extends DBController{
 						$category->setName($kat["Name"]);
 						$category->setID($kat["ID_category"]);
 						$product->addCategory($category);
+								
 					}					
 					return TRUE;
 				}else{
@@ -73,7 +72,8 @@ class ProductsRepository extends DBController{
 			
 	}
 	//domenske klase treba samo da rade sa objektima te klase a ne sa JSON ili html!!!! ovo je lose		
-	public function getPicturesOfProduct($productID){	
+	public function getPicturesOfProduct($productID)
+	{	
 		$photosArray = Photo::getPhotosFromFolder($GLOBALS['path_to_home']."public/images/imagesProducts/".$productID."_/");
 		//var_dump($photosArray);
 		//die();
@@ -89,7 +89,8 @@ class ProductsRepository extends DBController{
 
 		}
 	
-	public function insertProduct($product){
+	public function insertProduct($product)
+	{
 		$id = $this->vratiIDPoslednjegSloga("products");
 		
 		$product->setID($id+1);
@@ -135,7 +136,8 @@ class ProductsRepository extends DBController{
 		return TRUE;
 	}
 
-	public function getProduct($column, $value, $product){
+	public function getProduct($column, $value, $product)
+	{
 		$query = "SELECT * FROM onlineshop.products WHERE $column = '$value'";
 		
 		$stmt = $this->connection->prepare($query);
@@ -162,13 +164,11 @@ class ProductsRepository extends DBController{
 			return TRUE;
 		}else{
 			return FALSE;
-		}
-		
-			
-			
+		}			
 	}
 		
-	public function prepareStatement_editProduct($newProduct, $oldProduct, $queryArray){
+	public function prepareStatement_editProduct($newProduct, $oldProduct, $queryArray)
+	{
 		
 		$query1 = "UPDATE onlineshop.products SET Name = '".$newProduct->getName()."', Description = '".$newProduct->getDescription()."', Price = '".$newProduct->getPrice()."' WHERE ID = '".$newProduct->getID()."'";
 		
@@ -179,7 +179,8 @@ class ProductsRepository extends DBController{
 		$queryArray[] = $query2;
 	}
 	
-	public function prepareStatement_editCategoriesOfProduct($newProduct, $oldProduct, $queryArray){
+	public function prepareStatement_editCategoriesOfProduct($newProduct, $oldProduct, $queryArray)
+	{
 		$k1 = $newProduct->getCategories(); 	$k2 = $oldProduct->getCategories();		
 		//nadji one koje treba da insertujes
 		for($i = 0; $i< count($k1); $i++){

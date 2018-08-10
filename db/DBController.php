@@ -1,4 +1,8 @@
 <?php
+namespace Myalpinerocks;
+
+use \PDO;
+use \PDOException;
 
 abstract class DBController {
 	protected $connection = NULL;

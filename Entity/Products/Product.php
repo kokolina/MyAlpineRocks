@@ -1,5 +1,7 @@
 <?php
+namespace Myalpinerocks;
 
+use \ArrayObject;
 class Product{
 	
 	public $repository = "";
@@ -156,7 +158,7 @@ class Product{
 		$this->categories = NULL;
 	}
 	public function addCategory($i){	
-		if(is_a($i, "Category")){
+		if(is_a($i, "\Myalpinerocks\Category")){
 			$this->categories[] = $i;
 			return TRUE;
 		}else{

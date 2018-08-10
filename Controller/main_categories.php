@@ -1,4 +1,6 @@
 <?php
+use \Myalpinerocks\CategoriesFrontEndController;
+
 if(!isset($_SESSION)){
     $s = session_start();	    
 }

@@ -1,4 +1,9 @@
 <?php
+namespace Myalpinerocks;
+
+use \PDO;
+use \PDOException;
+use \ArrayObject;
 
 class UserRepository extends DBController{
 

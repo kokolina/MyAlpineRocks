@@ -68,12 +68,14 @@ function loadProducts(){
 			
 			var c8 = document.createElement("td");
 			var katNiz = k.Products[i].categories;
+			if (katNiz != null) {
 			for(j = 0;j<katNiz.length;j++){
 				var categories = document.createElement("P"); 
 				var categoriesTxt = document.createTextNode(katNiz[j].ID+" "+katNiz[j].name);
 				categories.appendChild(categoriesTxt);
 				c8.appendChild(categories);
-			}			
+			}
+		}			
 			red.appendChild(c8);
 			
 			var c7 = document.createElement("td");

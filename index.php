@@ -24,7 +24,7 @@
 	<br />
 	Password:<br />
 	<input type="password" name="password" class="MyTextfield" id="password" maxlength="10" required/><br />
-	<p class="err" id="passErr"><?php echo $_SESSION['msg']; $_SESSION['msg'] = "";?></p>
+	<p class="err" id="passErr"><?php echo $_SESSION['msg'] ?? ""; $_SESSION['msg'] = "";?></p>
 	<br />
 	<input type="submit" id="submitBtt" name="LoginFormBtt" onclick="return login()" class="MyButton" value="Login" /> 
 </form>

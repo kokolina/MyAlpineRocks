@@ -1,4 +1,8 @@
 <?php
+namespace Myalpinerocks;
+
+use \PDO;
+use \PDOException;
 
 class CategoryRepository extends DBController
 {
@@ -161,7 +165,7 @@ class CategoryRepository extends DBController
 						$k->setStatus($cat["Status"]);
 						$catArray[] = $k;
 					}
-				return $str;
+					return $str;
 				}else{
 					return '"err":"*1"'; //Tabela je prazna
 				}

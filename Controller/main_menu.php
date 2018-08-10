@@ -1,4 +1,6 @@
 <?php
+use \Myalpinerocks\UsersFrontEndController;
+
 if(!isset($_SESSION)){
 	    $s = session_start();	    
     }

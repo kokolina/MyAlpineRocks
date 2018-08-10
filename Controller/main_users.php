@@ -1,4 +1,7 @@
-<?php				
+<?php		
+    use \Myalpinerocks\UsersFrontEndController;
+    use \Myalpinerocks\Photo;
+		
     if(!isset($_SESSION)){
 	    $s = session_start();	    
     }
