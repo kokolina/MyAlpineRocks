@@ -7,7 +7,7 @@ use \PDOException;
 class CategoryRepository extends DBController
 {
 
-	public function insertCategory($category)
+	public function insertCategory(Category $category)
 	{
 		$id = $this->vratiIDPoslednjegSloga("categories");
 		$category->setID($id+1);
@@ -37,7 +37,7 @@ class CategoryRepository extends DBController
 		return TRUE;
 	}
 
-    public function editCategory($newCategory)
+    public function editCategory(Category $newCategory)
     { 
         $c = $newCategory->getParentCategory()=='default' ? 0 : "'".$newCategory->getParentCategory()."'";
         $query1 = "UPDATE onlineshop.categories SET Name = '".$newCategory->getName()."', Description = '".$newCategory->getDescription()."', Parent_category = ".$c." WHERE ID = '".$newCategory->getID()."'";
@@ -67,7 +67,7 @@ class CategoryRepository extends DBController
         return TRUE;
     }
 	
-	public function deleteCategory($k){
+	public function deleteCategory(Category $k){
 		$query1 =  "INSERT INTO onlineshop.categories_log (ID_category, Name, Description, Parent_category, Status, ID_admin) 
 					SELECT K.ID, K.Name, K.Description, K.Parent_category, K.Status, KO.ID
 					FROM onlineshop.categories K, onlineshop.users KO
@@ -108,7 +108,7 @@ class CategoryRepository extends DBController
 		
 	}
 	
-	public function getCategory($category, $polje, $vrednost)
+	public function getCategory(Category $category, string $polje, string $vrednost)
 	{   		
 		$query = "SELECT * FROM onlineshop.categories WHERE ".$polje." = '".$vrednost."' AND Status = '1'";
 		
@@ -145,7 +145,7 @@ class CategoryRepository extends DBController
 		}
 	}
 	
-	public function getCategories($catArray)
+	public function getCategories(array $catArray)
 	{
 		$this->openDataBaseConnection();
 		$query = "SELECT * FROM onlineshop.categories WHERE Status='1'";
@@ -161,7 +161,9 @@ class CategoryRepository extends DBController
 						$k->setID($cat["ID"]);
 						$k->setName($cat["Name"]);
 						$k->setDescription($cat["Description"]);
-						$k->setParentCategory($cat["Parent_category"]);
+						$parent = new Category();
+						$parent->setID($cat["Parent_category"]);
+						$k->setParentCategory($parent);
 						$k->setStatus($cat["Status"]);
 						$catArray[] = $k;
 					}
@@ -176,7 +178,7 @@ class CategoryRepository extends DBController
 			$this->closeDataBaseConnection();
 	}
 
-	public function hasSubProducts($category)
+	public function hasSubProducts(Category $category)
 	{
 		$this->openDataBaseConnection();
 		$query = "SELECT * FROM onlineshop.product_category WHERE Status = '1' AND ID_category = '".$category->getID()."'";
@@ -196,7 +198,7 @@ class CategoryRepository extends DBController
 			$this->closeDataBaseConnection();
 	}
 	
-	public function editCategoryGeneral($conditionColumnsArray,$conditionValuesArray, $updColumnsArray, $updValuesArray)
+	public function editCategoryGeneral(array $conditionColumnsArray,array $conditionValuesArray, array $updColumnsArray, array $updValuesArray)
 	{
 		$query1 =  "INSERT INTO onlineshop.categories_log (ID_category, Name, Description, Parent_category, Status, ID_admin) 
 						SELECT K.ID, K.Name, K.Description, K.Parent_category, K.Status, KO.ID

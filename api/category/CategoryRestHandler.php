@@ -1,4 +1,7 @@
 <?php
+//namespace Myalpinerocks;
+
+//use \ArrayObject;
 		
 class CategoryRestHandler extends Rest {
 

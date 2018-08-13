@@ -1,5 +1,8 @@
 <?php
-		
+//namespace Myalpinerocks;
+
+//use \ArrayObject;
+	
 class ProductRestHandler extends Rest 
 {
 

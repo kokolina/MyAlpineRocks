@@ -3,24 +3,24 @@ namespace Myalpinerocks;
 
 class Category
 {
-	public $ID, $name, $description, $parentCategory, $ID_user, $date, $status,$repository, $err = "";
+	private $ID, $name, $description, $parentCategory, $ID_user, $date, $status, $repository, $err = "";
 	
 	function __construct()
 	{
 		$this->repository = new CategoryRepository();
 	}
 	
-	public function getCategories($catArray)
+	public function getCategories(array $catArray)
 	{
 		return $this->repository->getCategories($catArray);
 	}
 	
-	public function getCategory($param, $value)
+	public function getCategory(string $param, string $value)
 	{
 		return $this->repository->getCategory($this, $param, $value);
 	}
 	
-	public function insertCategory($category){
+	public function insertCategory(Category $category){
 		return $this->repository->insertCategory($category);
 	}
 	
@@ -54,7 +54,7 @@ class Category
 		}
 	
 	}
-	public function areCategoriesEqual($cat1, $cat2)
+	public function areCategoriesEqual(Category $cat1, Category $cat2)
 	{	
 		return (
 		    CategoriesFrontEndController::test_input_KAT($cat1->getID()) == $cat2->getID() && 
@@ -100,31 +100,31 @@ class Category
 	{
 		return $this->err;
 	}
-	function setName($i)
+	function setName(string $i)
 	{
 		$this->name = $i;
 	}
-	function setDescription($i)
+	function setDescription(string $i)
 	{
 		$this->description = $i;
 	}
-	function setParentCategory($i)
+	function setParentCategory(Category $i)
 	{
 		$this->parentCategory = $i;
 	}
-	function setID_user($i)
+	function setID_user(int $i)
 	{
 		$this->ID_user = $i;
 	}
-	function setDate($i)
+	function setDate(string $i)
 	{
 		$this->date = $i;
 	}
-	function setStatus($i)
+	function setStatus(int $i)
 	{
 		$this->status = $i;
 	}
-	function setErr($i)
+	function setErr(string $i)
 	{
 		$this->err = $this->err." ".$i;
 	}

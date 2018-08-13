@@ -154,6 +154,9 @@ class ProductsFrontEndController
 	public static function getProducts(){
 			$p = new Product();
 			$result = $p->getProducts();
+			var_dump($result);
+			die("123");
+			
 			$str = '{"user":"'.$_SESSION['user_rights'].'","Products":'.json_encode($result).'}';
 			echo $str;			
 	}
