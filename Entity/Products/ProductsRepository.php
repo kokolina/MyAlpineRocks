@@ -1,11 +1,13 @@
 <?php
 namespace Myalpinerocks;
 
+use \ArrayObject;
+
 class ProductsRepository extends DBController
 {	
 	public function getProducts()
 	{
-			$products = array();
+			$products = new ArrayObject();
 			$this->openDataBaseConnection();			
 			$query = "SELECT * FROM onlineshop.products WHERE Status='1'";
 			$stmt = $this->connection->prepare($query);
@@ -75,8 +77,6 @@ class ProductsRepository extends DBController
 	public function getPicturesOfProduct($productID)
 	{	
 		$photosArray = Photo::getPhotosFromFolder($GLOBALS['path_to_home']."public/images/imagesProducts/".$productID."_/");
-		//var_dump($photosArray);
-		//die();
 		/**
 		* 
 		* @var 
@@ -97,7 +97,7 @@ class ProductsRepository extends DBController
 		$query1 = "INSERT INTO onlineshop.products(Name, Description, Price) VALUES ('".$product->getName()."','".$product->getDescription()."','".$product->getPrice()."')";  
 		$query2 = "INSERT INTO onlineshop.products_log(ID_product,Name, Description, Price,Status,ID_admin) VALUES 
 		('".$product->getID()."','".$product->getName()."','".$product->getDescription()."','".$product->getPrice()."','1','".$product->getID_admin()."')";
-		$queryArr = array();
+		$queryArr = new ArrayObject();
 		$br = 0;
 		$kat = $product->getCategories();
 		for($i = 0; $i<count($kat);$i++){

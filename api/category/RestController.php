@@ -9,7 +9,7 @@ require_once "../../Entity/Categories/CategoryRepository.php";
 require_once "../../Entity/Categories/Category.php";
 require_once "../../Controller/CategoriesFrontEndController.php";
 
-
+use \ArrayObject;
 //01240c8a54f91dd57c6a1d485a3c766526f3446331f469eedc302169019295c1
 
 //https://github.com/lycheng423/RESTful/blob/master/Request.php
@@ -49,7 +49,7 @@ if($user->getUser($user, 'Email',$clientEmail)) {
 			// INSERT
 			}elseif(strtolower($_SERVER['REQUEST_METHOD']) === 'post'){	
 			if($rights !== "R") {
-					$data = array();	
+					$data = new ArrayObject();	
 					if(!empty($_REQUEST['name'])){
 						$data["Name"] = $categoryRestHandler->test_input($_REQUEST['name']);
 					}else{
@@ -77,7 +77,7 @@ if($user->getUser($user, 'Email',$clientEmail)) {
 			// EDIT	
 			}elseif(strtolower($_SERVER['REQUEST_METHOD']) === 'patch'){
 				if($rights !== "R") {
-						$data = array();	
+						$data = new ArrayObject();	
 						
 						if(!empty($_REQUEST['id'])){
 							$data["ID"] = $categoryRestHandler->test_input($_REQUEST['id']);							

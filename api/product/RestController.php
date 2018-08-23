@@ -11,7 +11,7 @@ require_once "../../Entity/Users/User.php";
 require_once("../../Entity/Products/Product.php");
 require_once "../../Entity/Categories/Category.php";
 
-
+use \ArrayObject;
 // n@gmail.com       809d63855877f0b801e633a1464d7e41d414be87e31886da079bbe5e496c65dd
 
 $GLOBALS['path_to_home'] = "../../";
@@ -53,7 +53,7 @@ if ($user->getUser($user, 'Email', $clientEmail)) {
 		//	INSERT				
 		elseif (strtolower($_SERVER['REQUEST_METHOD']) === 'post') {
 		    if($rights !== "R"){
-			    $data = array();
+			    $data = new ArrayObject();
 				if(isset($_REQUEST['name'])){
 					$data["setName"] = $productRestHandler->test_input($_REQUEST['name']);
 				}else{
@@ -85,7 +85,7 @@ if ($user->getUser($user, 'Email', $clientEmail)) {
 		//	EDIT				
 		elseif (strtolower($_SERVER['REQUEST_METHOD']) === 'patch'){
 			if ($rights !== "R") {
-				$data = array();
+				$data = new ArrayObject();
 				$sgn = FALSE;
 				if (isset($_REQUEST['id'])) {
 					$data["setID"] = $productRestHandler->test_input($_REQUEST['id']);

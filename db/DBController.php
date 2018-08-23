@@ -3,6 +3,7 @@ namespace Myalpinerocks;
 
 use \PDO;
 use \PDOException;
+use \ArrayObject;
 
 abstract class DBController {
 	protected $connection = NULL;
@@ -30,7 +31,7 @@ public function closeDataBaseConnection()
 	}
 }
 
-public function vratiIDPoslednjegSloga($table)
+public function vratiIDPoslednjegSloga(string $table)
 {
 	$query = "SELECT * FROM onlineshop.".$table." ORDER BY ID DESC LIMIT 1";
 	$this->openDataBaseConnection();
@@ -51,7 +52,7 @@ public function vratiIDPoslednjegSloga($table)
 	}
 }
 
-public function executeTransaction($queryArray)
+public function executeTransaction(ArrayObject $queryArray)
 {
 	try{
 		$this->connection->beginTransaction();
@@ -63,8 +64,6 @@ public function executeTransaction($queryArray)
 			return TRUE;				
 		}catch(PDOException $e){
 			$this->connection->rollback();
-			var_dump($e);
-			die("123");
 			return FALSE;
 		}	
 }

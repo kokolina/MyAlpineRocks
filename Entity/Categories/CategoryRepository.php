@@ -3,6 +3,7 @@ namespace Myalpinerocks;
 
 use \PDO;
 use \PDOException;
+use \ArrayObject;
 
 class CategoryRepository extends DBController
 {
@@ -15,7 +16,7 @@ class CategoryRepository extends DBController
 		$this->connection->beginTransaction();
 
 		try{
-			$c = $category->getParentCategory()=='default' ? 0 : "'".$category->getParentCategory()."'";
+			$c = $category->getParentCategory()->getID() =='default' ? 0 : "'".$category->getParentCategory()->getID()."'";
 			$query1 = "INSERT INTO onlineshop.categories (Name, Description, Parent_category) VALUES ('".$category->getName()
 					."','".$category->getDescription()."',".$c.")";
 
@@ -39,7 +40,7 @@ class CategoryRepository extends DBController
 
     public function editCategory(Category $newCategory)
     { 
-        $c = $newCategory->getParentCategory()=='default' ? 0 : "'".$newCategory->getParentCategory()."'";
+        $c = $newCategory->getParentCategory()=='default' ? 0 : "'".$newCategory->getParentCategory()->getID()."'";
         $query1 = "UPDATE onlineshop.categories SET Name = '".$newCategory->getName()."', Description = '".$newCategory->getDescription()."', Parent_category = ".$c." WHERE ID = '".$newCategory->getID()."'";
 
         $query2 = "INSERT INTO onlineshop.categories_log (ID_category, Name, Description, Parent_category, Status, ID_admin) 
@@ -129,7 +130,9 @@ class CategoryRepository extends DBController
 			$category->setID($result1["ID"]);
 			$category->setName($result1["Name"]);
 			$category->setDescription($result1["Description"]);
-			$category->setParentCategory($result1["Parent_category"]);
+			$pCat = new Category();
+			$pCat->setID($result1["Parent_category"]);
+			$category->setParentCategory($pCat);
 			$category->setStatus($result1["Status"]);
 			
 			$this->closeDataBaseConnection();
@@ -145,7 +148,7 @@ class CategoryRepository extends DBController
 		}
 	}
 	
-	public function getCategories(array $catArray)
+	public function getCategories(ArrayObject $catArray)
 	{
 		$this->openDataBaseConnection();
 		$query = "SELECT * FROM onlineshop.categories WHERE Status='1'";
@@ -198,7 +201,7 @@ class CategoryRepository extends DBController
 			$this->closeDataBaseConnection();
 	}
 	
-	public function editCategoryGeneral(array $conditionColumnsArray,array $conditionValuesArray, array $updColumnsArray, array $updValuesArray)
+	/*public function editCategoryGeneral(ArrayObject $conditionColumnsArray,ArrayObject $conditionValuesArray, ArrayObject $updColumnsArray, ArrayObject $updValuesArray)
 	{
 		$query1 =  "INSERT INTO onlineshop.categories_log (ID_category, Name, Description, Parent_category, Status, ID_admin) 
 						SELECT K.ID, K.Name, K.Description, K.Parent_category, K.Status, KO.ID
@@ -230,7 +233,7 @@ class CategoryRepository extends DBController
 				$query2 = $query2." AND ";
 				}
 		}	
-	}
+	}*/
 	
 	public function getTableName()
 	{

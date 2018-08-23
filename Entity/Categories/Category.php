@@ -1,7 +1,10 @@
 <?php
 namespace Myalpinerocks;
 
-class Category
+use \JsonSerializable;
+use \ArrayObject;
+
+class Category implements JsonSerializable
 {
 	private $ID, $name, $description, $parentCategory, $ID_user, $date, $status, $repository, $err = "";
 	
@@ -10,7 +13,7 @@ class Category
 		$this->repository = new CategoryRepository();
 	}
 	
-	public function getCategories(array $catArray)
+	public function getCategories(ArrayObject $catArray)
 	{
 		return $this->repository->getCategories($catArray);
 	}
@@ -63,6 +66,11 @@ class Category
 		    CategoriesFrontEndController::test_input_KAT($cat1->getParentCategory())== $cat2->getParentCategory()
 		    ) ? TRUE : FALSE;
 	}
+	
+	public function jsonSerialize()
+   {
+      return get_object_vars($this);
+   }
 		
 	function getID()
 	{
@@ -92,7 +100,7 @@ class Category
 	{
 		return $this->status;
 	}
-	function setID($i)
+	function setID(int $i)
 	{
 		$this->ID = $i;
 	}

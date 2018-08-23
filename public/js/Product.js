@@ -43,7 +43,7 @@ function loadProducts(){
 		document.getElementById("productsDIV").appendChild(p);
 	}else{
 		var tab = document.getElementById("productsTable");
-		for(i = 0; i<k.Products.length; i++){
+		for(i = 0; i<Object.values(k.Products).length; i++){
 			var red = document.createElement("tr");
 			
 			var c1 = document.createElement("td");

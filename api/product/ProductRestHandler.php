@@ -1,7 +1,7 @@
 <?php
 //namespace Myalpinerocks;
 
-//use \ArrayObject;
+use \ArrayObject;
 	
 class ProductRestHandler extends Rest 
 {
@@ -82,7 +82,7 @@ class ProductRestHandler extends Rest
 			    $product["photos"][$j] = str_replace($GLOBALS["path_to_home"], $GLOBALS["homeDirectory"]."/", $product["photos"][$j]);
 			}		   
 	  }
-	  $response = array();
+	  $response = new ArrayObject();
 	  $response[] = $product;
 		
      $requestContentType = $_SERVER['HTTP_ACCEPT'];

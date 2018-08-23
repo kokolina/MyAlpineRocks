@@ -2,34 +2,42 @@
 namespace Myalpinerocks;
 
 use \ArrayObject;
-class Product{
+use \JsonSerializable;
+
+class Product implements JsonSerializable
+{
 	
-	public $repository = "";
-	public $id, $name, $description, $price, $valuta, $status, $categories, $ID_admin, $err = ""; 
-	public $photos = array();
+	private $repository = "";
+	private $id, $name, $description, $price, $valuta, $status, $categories, $ID_admin, $err = ""; 
+	private $photos;
 	
-	function __construct(){
+	function __construct()
+	{
 		$this->repository = new ProductsRepository();
-		
+		$this->photos = new ArrayObject();
 	}
 	
-	public function getProducts(){
+	public function getProducts()
+	{
 		return $this->repository->getProducts();
 	}
 	
-	public function getProduct($param, $value){
+	public function getProduct($param, $value)
+	{
 		$this->repository->openDataBaseConnection();
 		$sgn = $this->repository->getProduct($param, $value, $this);
 		$this->repository->closeDataBaseConnection();	
 		return $sgn;
 	}
 	
-	public function insertProduct(){
+	public function insertProduct()
+	{
 		return $this->repository->insertProduct($this);
 	}
 	
 	//checks if categories of two products are the same
-	public function areCategoriesEqual($proizvod){
+	public function areCategoriesEqual($proizvod)
+	{
 		$sgnKat = FALSE;
 		$k1 = $this->getCategories(); $k2 = $proizvod->getCategories();
 		if(count($k1) == count($k2)){
@@ -49,7 +57,8 @@ class Product{
 	}
 	
 	//checks if product data are the same (doesn't check if categories of product are same')
-	public function areDataEqual($proizvod){
+	public function areDataEqual($proizvod)
+	{
 		$sgnP = FALSE;
 		if(strtolower($this->getName()) == strtolower($proizvod->getName()) && 
 			strtolower($this->getDescription()) == strtolower($proizvod->getDescription()) && 
@@ -60,13 +69,15 @@ class Product{
 	}
 	
 	//checks if the product has same data and same categories as product that is passed to method as argument
-	public function isEqual($proizvod){
+	public function isEqual($proizvod)
+	{
 		$sgnKat = $this->areCategoriesEqual($proizvod);
 		$sgnP = $this->areDataEqual($proizvod);
 		return($sgnKat&&$sgnP);	
 	}
 		
-	public function editProduct(){
+	public function editProduct()
+	{
 		$oldProduct = new Product();
 		if($oldProduct->getProduct("ID", $this->getID(), $oldProduct)){
 			$queryArray = new ArrayObject();
@@ -94,12 +105,14 @@ class Product{
 		}
 	}
 	
-	public function getPhotosOfProduct(){
+	public function getPhotosOfProduct()
+	{
 		$this->setPhotos($this->repository->getPicturesOfProduct($this->getID()));
 		return TRUE;
 	}
 	
-	public function deleteProduct(){
+	public function deleteProduct()
+	{
 		$queryArray = new ArrayObject();
 		$this->repository->prepareStatement_deleteProduct($this, $queryArray);		
 		$this->repository->openDataBaseConnection();
@@ -107,6 +120,12 @@ class Product{
 		$this->repository->closeDataBaseConnection();
 		return $sgn ?  TRUE :  FALSE;
 	}
+	
+	
+	public function jsonSerialize()
+   {
+      return get_object_vars($this);
+   }
 	
 	public function getID(){
 		return $this->id;

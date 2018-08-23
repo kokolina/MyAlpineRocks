@@ -1,6 +1,8 @@
 <?php
 namespace Myalpinerocks;
 
+use \ArrayObject;
+
 class CategoriesFrontEndController{
 	
 public static function insertCategory(){
@@ -20,11 +22,13 @@ public static function insertCategory(){
 			return FALSE;
 	}
 	$nadK = CategoriesFrontEndController::test_input_KAT($_POST['parentCategory_new']);
+	$pCat = new Category();
+	$pCat->setID($nadK);
 	
 	$category = new Category();
 	$category->setName($n);
 	$category->setDescription($o);
-	$category->setParentCategory($nadK);
+	$category->setParentCategory($pCat);
 	$category->setID_user($_SESSION['user_ID']);
 	
 	if($category->insertCategory($category)){
@@ -60,14 +64,15 @@ public static function editCategory(){
 		echo '<script>document.getElementById("editCategory").style.display = "inline"</script>';
 		return;	
 	}
-	$nadK = CategoriesFrontEndController::test_input_KAT($_POST['parentCategory_edit']);
+	$pCatID = CategoriesFrontEndController::test_input_KAT($_POST['parentCategory_edit']);
+	$pCat = new Category();
+	$pCat->setID($pCatID);
 	
-	$category = new Category();
-	
+	$category = new Category();	
 	$category->setID($id);
 	$category->setName($n);
 	$category->setDescription($o);
-	$category->setParentCategory($nadK);
+	$category->setParentCategory($pCat);
 	$category->setID_user($_SESSION['user_ID']);
 	
 	if($category->editCategory($category)){		
@@ -89,7 +94,7 @@ public static function test_input_KAT($data) {
 
 public static function getCategories(){
 		$k = new Category();
-		$katArray = array();
+		$katArray = new ArrayObject();
 		echo '{"user":"'.$_SESSION['user_rights'].'",'.$k->getCategories($katArray).'}';
 		
 	}
@@ -99,7 +104,7 @@ public static function getCategory($id){
 		$k->setID($id);
 		
 		if($k->getCategory("ID",$id )){
-			echo '{"ID":"'.$k->getID().'","Name":"'.$k->getName().'","Description":"'.$k->getDescription().'","Parent_category":"'.$k->getParentCategory().
+			echo '{"ID":"'.$k->getID().'","Name":"'.$k->getName().'","Description":"'.$k->getDescription().'","Parent_category":"'.$k->getParentCategory()->getID().
 						'","Status":"'.$k->getStatus().'"}';
 		}else{
 			echo "*1";
