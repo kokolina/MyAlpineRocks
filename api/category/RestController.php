@@ -1,4 +1,6 @@
 <?php
+namespace Myalpinerocks;
+
 require_once("../Rest.php");
 require_once "CategoryRestHandler.php";
 require_once "../../db/db_config.php";
@@ -16,6 +18,7 @@ use \ArrayObject;
 
 $headers = apache_request_headers();
 //print_r($_SERVER);
+//die("123");
 
 $clientEmail = isset($headers["from"]) ? $headers["from"] : NULL;
 $clientAPI = isset($headers["authkey"]) ? $headers["authkey"] : NULL;

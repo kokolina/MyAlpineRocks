@@ -1,5 +1,5 @@
 <?php
-//namespace Myalpinerocks;
+namespace Myalpinerocks;
 
 use \ArrayObject;
 	

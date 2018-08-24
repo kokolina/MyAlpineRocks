@@ -1,7 +1,7 @@
 <?php
-//namespace Myalpinerocks;
+namespace Myalpinerocks;
 
-//use \ArrayObject;
+use \ArrayObject;
 		
 class CategoryRestHandler extends Rest {
 
@@ -62,11 +62,18 @@ class CategoryRestHandler extends Rest {
 	
 	public function editCategory($data){
 			$category = new Category();
-			if(!$category->getCategory("ID", $data['ID'])) {
-									$this->serverRespond(array('error' => 'No such category.'), 400); exit;
-							}	
+			$sgn = $category->getCategory("ID", $data['ID']);
+			if(!$sgn) { 
+			    $this->serverRespond(array(array('error' => 'No such category.')), 400); exit;
+			}
+				
 			foreach ($data as $key => $value)	{
  				 $method = 'set'.$key;
+ 				 if($key == 'ParentCategory'){
+                $val = new Category();
+                $val->setID($value);
+                $value = $val; 				 
+ 				 }
  				 $category->$method($value);
  			}	
 			if ($category->editCategory()) {
@@ -92,6 +99,7 @@ class CategoryRestHandler extends Rest {
 	//RESPONSE DATA HAS TO BE AN ARRAY
 	public function encodeHtml($responseData) {
 		$htmlResponse = "<table border='1'><tr><td>Rb</td><td>ID</td><td>Name</td><td>Description</td></tr>";
+		//var_dump($responseData); die("123");
 		for($i = 0; $i<count($responseData);$i++){
 			$htmlResponse .= "<tr><td>".($i+1)."</td>";
 			foreach($responseData[$i] as $j => $value)

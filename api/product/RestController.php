@@ -1,4 +1,6 @@
 <?php
+namespace Myalpinerocks;
+
 require_once("../Rest.php");
 require_once "ProductRestHandler.php";
 require_once "../../db/db_config.php";

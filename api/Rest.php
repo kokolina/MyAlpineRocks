@@ -1,4 +1,6 @@
 <?php
+namespace Myalpinerocks;
+
 /*
 A simple RESTful webservices base class
 Following class has a couple of methods that can be commonly used in all REStful service handlers. 
