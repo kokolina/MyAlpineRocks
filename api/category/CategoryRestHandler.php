@@ -2,21 +2,26 @@
 namespace Myalpinerocks;
 
 use \ArrayObject;
+use \SimpleXMLElement;
 		
 class CategoryRestHandler extends Rest {
 
-	function getAllCategories() {
+	function getAllCategories() 
+	{
 		$category = new Category();
-		$rawData = new ArrayObject();
+		$rawData = new ArrayObject();		
 		$category->getCategories($rawData);
-		if(empty($rawData)) {
+		
+		if(count($rawData) == 0) {
 			$statusCode = 404;
-			$rawData = array('error' => 'No categories found!');		
+			$rawData[0]['error'] = 'No categories found!';			
 		} else {
 			$statusCode = 200;
 			$categoriesArray = new ArrayObject();
 			for($i = 0; $i<count($rawData); $i++){
-				$categoriesArray[$i] = array($rawData[$i]->getID(), $rawData[$i]->getName(), $rawData[$i]->getDescription());
+				$categoriesArray["category_".$i]["id"] = $rawData[$i]->getID();
+				$categoriesArray["category_".$i]["name"] = $rawData[$i]->getName();
+				$categoriesArray["category_".$i]["description"] = $rawData[$i]->getDescription();
 			}
 			$rawData = $categoriesArray;
 		}
@@ -27,13 +32,14 @@ class CategoryRestHandler extends Rest {
 	public function getCategory($id) {
 		$category = new Category();
 		$category->getCategory("ID", $id);
-		
 		if($category->getID() === NULL) {
 			$statusCode = 404;
-			$rawData[0] = array('error' => 'No categories found!');		
+			$rawData = new ArrayObject();	
+			$rawData[0]['error'] = 'Category not found!';	
 		} else {
 			$statusCode = 200;
-			$rawData[0] = array("ID" => $category->getID(), "name" => $category->getName(), "description" => $category->getDescription());
+			$rawData = new ArrayObject();	
+			$rawData["category"] = array("ID" => $category->getID(), "name" => $category->getName(), "description" => $category->getDescription());
 		}
 		//SEND RESPONSE
 		$this->serverRespond($rawData, $statusCode);
@@ -71,6 +77,10 @@ class CategoryRestHandler extends Rest {
  				 $method = 'set'.$key;
  				 if($key == 'ParentCategory'){
                 $val = new Category();
+                $sgn = $val->getCategory("ID", $value);
+                if(!$sgn) { 
+			           $this->serverRespond(array(array('error' => 'Invalid parent category.')), 400); exit;
+			       }
                 $val->setID($value);
                 $value = $val; 				 
  				 }
@@ -97,7 +107,7 @@ class CategoryRestHandler extends Rest {
 	}
 	
 	//RESPONSE DATA HAS TO BE AN ARRAY
-	public function encodeHtml($responseData) {
+	public function encodeHtml(ArrayObject $responseData) {
 		$htmlResponse = "<table border='1'><tr><td>Rb</td><td>ID</td><td>Name</td><td>Description</td></tr>";
 		//var_dump($responseData); die("123");
 		for($i = 0; $i<count($responseData);$i++){
@@ -110,32 +120,20 @@ class CategoryRestHandler extends Rest {
 		return $htmlResponse;		
 	}
 	
-	public function encodeJson($responseData) {
-		return json_encode($responseData);
-		
+	public function encodeJson(ArrayObject $responseData) {
+		return json_encode($responseData);		
 	}
 	
-	public function encodeXml($responseData) {
+	public function encodeXml(ArrayObject $responseData) {
 		// creating object of SimpleXMLElement
-		$xml = new SimpleXMLElement('<?xml version="1.0"?><category></category>');
-		foreach($responseData as $key=>$value) {
-			$xml->addChild($key, $value);
-		}
-		return $xml->asXML();
+		$xml = new SimpleXMLElement('<?xml version="1.0"?><categories></categories>');
+		
+      $arrayData = (array)$responseData;
+		$this->arrayToXMLNodes($arrayData, $xml);		
+		return $xml->asXML();		
 	}
 	
-	public function serverRespond($rawData, $statusCode){
-		$requestContentType = $_SERVER['HTTP_ACCEPT'];
-		$this ->setHttpHeaders($requestContentType, $statusCode);
-				
-		if(strpos($requestContentType,'application/json') !== false){
-			echo $this->encodeJson($rawData);
-		} else if(strpos($requestContentType,'text/html') !== false){
-			echo $this->encodeHtml($rawData);
-		} else if(strpos($requestContentType,'application/xml') !== false){
-			echo $this->encodeXml($rawData);
-		}
-	}
+	
 	
 	
 }

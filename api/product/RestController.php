@@ -22,10 +22,13 @@ $clientEmail = isset($headers["from"]) ? $headers["from"] : NULL;
 $clientAPI = isset($headers["authkey"]) ? $headers["authkey"] : NULL;
 $productRestHandler = new ProductRestHandler(); 
 
+$errorResponse = new ArrayObject();
+
 if ($clientEmail != NULL) {
     $user = new User($clientEmail);
 } else {
-    $productRestHandler->serverRespond(array("error"=>'Bad request. Missing "from" header. (p3)'), 400);
+	 $errorResponse[0]["error"] = 'Bad request. Missing "from" header. (p3)';
+    $productRestHandler->serverRespond($errorResponse, 400);
 }
 
 if ($user->getUser($user, 'Email', $clientEmail)) {
@@ -39,49 +42,55 @@ if ($user->getUser($user, 'Email', $clientEmail)) {
 				    $productRestHandler->getAllProducts();
 					break;			
 				case "single":
-					$productRestHandler = new ProductRestHandler();
 					if(isset($_GET["id"])){
-				        $id = $_GET["id"];
+				      $id = $_GET["id"];
 						$productRestHandler->getProduct($id);
 					}else{
-					    $productRestHandler->serverRespond(array("error"=>'ID parameter is missing'), 400);
+						 $errorResponse[0]["error"] = 'ID parameter is missing. (p21)';
+					    $productRestHandler->serverRespond($errorResponse, 400);
 					}			
 					break;
 				default:
-				    $productRestHandler->serverRespond(array("error"=>'Bad request. (p1)'), 400);
+				    $errorResponse[0]["error"] = 'Bad request. (p1)';
+					 $productRestHandler->serverRespond($errorResponse, 400);
 					break;
 			}
 		}
 		//	INSERT				
 		elseif (strtolower($_SERVER['REQUEST_METHOD']) === 'post') {
 		    if($rights !== "R"){
-			    $data = new ArrayObject();
+			      $data = new ArrayObject();
 				if(isset($_REQUEST['name'])){
 					$data["setName"] = $productRestHandler->test_input($_REQUEST['name']);
 				}else{
-					$productRestHandler->serverRespond(array("error"=>'Name parameter is missing'), 400);
+					$errorResponse[0]["error"] = 'Name parameter is missing';
+					$productRestHandler->serverRespond($errorResponse, 400);
 				}
 			    if(isset($_REQUEST['desc'])){
 					$data['setDescription'] = $productRestHandler->test_input($_REQUEST['desc']);
 				}else{
-					$productRestHandler->serverRespond(array("error"=>'Description parameter is missing'), 400);
+					$errorResponse[0]["error"] = 'Description parameter is missing';
+					$productRestHandler->serverRespond($errorResponse, 400);
 				}
 				if(isset($_REQUEST['price'])){
 					$data['setPrice'] = $productRestHandler->test_input($_REQUEST['price']);
 				}else{
-					$productRestHandler->serverRespond(array("error"=>'Price parameter is missing'), 400);
+					$errorResponse[0]["error"] = 'Price parameter is missing';
+					$productRestHandler->serverRespond($errorResponse, 400);
 				}
 				if(isset($_REQUEST['cat'])){
 					for($i = 0; $i<count($_REQUEST['cat']); $i++){
 						$data['addCategory'][$i] = $productRestHandler->test_input($_REQUEST['cat'][$i]);
 					}
 				}else{
-					$productRestHandler->serverRespond(array("error"=>'Category parameter is missing'), 400);
+					$errorResponse[0]["error"] = 'Category parameter is missing';
+					$productRestHandler->serverRespond($errorResponse, 400);
 				}
 					$data['setID_admin'] = $user->getID();
 					$productRestHandler->insertProduct($data);	
 			}else{
-				$productRestHandler->serverRespond(array("error"=>"Not authorised."), 401);
+				$errorResponse[0]["error"] = 'Not authorised.';
+				$productRestHandler->serverRespond($errorResponse, 401);
 			}					
 		}
 		//	EDIT				
@@ -92,7 +101,8 @@ if ($user->getUser($user, 'Email', $clientEmail)) {
 				if (isset($_REQUEST['id'])) {
 					$data["setID"] = $productRestHandler->test_input($_REQUEST['id']);
 				} else {
-					$productRestHandler->serverRespond(array("error"=>'Product ID is missing'), 400);
+					$errorResponse[0]["error"] = 'Product ID is missing';
+					$productRestHandler->serverRespond($errorResponse, 400);
 					exit;
 				}
 				if (isset($_REQUEST['name'])) {
@@ -114,13 +124,15 @@ if ($user->getUser($user, 'Email', $clientEmail)) {
 					$sgn = TRUE;
 				}
 				if(!$sgn){ 
-				    $productRestHandler->serverRespond(array("error"=>"No data has been changed"), 400); 
+				    $errorResponse[0]["error"] = 'No data has been changed';
+					 $productRestHandler->serverRespond($errorResponse, 400);
 				    exit;
 				}
 				$data['setID_admin'] = $user->getID();
 				$productRestHandler->editProduct($data);					
 			} else {
-				$productRestHandler->serverRespond(array("error"=>"Not authorised."), 401);
+				$errorResponse[0]["error"] = 'Not authorised.';
+				$productRestHandler->serverRespond($errorResponse, 401);
 			}
 		}
 		//	DELETE				
@@ -130,17 +142,23 @@ if ($user->getUser($user, 'Email', $clientEmail)) {
 					$data["id"] = $productRestHandler->test_input($_REQUEST['id']);
 					$productRestHandler->deleteProduct($data);
 				} else {
-					$productRestHandler->serverRespond(array("error"=>"ID parameter is missing."), 400);									}
+					$errorResponse[0]["error"] = 'ID parameter is missing.';
+					$productRestHandler->serverRespond($errorResponse, 400);								
+				}
 			} else {
-				$productRestHandler->serverRespond(array("error"=>"Not authorised."), 401);							
+				$errorResponse[0]["error"] = 'Not authorised.';
+				$productRestHandler->serverRespond($errorResponse, 401);							
 			}
 		}else {
-		    $productRestHandler->serverRespond(array("error"=>'Bad request. (p2)'), 400);				
+			 $errorResponse[0]["error"] = 'Bad request. (p2)';
+			 $productRestHandler->serverRespond($errorResponse, 400);					
 		}
     } else {
-		$productRestHandler->serverRespond(array('error' => 'Not authorized.'), 401);	
+		$errorResponse[0]["error"] = 'Not authorised.';
+		$productRestHandler->serverRespond($errorResponse, 401);
 	}
 } else {
-	$productRestHandler->serverRespond(array('error' => 'Client is not registered'), 401);
+	$errorResponse[0]["error"] = 'Client is not registered.';
+	$productRestHandler->serverRespond($errorResponse, 401);
 }		
 ?>

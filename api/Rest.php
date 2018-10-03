@@ -1,6 +1,8 @@
 <?php
 namespace Myalpinerocks;
 
+use \SimpleXMLElement;
+use \ArrayObject;
 /*
 A simple RESTful webservices base class
 Following class has a couple of methods that can be commonly used in all REStful service handlers. 
@@ -8,7 +10,7 @@ One method is used to construct the response and another method is to hold the d
 HTTP status code and its respective messages. Such common methods can be added to this class 
 and this can be made a base class for all RESTful handler classes.
 */
-class Rest 
+abstract class Rest 
 {
 	
 	private $httpVersion = "HTTP/1.1";
@@ -93,5 +95,36 @@ class Rest
   		$data = addslashes($data);
   	return $data;
 	}
+	
+	public function arrayToXMLNodes(array $responseData, SimpleXMLElement $xml)
+	{
+	    foreach ($responseData as $key=>$value) {
+	        if(!is_array($value)) {
+			      $xml->addChild($key,$value);
+		     } else {
+		     	    $subnode = $xml->addChild($key);
+		          $this->arrayToXMLNodes($value, $subnode);
+		     }
+	    }
+	}
+	
+	public function serverRespond(ArrayObject $rawData, int $statusCode)
+	{
+		$requestContentType = $_SERVER['HTTP_ACCEPT'];
+		$this ->setHttpHeaders($requestContentType, $statusCode);
+				
+		if(strpos($requestContentType,'application/json') !== false){
+			echo $this->encodeJson($rawData);
+		} else if(strpos($requestContentType,'text/html') !== false){
+			echo $this->encodeHtml($rawData);
+		} else if(strpos($requestContentType,'application/xml') !== false){
+			echo $this->encodeXml($rawData);
+		}
+	}
+	
+	abstract protected function encodeJson(ArrayObject $rawData);
+	abstract protected function encodeHtml(ArrayObject $rawData);
+	abstract protected function encodeXml(ArrayObject $rawData);
+	
 }
 ?>

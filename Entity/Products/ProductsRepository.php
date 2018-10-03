@@ -14,6 +14,7 @@ class ProductsRepository extends DBController
 			try{
 				$stmt->execute();
 				$result = $stmt->fetchAll();
+				
 				if(count($result) > 0){
 					for($i = 0; $i<count($result);$i++){
 						$pro = $result[$i];
@@ -24,7 +25,7 @@ class ProductsRepository extends DBController
 						$obj->setDescription($pro["Description"]);
 						$obj->setStatus($pro["Status"]);
 						$obj->setPhotos($this->getPicturesOfProduct($pro['ID']));
-						$this->getCategoriesOfProduct($obj);
+						$this->getCategoriesOfProduct($obj);						
 						$products[] = $obj;
 						}
 					return $products;
@@ -38,7 +39,6 @@ class ProductsRepository extends DBController
 				$products[1] = $e->getMessage();
 				return $products; //greska 
 			}
-			$this->closeDataBaseConnection();
 		}
 		
 	
@@ -138,7 +138,7 @@ class ProductsRepository extends DBController
 
 	public function getProduct($column, $value, $product)
 	{
-		$query = "SELECT * FROM onlineshop.products WHERE $column = '$value'";
+		$query = "SELECT * FROM onlineshop.products WHERE $column = '$value' and Status = '1'";
 		
 		$stmt = $this->connection->prepare($query);
 			try{
