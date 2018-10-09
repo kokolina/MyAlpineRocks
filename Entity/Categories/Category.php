@@ -8,9 +8,17 @@ class Category implements JsonSerializable
 {
 	private $ID, $name, $description, $parentCategory, $ID_user, $date, $status, $repository, $err = "";
 	
-	function __construct()
+	public function __construct()
 	{
 		$this->repository = new CategoryRepository();
+	}
+	
+	public static function constructWithID(int $id)
+	{
+      $instance = new self();		
+		$instance->repository = new CategoryRepository();
+		$instance->setId($id);
+		return $instance;
 	}
 	
 	public function getCategories(ArrayObject $catArray)
@@ -23,7 +31,7 @@ class Category implements JsonSerializable
 		return $this->repository->getCategory($this, $param, $value);
 	}
 	
-	public function insertCategory(Category $category){
+	public function insertCategory(Category $category) {
 		return $this->repository->insertCategory($category);
 	}
 	
@@ -33,7 +41,7 @@ class Category implements JsonSerializable
 				
 		if ($this->repository->getCategory($oldCategory, "ID", $this->getID())) {
 			
-			if($this->areCategoriesEqual($oldCategory, $this)){
+			if ($this->areCategoriesEqual($oldCategory, $this)) {
 				$this->setErr("No data has been changed.");
 				 return FALSE;
 			} else {
@@ -44,9 +52,9 @@ class Category implements JsonSerializable
 		}		
 	}
 	
-	public function deleteCategory(){
-		if($this->repository->getCategory($this, "ID", $this->getID())){
-			if(!$this->repository->hasSubProducts($this)){
+	public function deleteCategory() {
+		if ($this->repository->getCategory($this, "ID", $this->getID())) {
+			if (!$this->repository->hasSubProducts($this)) {
 				return $this->repository->deleteCategory($this);
 			}else{
 				$this->setErr("Not allowed. Category has active products.");
@@ -71,7 +79,8 @@ class Category implements JsonSerializable
    {
       return get_object_vars($this);
    }
-		
+   
+	//    getters	
 	function getID()
 	{
 		return $this->ID;
@@ -100,14 +109,15 @@ class Category implements JsonSerializable
 	{
 		return $this->status;
 	}
-	function setID(int $i)
-	{
-		$this->ID = $i;
-	}
 	function getErr()
 	{
 		return $this->err;
 	}
+	//    setters
+	function setID(int $i)
+	{
+		$this->ID = $i;
+	}	
 	function setName(string $i)
 	{
 		$this->name = $i;

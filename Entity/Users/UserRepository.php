@@ -7,7 +7,7 @@ use \ArrayObject;
 
 class UserRepository extends DBController{
 
-	public function insertUser($user){
+	public function insertUser(User $user){
 		$pp = "";
 		if($user->getAccessRights()=="Administrator"){
 			$pp = "A";
@@ -45,7 +45,7 @@ class UserRepository extends DBController{
 		return TRUE;
 	}
 
-    public function editUser($user, $exUser){
+    public function editUser(User $user, User $exUser){
 		$pp = "";
 		if($user->getAccessRights()=="Administrator"){
 			$pp = "A";
@@ -84,7 +84,8 @@ class UserRepository extends DBController{
 		
 	}
 	
-	public function deleteUser($user){
+	public function deleteUser(User $user)
+	{
 		$this->connection->beginTransaction();
 		
 		//kopiraj u korisnici log
@@ -111,14 +112,17 @@ class UserRepository extends DBController{
 		return TRUE;
 		
 	}
-    
-    public function getUser($user, $columnName, $value){
-		/**
-		* Funkcija uzima objekat Korisnik i polje i vrednost po kojoj treba da ga nadje u bazi.
-		* Funckija vraca true samo ako nadje samo jednog korisnika KOJI JE AKTIVAN u bazi i takodje puni primljenog korisnika podacima onog iz baze.
-		* Funkcija vraca FALSE ako ne nadje korisnika, ako nadje vise od jednog korisnika i u slucaju neke druge greske.
-		*/
-		$query = "SELECT * FROM onlineshop.users WHERE ".$columnName." = '".$value."' AND Status = '1'";
+	
+   public function getUser(User $user, array $columnValuePairs)
+   {	
+		$query = "SELECT * FROM onlineshop.users WHERE ";
+		$i = 0; 
+		foreach ($columnValuePairs as $column => $value) {
+			$query .= ($i == 0 ? " ".$column." = '$value'" : " and ".$column." = '$value'");
+			$i++;
+		}
+		$query .= " and Status = '1'";
+		
 		$stmt = $this->connection->prepare($query);
 		try{
 		$stmt->execute();	
@@ -154,8 +158,9 @@ class UserRepository extends DBController{
 			return false;
 		}
 	}
-	
-    public function lockUser($user){
+    	
+   public function lockUser(User $user)
+   {
 		$query = "UPDATE onlineshop.users SET Locked = Locked-1 WHERE Locked>0 AND Email = '".$user->getEmail()."' AND Status = '1'";
 		$stmt = $this->connection->prepare($query);
 		try{
@@ -186,7 +191,8 @@ class UserRepository extends DBController{
 		}
 	}
 	
-    public function unlockUser($user){
+    public function unlockUser(User $user)
+    {
 		$query = "UPDATE onlineshop.users SET Locked = 3 WHERE Email = '".$user->getEmail()."' AND Status = '1'";
 		$stmt = $this->connection->prepare($query);
 		try{
@@ -197,7 +203,8 @@ class UserRepository extends DBController{
 		}
 	}
 		
-	public function getUsers($user){
+	public function getUsers(User $user)
+	{
         $query = "SELECT * FROM onlineshop.users WHERE Status = '1'";
         $stmt = $this->connection->prepare($query);
 		try{
@@ -232,7 +239,8 @@ class UserRepository extends DBController{
 		}     
     }
     
-    public function generateAPIKey($user){
+    public function generateAPIKey(User $user)
+    {
 		$api = hash("sha256", $user->getPassword().$user->getAPIKey(), $raw_output = false );
 		//$api = "apikey";		
 		$query = "UPDATE onlineshop.users SET API_key='".$api."' WHERE Email = '".$user->getEmail()."'";		

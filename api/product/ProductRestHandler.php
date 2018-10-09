@@ -39,21 +39,19 @@ class ProductRestHandler extends Rest
 				
 				$photos = $rawData[$i]->getPhotos();
 				for ($j = 0; $j<count($photos); $j++) {
-			    $this->responseData['product_'.($i+1)]["photos"][$j] = str_replace($GLOBALS["path_to_home"], $GLOBALS["homeDirectory"]."/", $photos[$j]);
+			    $this->responseData['product_'.($i+1)]["photos"]["photo_".($j+1)] = str_replace($GLOBALS["path_to_home"], $GLOBALS["homeDirectory"]."/", $photos[$j]);
 			   }
 			}	
-		}
-		
+		}		
         $this->serverRespond($this->responseData, $statusCode);		
-		
 	}
 	
 	public function getProduct($id) 
 	{
 		$product = new Product();
-		$product->getProduct("ID", $id);
+		$product->getProduct(array("ID" => $id));
 		
-		if($product->getID() === NULL) {
+		if ($product->getID() === NULL) {
 			$statusCode = 404;
 			$this->responseData["myalpinerocks"]['error'] = 'The product was not found!';	
 		} else {
@@ -71,10 +69,9 @@ class ProductRestHandler extends Rest
 			
 			$photos = $product->getPhotos();			
 			for ($j = 0; $j<count($photos); $j++) {
-			    $this->responseData["product"]["photos"][$j] = str_replace($GLOBALS["path_to_home"], $GLOBALS["homeDirectory"]."/", $photos[$j]);
+			    $this->responseData["product"]["photos"]["photo_".($j+1)] = str_replace($GLOBALS["path_to_home"], $GLOBALS["homeDirectory"]."/", $photos[$j]);
 			}
-	  }
-		
+	  }		
 		$this->serverRespond($this->responseData, $statusCode);	
 	}
 	
@@ -82,49 +79,60 @@ class ProductRestHandler extends Rest
 	{
 		$product = new Product();
 		
-		foreach($data as $key => $value){
-			if($key === "addCategory"){
-				for($i = 0; $i<count($value); $i++){
+		foreach($data as $key => $value) {
+			if ($key === "addCategory") {
+				for($i = 0; $i<count($value); $i++) {
+					
 					$cat = new Category();
-					$cat->getCategory("ID", $value[$i]);
-					$product->$key($cat);
+					$sgn = $cat->getCategory("ID", $value[$i]);
+					if ($sgn) {
+					    $product->$key($cat);
+					} else {
+					    $this->responseData["myalpine.rocks"]["error"] = "Unsuccessful insert of category ID = $value[$i]. ".$cat->getErr();
+			          $this->serverRespond($this->responseData, 400);
+			          exit;
+					}					
 				}
-			}else{
+			} else {
 				$product->$key($value);
 			}			
 		}
-		if($product->insertProduct()){
-			$this->responseData["myalpine.rocks"]["ok"] = "Product saved. ";
-			$this->serverRespond($this->responseData, 200);
-		}else{
+		if ($product->insertProduct()) {
+			$this->responseData["myalpine.rocks"]["ok"] = " New product saved. Product ID : ".$product->getID();
+			$this->serverRespond($this->responseData, 200); exit;
+		} else {
 			$this->responseData["myalpine.rocks"]["error"] = "Unsuccessful insert. ".$product->getErr();
-			$this->serverRespond($this->responseData, 400);
+			$this->serverRespond($this->responseData, 400); exit;
 		}
 	}
 	
 	public function editProduct($data)
 	{		
 		$product = new Product();
-		$product->getProduct("ID", $data["setID"]);
+		$product->getProduct(array("ID" => $data["setID"]));
 		$product->setCategoryToNull();
 		
-		foreach($data as $key => $value){
-			if($key === "addCategory"){
-				for($i = 0; $i<count($value); $i++){
+		foreach($data as $key => $value) {
+			if ($key === "addCategory") {
+				for($i = 0; $i<count($value); $i++) {
 					$cat = new Category();
-					$cat->getCategory("ID", $value[$i]);
-					$product->$key($cat);
+					if ($cat->getCategory("ID", $value[$i])) {
+					    $product->$key($cat);
+					} else {
+					    $this->responseData["myalpine.rocks"]["error"] = " Unsuccessful insert. ".$cat->getErr();
+					    $this->serverRespond($this->responseData, 400); exit;
+					}					
 				}
-			}else{
+			} else {
 				$product->$key($value);
 			}			
 		}
-		if($product->editProduct()){			
+		if ($product->editProduct()) {			
 			$this->responseData["myalpine.rocks"]["ok"] = "Product saved. ";
 			$this->serverRespond($this->responseData, 200);
-		}else{
+		} else {
 			$this->responseData["myalpine.rocks"]["error"] = "Unsuccessful insert. ".$product->getErr();
-			$this->serverRespond($this->responseData, 400);
+			$this->serverRespond($this->responseData, 400); exit;
 		}
 	}
 	
@@ -132,24 +140,17 @@ class ProductRestHandler extends Rest
 	{
 		$product = new Product();
 		$product->setID($data['id']);
-		if($product->getProduct("ID", $data['id']))
-		{
-			if($product->deleteProduct()) 
-			{
+		if ($product->getProduct(array("ID" => $data['id']))) {
+			if ($product->deleteProduct()) {
 				$this->responseData["myalpine.rocks"]["ok"] = "Product deleted. ";
 			   $this->serverRespond($this->responseData, 200);	
-			}
-			else 
-			{
+			} else {
             $this->responseData["myalpine.rocks"]["error"] = "Product is not deleted. ".$product->getErr();
-			   $this->serverRespond($this->responseData, 500);				
-			}
-		
-		}
-		else 
-		{
+			   $this->serverRespond($this->responseData, 500);	exit;			
+			}		
+		} else {
          $this->responseData["myalpine.rocks"]["error"] = "No such product in database. ".$product->getErr();
-			$this->serverRespond($this->responseData, 400);				
+			$this->serverRespond($this->responseData, 400);	exit;			
 		}	
 	}
 	
@@ -172,21 +173,17 @@ class ProductRestHandler extends Rest
 				      } else { 
                       $htmlResponse .= "<td></td>";  
 				    }		
-            } else if ($j === "categories") 
-            {
-                if ($value !== null) 
-                {
+            } else if ($j === "categories") {
+                if ($value !== null) {
                     $categoriesTxt = "";
-                    for ($k = 0; $k<count($value); $k++) 
-                    {
+                    for ($k = 0; $k<count($value); $k++) {
                         $categoriesTxt .= $value[$k]["id"]. " ". $value[$k]["name"]."<br>";
                     }
                     $htmlResponse .= "<td>".$categoriesTxt."</td>"; 
                 } else {
                     $htmlResponse .= "<td></td>"; 
                 }
-            } else {
-            	
+            } else {            	
                 $htmlResponse .= "<td>". $value . "</td>";
             }			
 			} 	
@@ -196,19 +193,112 @@ class ProductRestHandler extends Rest
 		return $htmlResponse;		
 	}
 	
-	
-	public function encodeJson(ArrayObject $response) 
-	{
-		return json_encode($response);		
+	public function encodeXml(ArrayObject $responseData) {
+		// creating object of SimpleXMLElement
+		$xml = new SimpleXMLElement('<?xml version="1.0"?><products></products>');
+		
+      $arrayData = (array)$responseData;
+		$this->arrayToXMLNodes($arrayData, $xml);		
+		return $xml->asXML();		
 	}
 	
-	public function encodeXml(ArrayObject $response) 
+	public function fillInRequestData_post(ArrayObject $data, ArrayObject $errorResponse) 
 	{
-		$xml = new SimpleXMLElement('<?xml version="1.0"?><products></products>');
-		$arrayData = (array)$response;
-		$this->arrayToXMLNodes($arrayData, $xml);		
-		return $xml->asXML();
-	}	
+	         if (isset($_REQUEST['name'])) {
+					$data["setName"] = $this->test_input($_REQUEST['name']);
+				} else {
+					$errorResponse[0]["error"] = 'Name parameter is missing';
+					$this->serverRespond($errorResponse, 400); exit;
+				}
+			    if (isset($_REQUEST['desc'])) {
+					$data['setDescription'] = $this->test_input($_REQUEST['desc']);
+				} else {
+					$errorResponse[0]["error"] = 'Description parameter is missing';
+					$this->serverRespond($errorResponse, 400); exit;
+				}
+				if (isset($_REQUEST['price'])) {
+					$c = $this->test_input($_REQUEST['price']);
+						if (is_numeric($c)) {
+							$data['setPrice'] = (int)$c;
+						} else {
+						    $errorResponse[0]["error"] = 'Invalid price value.';
+					       $this->serverRespond($errorResponse, 400); exit;
+					   }
+				} else { 
+					$errorResponse[0]["error"] = 'Price parameter is missing';
+					$this->serverRespond($errorResponse, 400); exit;
+				}				
+				if (isset($_REQUEST['cat'])) {
+					$i = 0;
+					foreach($_REQUEST['cat'] as $key => $value) {
+						$c = $this->test_input($value);
+						if (is_numeric($c)) {
+							$data['addCategory'][$i] = (int)$c;
+						} else {
+						    $errorResponse[0]["error"] = 'Category ID has to be integer.';
+					       $this->serverRespond($errorResponse, 400); exit;
+					   }
+					   $i++;
+					}
+				} else {
+					$errorResponse[0]["error"] = 'Category parameter is missing';
+					$this->serverRespond($errorResponse, 400); exit;
+				}
+	}
 	
+	public function fillInRequestData_patch(ArrayObject $data, ArrayObject $errorResponse) 
+	{
+	    $sgn = FALSE;
+				if (isset($_REQUEST['id'])) {
+					$c = $this->test_input($_REQUEST['id']);
+					if (is_numeric($c)) {
+						$data['setID'] = (int)$c;
+					} else {
+						$errorResponse[0]["error"] = 'Invalid ID.';
+					   $this->serverRespond($errorResponse, 400); exit;
+					}
+				} else {
+					$errorResponse[0]["error"] = 'Product ID is missing';
+					$this->serverRespond($errorResponse, 400);
+					exit;
+				}
+				if (isset($_REQUEST['name'])) {
+					$data["setName"] = $this->test_input($_REQUEST['name']);
+					$sgn = TRUE;
+				}
+				if (isset($_REQUEST['desc'])) {
+					$data['setDescription'] = $this->test_input($_REQUEST['desc']);
+					$sgn = TRUE;
+				}
+				if (isset($_REQUEST['price'])) {
+					$c = $this->test_input($_REQUEST['price']);
+					if (is_numeric($c)) {
+						$data['setPrice'] = (int)$c;
+					} else {
+						$errorResponse[0]["error"] = 'Invalid price value.';
+					   $this->serverRespond($errorResponse, 400); exit;
+					}
+					$sgn = TRUE;
+				}
+				if (isset($_REQUEST['cat'])) {
+					$i = 0;
+					foreach($_REQUEST['cat'] as $key => $value) {
+						$c = $this->test_input($value);
+					   if (is_numeric($c)) {
+						    $data['addCategory'][$i] = (int)$c;
+					   } else {
+						    $errorResponse[0]["error"] = 'Category ID has to be integer.';
+					       $this->serverRespond($errorResponse, 400); exit;
+					   }
+					   $i++;
+					}
+					$sgn = TRUE;
+				}
+				if (!$sgn) { 
+				    $errorResponse[0]["error"] = 'No data has been changed';
+					 $this->serverRespond($errorResponse, 400);
+				    exit;
+				}
+	}
 }
 ?>

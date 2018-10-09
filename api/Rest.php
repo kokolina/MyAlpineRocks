@@ -108,6 +108,10 @@ abstract class Rest
 	    }
 	}
 	
+	public function encodeJson(ArrayObject $responseData) {
+		return json_encode($responseData);		
+	}
+	
 	public function serverRespond(ArrayObject $rawData, int $statusCode)
 	{
 		$requestContentType = $_SERVER['HTTP_ACCEPT'];
@@ -122,9 +126,7 @@ abstract class Rest
 		}
 	}
 	
-	abstract protected function encodeJson(ArrayObject $rawData);
 	abstract protected function encodeHtml(ArrayObject $rawData);
 	abstract protected function encodeXml(ArrayObject $rawData);
-	
 }
 ?>

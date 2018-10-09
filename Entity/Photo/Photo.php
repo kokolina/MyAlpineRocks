@@ -4,6 +4,13 @@ namespace Myalpinerocks;
 class Photo
 {
 	private $path, $name = "";
+
+   public function __construct(string $path = "", string $name = "")	
+   {
+   	$this->path = $path;
+   	$this->name = $name; 
+   }
+	
 	/**
 	* 
 	* @param undefined $fileInputTagName  name of file inut tag <input type=file>
@@ -15,7 +22,7 @@ class Photo
 	* 
 	* @return TRUE/FALSE
 	*/
-	public static function photoUpload($fileInputTagName, $destinationFolder, $photoName, $msgOut, $selectedFileNo)
+	public static function photoUpload(string $fileInputTagName, string $destinationFolder, string $photoName, string $msgOut, string $selectedFileNo)
 	{	
 			$sgn = TRUE;
 			$destinationFileName = $destinationFolder.$photoName.".jpg";
@@ -70,7 +77,7 @@ class Photo
 			}
 	}
 	
-	public function isPhoto($tmpFilePath)
+	public function isPhoto(string $tmpFilePath)
 	{
 		try{
 					$formatCheck = getimagesize($tmpFilePath);
@@ -83,7 +90,7 @@ class Photo
 	}
 	//funkciju koristim za nalazenje slike proizvoda koja je obelezena najvecim brojem, da bih dodala sledecu.
 	//Slike proizvoda obelezavam brojevima
-	public static function getLastPhotoNumber($destinationFolder)
+	public static function getLastPhotoNumber(string $destinationFolder)
 	{
 		$filesArray = scandir($destinationFolder);
 		$number = 0;
@@ -96,7 +103,7 @@ class Photo
 		return $number;
 	}
 	//sourceFolder parameter has to end with "/" 
-	public static function getPhotosFromFolder($sourceFolder)
+	public static function getPhotosFromFolder(string $sourceFolder)
 	{
 		$photoNamesArray[] = NULL;		
 		$allFiles = glob($sourceFolder."*.*");   // ".$id."_
@@ -109,7 +116,7 @@ class Photo
 		return $photoNamesArray;
 	}
 	
-	public static function deletePhotoP($path)
+	public static function deletePhotoP(string $path)
 	{
 		if(file_exists($path)){
 					//DELETE FILE
@@ -124,6 +131,7 @@ class Photo
 				}
 	}
 	
+	//    getters
 	public function getPath()
 	{
 		return $this->path;
@@ -132,12 +140,12 @@ class Photo
 	{
 		return $this->name;
 	}
-	
-	public function setPath($i)
+	 //    setters
+	public function setPath(string $i)
 	{
 		$this->path = $i;
 	}
-	public function setName($i)
+	public function setName(string $i)
 	{
 		$this->name = $i;
 	}

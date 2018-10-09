@@ -15,7 +15,7 @@ class CategoryRepository extends DBController
 		$this->openDataBaseConnection();
 		$this->connection->beginTransaction();
 
-		try{
+		try {
 			$c = $category->getParentCategory()->getID() =='default' ? 0 : "'".$category->getParentCategory()->getID()."'";
 			$query1 = "INSERT INTO onlineshop.categories (Name, Description, Parent_category) VALUES ('".$category->getName()
 					."','".$category->getDescription()."',".$c.")";
@@ -30,7 +30,7 @@ class CategoryRepository extends DBController
 			$stmt->execute();
 
 			$this->connection->commit();
-		}catch(PDOException $e){
+		} catch (PDOException $e) {
 			$category->setErr("Error cateroryRepositry 1: ".$e->getMessage());
 			return FALSE;
 		}
@@ -50,7 +50,7 @@ class CategoryRepository extends DBController
         $this->openDataBaseConnection();
         $this->connection->beginTransaction();
 		
-        try{
+        try {
             $stm = $this->connection->prepare($query2);
             $stm->execute();
 	
@@ -58,7 +58,7 @@ class CategoryRepository extends DBController
             $stm->execute();
 			
             $this->connection->commit();
-        }catch(PDOException $e){  			
+        } catch (PDOException $e) {  			
             $this->connection->rollback();
             $newCategory->setErr("Database problem ".$e->getMessage());
             $this->closeDataBaseConnection();
@@ -68,7 +68,7 @@ class CategoryRepository extends DBController
         return TRUE;
     }
 	
-	public function deleteCategory(Category $k){
+	public function deleteCategory(Category $k) {
 		$query1 =  "INSERT INTO onlineshop.categories_log (ID_category, Name, Description, Parent_category, Status, ID_admin) 
 					SELECT K.ID, K.Name, K.Description, K.Parent_category, K.Status, KO.ID
 					FROM onlineshop.categories K, onlineshop.users KO
@@ -85,7 +85,7 @@ class CategoryRepository extends DBController
 		
 		$this->openDataBaseConnection();
 		$this->connection->beginTransaction();
-		try{
+		try {
 			$stm = $this->connection->prepare($query1);
 			$stm->execute();
 			
@@ -99,7 +99,7 @@ class CategoryRepository extends DBController
 			$stm->execute();
 						
 			$this->connection->commit();
-		}catch(PDOException $e){
+		} catch (PDOException $e) {
 			$k->setErr("Database problem ".$e->getMessage());
 			$this->closeDataBaseConnection();
 			return FALSE;
@@ -116,16 +116,16 @@ class CategoryRepository extends DBController
 		$this->openDataBaseConnection();
 		$stmt = $this->connection->prepare($query);
 		
-		try{
+		try {
 			$stmt->execute();			
-		}catch(PDOException $e){
+		} catch (PDOException $e) {
 			$category->setErr("Database error: ".$e->getMessage());
 			return FALSE;
 		}		
 		$stmt->setFetchmode(PDO::FETCH_ASSOC);
 		$result = $stmt->fetchAll();
 		
-		if(count($result) == 1){
+		if (count($result) == 1) {
 			$result1 = $result[0];
 			$category->setID($result1["ID"]);
 			$category->setName($result1["Name"]);
@@ -137,7 +137,7 @@ class CategoryRepository extends DBController
 			
 			$this->closeDataBaseConnection();
 			return TRUE;		
-		}elseif(count($result) > 1){			
+		}elseif (count($result) > 1) {			
 			$category->setErr("Vise od jednog u bazi: ".count($result));
 			$this->closeDataBaseConnection();
 			return FALSE;
@@ -153,12 +153,12 @@ class CategoryRepository extends DBController
 		$this->openDataBaseConnection();
 		$query = "SELECT * FROM onlineshop.categories WHERE Status='1'";
 		$stmt = $this->connection->prepare($query);
-			try{
+			try {
 				$stmt->execute();
 				$result = $stmt->fetchAll();
-				if(count($result)>0){
+				if (count($result)>0) {
 					$str = '"Categories":'.json_encode($result);
-					for($i = 0; $i<count($result);$i++){
+					for($i = 0; $i<count($result);$i++) {
 						$cat = $result[$i];
 						$k = new Category();
 						$k->setID($cat["ID"]);
@@ -175,7 +175,7 @@ class CategoryRepository extends DBController
 					return '"err":"*1"'; //Tabela je prazna
 				}
 
-			}catch(PDOException $e){
+			} catch (PDOException $e) {
 				return '"err":"*2"'; //greska 
 			}
 			$this->closeDataBaseConnection();
@@ -186,54 +186,20 @@ class CategoryRepository extends DBController
 		$this->openDataBaseConnection();
 		$query = "SELECT * FROM onlineshop.product_category WHERE Status = '1' AND ID_category = '".$category->getID()."'";
 		$stmt = $this->connection->prepare($query);
-			try{
+			try {
 				$stmt->execute();
 				$result = $stmt->fetchAll();
-				if(count($result)>0){
+				if (count($result)>0) {
 					return TRUE;
 				}else{
 					return FALSE; //Empty table
 				}
 				
-			}catch(PDOException $e){
+			} catch (PDOException $e) {
 				return $e;  
 			}
 			$this->closeDataBaseConnection();
 	}
-	
-	/*public function editCategoryGeneral(ArrayObject $conditionColumnsArray,ArrayObject $conditionValuesArray, ArrayObject $updColumnsArray, ArrayObject $updValuesArray)
-	{
-		$query1 =  "INSERT INTO onlineshop.categories_log (ID_category, Name, Description, Parent_category, Status, ID_admin) 
-						SELECT K.ID, K.Name, K.Description, K.Parent_category, K.Status, KO.ID
-						FROM onlineshop.categories K, onlineshop.users KO
-						 WHERE K.ID = '";
-		for($i = 0; $i < count($conditionColumnsArray); $i++){
-			$query2 = $query2.$conditionColumnsArray[$i]." = '".$conditionValuesArray."'";
-				if($i < count($conditionColumnsArray)){ 
-				$query2 = $query2." AND ";
-				}
-		}
-						 
-						 
-		$query1 = $query1."' AND KO.ID = '".$_SESSION['user_ID']."'";
-						 
-		$query2 = "UPDATE onlineshop.categories SET ";
-		for ($i = 0; $i<count($updColumnsArray); $i++){
-			$query2 = $query2.$updColumnsArray[$i]." = '".$updValuesArray[$i]."'";
-			if($i < count($$updColumnsArray)){ 
-				$query2 = $query2.",";
-				}else{
-					$query2 = $query2." ";
-				}
-		}
-		$query2 = $query2."WHERE ";
-		for($i = 0; $i < count($conditionColumnsArray); $i++){
-			$query2 = $query2.$conditionColumnsArray[$i]." = '".$conditionValuesArray."'";
-				if($i < count($conditionColumnsArray)){ 
-				$query2 = $query2." AND ";
-				}
-		}	
-	}*/
 	
 	public function getTableName()
 	{

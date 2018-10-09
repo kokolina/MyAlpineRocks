@@ -9,16 +9,16 @@ class User{
 	
 	//NE POSTOJI KORISNIK BEZ EMAILA!!! kao ali ajde...
 	
-	function __construct($e){
+	function __construct(string $e){
 		$this->uRepository = new UserRepository();
 		$this->email = $e;
 		$this->err = new UserERR("","");
 		
 	}
 	
-	public function getUser($user, $field, $value){
+	public function getUser(User $user, array $columnValuePairs){
 		$this->uRepository->openDataBaseConnection();
-		if($this->uRepository->getUser($user,$field, $value)){
+		if($this->uRepository->getUser($user,$columnValuePairs)){
 			$this->uRepository->closeDataBaseConnection();
 			return TRUE;
 		}else{
@@ -33,8 +33,8 @@ class User{
 		
 		$this->uRepository->openDataBaseConnection();
 		
-		if($this->uRepository->getUser($testUser, "Email", $testUser->getEmail())){
-
+		if($this->uRepository->getUser($testUser, array("Email" => $testUser->getEmail()))) {
+			$sgn = false;
 			if($testUser->locked != 0){
 				if($testUser->password == $this->password){
 					$this->uRepository->unlockUser($this);
@@ -45,23 +45,23 @@ class User{
 					$this->locked = $testUser->locked;
 					$this->accessRights = $testUser->accessRights;
 					$this->err = $testUser->getERRStatus();
-					return true;
+					$sgn = true;
 				}else{					
 					$this->setERRStatus("pass", "Wrong password presented");
 					$this->setLocked($testUser->getLocked());
 					$this->lockUser();
-					return FALSE;
+					$sgn = false;
 				}
 			}else{
 				$this->setERRStatus("zak", "ERR:User account is locked");
-				return false;
+				$sgn = false;
 			}			
 		}else{
 			$this->err = $testUser->getERRStatus();
-			return FALSE;
+			$sgn = false;
 		}
 		$this->uRepository->closeDataBaseConnection();
-		
+		return $sgn;		
 	}
 	 
 	public function lockUser(){
@@ -81,7 +81,7 @@ class User{
 		
 		$this->uRepository->openDataBaseConnection();
 		
-		$this->uRepository->getUser($testUser, "Email", $testUser->getEmail());
+		$this->uRepository->getUser($testUser, array("Email" => $testUser->getEmail()));
 			if($testUser->getErrKod()=="n"){
 				$testEmail = TRUE;
 			}elseif($testUser->getErrKod()== "ok"){
@@ -94,7 +94,7 @@ class User{
 				//return FALSE;
 			}
 		
-		$this->uRepository->getUser($testUser, "Username", $this->getUsername());
+		$this->uRepository->getUser($testUser, array("Username" => $this->getUsername()));
 		
 		if($testUser->getErrKod()=="n"){
 				$testUsername = TRUE;
@@ -129,7 +129,7 @@ class User{
 		//ako da, promeni podatke o korisniku
 		$this->uRepository->openDataBaseConnection();
 		$testUser = new User($this->getEmail()); 				//postojeci korisnik u bazi
-		if($this->uRepository->getUser($testUser, "Email", $testUser->getEmail())){
+		if($this->uRepository->getUser($testUser, array("Email" => $testUser->getEmail()))){
 			if($this->getLocked() == 3 && $testUser->getLocked() != 0){		//ovo je provera za slucaj kada korisnik kog menjam ima locked=1 ili 2, pa da to ostane nepromenjeno u bazi ako vec nisam odlucila da ga zakljucam namerno
 				$this->setLocked($testUser->getLocked());
 			}
@@ -157,7 +157,7 @@ class User{
             return $users;
         }
     
- 	public function deleteUser($user){
+ 	public function deleteUser(User $user){
  		$this->uRepository->openDataBaseConnection();
  		if($this->uRepository->deleteUser($user)){
 			$this->uRepository->closeDataBaseConnection();
@@ -169,8 +169,8 @@ class User{
 		
 	}
 	
-	public function validatePassword($password){
-		$this->getUser($this, "Email",$this->getEmail());
+	public function validatePassword(string $password){
+		$this->getUser($this, array("Email" => $this->getEmail()));
 		
 		if($this->getPassword() === hash("sha256", $password, $raw_output = false)) {
 			return true;		
@@ -180,7 +180,7 @@ class User{
 	}
 	
 	public function generateAPIKey(){
-		if($this->getUser($this, "Email", $this->getEmail())){
+		if($this->getUser($this, array("Email" => $this->getEmail()))){
 			$this->uRepository->openDataBaseConnection();
 			$sgn = $this->uRepository->generateAPIKey($this);
 			$this->uRepository->closeDataBaseConnection();
@@ -191,46 +191,46 @@ class User{
 	}
 	
 	
-	
-    public function setID($i){
+	//    setters
+   public function setID(int $i){
 		$this->ID = $i;
 	}
-	public function setName($i){
+	public function setName(string $i){
 		$this->name = $i;
 	}	
-	public function setLastName($i){
+	public function setLastName(string $i){
 		$this->lastName = $i;
 	}
 	
-	public function setUsername($i){
+	public function setUsername(string $i){
 		$this->username = $i;
 	}
 		
-	public function  setPassword($i){
+	public function  setPassword(string $i){
 		$this->password = $i;
 	}
-	public function setLocked($i){
+	public function setLocked(int $i){
 		$this->locked = $i;
 	}
-	public function setEmail($i){
+	public function setEmail(string $i){
 		$this->email = $i;
 	}
-	public function setAccessRights($i){
+	public function setAccessRights(string $i){
 		$this->accessRights = $i;
 	}
-	public function setAPIKey($ak){
+	public function setAPIKey(string $ak = NULL){
 		$this->APIKey = $ak;
 	}
-	public function setERRStatus($i, $p){
+	public function setERRStatus(string $i, string $p){
 		$this->err->kod = $i;
 		$this->err->msg = $this->err->msg." ".$p;
 	}
-	public function setStatus($i){
+	public function setStatus(int $i){
 		$this->status = $i;
 	}
 	
-	
-    public function getID(){
+	//    getters
+   public function getID(){
 		return $this->ID;
 	}
 	public function getName(){

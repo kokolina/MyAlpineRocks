@@ -27,5 +27,5 @@
 			</a>
 		</span>
 		<br style="clear: both"/>
-	</div>
+</div>
 
