@@ -3,9 +3,8 @@ use \Myalpinerocks\ProductsFrontEndController;
 use \Myalpinerocks\Photo;
 
 if (!isset($_SESSION)) {
-	    $s = session_start();	    
-}
-	
+    $s = session_start();	    
+}	
 	include_once "../db/db_config.php";    
 	include_once "../Entity/Photo/Photo.php";
 	include_once "../db/DBController.php";
@@ -13,33 +12,40 @@ if (!isset($_SESSION)) {
 	include_once "../Entity/Categories/Category.php";
 	include_once "../Entity/Products/ProductsRepository.php";
 	include_once "../Entity/Products/Product.php";
-	include_once "ProductsFrontEndController.php";    
+	include_once "ProductsFrontEndController.php";
+	
+if (!isset($_SESSION['username']) || !isset($_REQUEST['token']) || $_REQUEST['token'] !== $_SESSION['token']) {
+
+    session_destroy();
+    header("Location: ".$GLOBALS['indexPage']);
+    exit;
+}
+output_add_rewrite_var("token", $_SESSION['token']);	
 
 $GLOBALS['path_to_home'] = '../';    
 if (isset($_POST['submit_newProduct'])) {
     ProductsFrontEndController::insertProduct();
     include_once	"../templates/products_template.php";
-}elseif (isset($_POST['submit_editProduct'])) {
+} elseif (isset($_POST['submit_editProduct'])) {
     ProductsFrontEndController::editProduct();
     include_once	"../templates/products_template.php";
-}elseif (isset($_REQUEST['load'])) {
+} elseif (isset($_REQUEST['load'])) {
     ProductsFrontEndController::getProducts();
-}elseif (isset($_REQUEST['loadCategories'])) {
+} elseif (isset($_REQUEST['loadCategories'])) {
     ProductsFrontEndController::getCategories();
-}elseif (isset($_REQUEST['editProduct'])) {		
+} elseif (isset($_REQUEST['editProduct'])) {		
     $ulaz = $_REQUEST['editProduct'];
     ProductsFrontEndController::loadProduct($ulaz);
-}elseif (isset($_REQUEST['deletePhoto'])) {		
-    $ulaz = $_REQUEST['deletePhoto'];		
-    echo Photo::deletePhotoP($ulaz) ? "1" : "0";
-}elseif (isset($_REQUEST['deleteProduct'])) {
+} elseif (isset($_REQUEST['deletePhoto'])) {		
+    $ulaz = $_REQUEST['deletePhoto'];	
+    echo Photo::deletePhotoP($ulaz) ? "1" : "0";    
+} elseif (isset($_REQUEST['deleteProduct'])) {
     $ulaz = $_REQUEST['deleteProduct'];
     ProductsFrontEndController::deleteProduct($ulaz);
-}elseif (isset($_REQUEST['logout'])) {
-    session_start();
+} elseif (isset($_REQUEST['logout'])) {
     session_unset();
     session_destroy();
     return true;	
-}else {
+} else {
     include_once	"../templates/products_template.php";
 }

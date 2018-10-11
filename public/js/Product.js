@@ -20,7 +20,8 @@ function ajaxCall_prod(requestKeyName, requestKeyValue, PHPfile){
 		}catch(e){
 			return false;
 		}
-		ajax.open("POST", PHPfile+"?"+requestKeyName+"="+requestKeyValue, false);
+		token = document.getElementById("token").innerHTML;
+		ajax.open("POST", PHPfile+"?"+requestKeyName+"="+requestKeyValue+"&token="+token, false);
 		ajax.send();
 		return response;
 }

@@ -152,21 +152,24 @@ class ProductsFrontEndController
 		
 	}
 		
-	public static function getProducts() {
+	public static function getProducts() 
+	{
 			$p = new Product();
 			$result = $p->getProducts();			
 			$str = '{"user":"'.$_SESSION['user_rights'].'","Products":'.json_encode($result, 110).'}';
 			echo $str;			
 	}
 	
-	public static function loadProduct($id) {
+	public static function loadProduct($id) 
+	{
 		$product = new Product();
 		$product->setID($id);
 		$product->getProduct(array("ID" => $id));		
 		echo json_encode($product);
 	}
 	
-	public static function deleteProduct($productID) {
+	public static function deleteProduct($productID) 
+	{
 		$product = new Product();
 		$product->setID($productID);
 		$product->setID_admin($_SESSION['user_ID']);

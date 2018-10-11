@@ -16,7 +16,7 @@ class CategoryRepository extends DBController
 		$this->connection->beginTransaction();
 
 		try {
-			$c = $category->getParentCategory()->getID() =='default' ? 0 : "'".$category->getParentCategory()->getID()."'";
+			$c = $category->getParentCategory()->getID();
 			$query1 = "INSERT INTO onlineshop.categories (Name, Description, Parent_category) VALUES ('".$category->getName()
 					."','".$category->getDescription()."',".$c.")";
 
@@ -40,7 +40,7 @@ class CategoryRepository extends DBController
 
     public function editCategory(Category $newCategory)
     { 
-        $c = $newCategory->getParentCategory()=='default' ? 0 : "'".$newCategory->getParentCategory()->getID()."'";
+        $c = $newCategory->getParentCategory()->getID();
         $query1 = "UPDATE onlineshop.categories SET Name = '".$newCategory->getName()."', Description = '".$newCategory->getDescription()."', Parent_category = ".$c." WHERE ID = '".$newCategory->getID()."'";
 
         $query2 = "INSERT INTO onlineshop.categories_log (ID_category, Name, Description, Parent_category, Status, ID_admin) 
@@ -68,7 +68,8 @@ class CategoryRepository extends DBController
         return TRUE;
     }
 	
-	public function deleteCategory(Category $k) {
+	public function deleteCategory(Category $k) 
+	{
 		$query1 =  "INSERT INTO onlineshop.categories_log (ID_category, Name, Description, Parent_category, Status, ID_admin) 
 					SELECT K.ID, K.Name, K.Description, K.Parent_category, K.Status, KO.ID
 					FROM onlineshop.categories K, onlineshop.users KO

@@ -18,7 +18,8 @@ function ajaxCall(requestKeyName, requestKeyValue){
 		}catch(e){
 			return false;
 		}
-		ajax.open("POST", "main_users.php?"+requestKeyName+"="+requestKeyValue, false);
+		token = document.getElementById("token").innerHTML;
+		ajax.open("POST", "main_users.php?"+requestKeyName+"="+requestKeyValue+"&token="+token, false);
 		ajax.send();
 		return response;
 }
@@ -30,7 +31,6 @@ function evaluateEmail(input){
 		return false;
 		}
 }
-
 
 function isEmailFormatOk(email, txtField, errPTab){
 	if(email.indexOf("@")>0 && email.indexOf("@") == email.lastIndexOf("@")
@@ -67,15 +67,94 @@ function isEmailRegistered(input, txtField, errPTab){
 }
 
 function logout(){
-var response = ajaxCall("logout", true);
-return response;
+    var response = ajaxCall("logout", true);
+    return response;
 }
 
 function loadUsers(){
-      var response = ajaxCall("loadUsers", true);
-		document.getElementById("usersDIV").innerHTML = response;
-	}
-
+    var response = ajaxCall("loadUsers", true);
+    var res = JSON.parse(response);      
+    var accessRights = res.user;
+    var usersArray = res.Users;
+    
+    if(usersArray[0] == "error") {
+    	var p = document.createElement("p");
+		p.innerHTML = usersArray[1];
+		p.setAttribute("class","err");
+		document.getElementById("usersDIV").appendChild(p);
+		return false;
+    } else if (usersArray[0] != "error") {      
+		var tab = document.getElementById("usersTable");
+		for(i = 0; i<Object.values(usersArray).length; i++){
+			var red = document.createElement("tr");
+			
+			var c1 = document.createElement("td");
+			var id = document.createTextNode(usersArray[i].ID);
+			c1.appendChild(id);
+			red.appendChild(c1);
+			
+			var c2 = document.createElement("td");
+			var name = document.createTextNode(usersArray[i].name);
+			c2.appendChild(name);
+			red.appendChild(c2);
+			
+			var c3 = document.createElement("td");
+			var lastName = document.createTextNode(usersArray[i].lastName);
+			c3.appendChild(lastName);
+			red.appendChild(c3);
+			
+			var c4 = document.createElement("td");
+			var username = document.createTextNode(usersArray[i].username);
+			c4.appendChild(username);
+			red.appendChild(c4);
+			
+			var c5 = document.createElement("td");
+			var email = document.createTextNode(usersArray[i].email);
+			c5.appendChild(email);
+			red.appendChild(c5);
+			
+			var c6 = document.createElement("td");
+			var userAccessRights = document.createTextNode(usersArray[i].accessRights);
+			c6.appendChild(userAccessRights);
+			red.appendChild(c6);
+			
+			var c7 = document.createElement("td");
+			var locked = document.createTextNode(usersArray[i].locked);
+			c7.appendChild(locked);
+			red.appendChild(c7);
+			
+			if(accessRights == "A"){
+				var c8 = document.createElement("td");
+				c8.setAttribute("id",usersArray[i].ID);
+				c8.addEventListener("click", function(){editUserData(this.id);});
+				var c81 = document.createElement("a");
+				c81.href = '#editProduct';
+				var c811 = document.createElement("img");
+				c811.setAttribute("class", "Ikonica");
+				c811.src = '../public/images/edit.png';
+				c81.appendChild(c811);
+				c8.appendChild(c81);
+				red.appendChild(c8);		
+			
+				var c9 = document.createElement("td");
+				c9.setAttribute("id", usersArray[i].ID);
+				c9.addEventListener("click",function(){deleteUser(this.id)});
+				var c91 = document.createElement("a");
+				c91.href = '#proizvodiDIV';
+				var c911 = document.createElement("img");
+				c911.setAttribute("class", "Ikonica");
+				c911.src = '../public/images/delete.ico';
+				c91.appendChild(c911);
+				c9.appendChild(c91);
+				red.appendChild(c9);
+			}
+			tab.appendChild(red);
+		}	
+			return true;
+		} else {
+			return false;		
+		}          
+} 
 //Funkcija se pokrece na pritisak na olovku u tabeli, prikazuje formu za izmenu podataka o useru
 //ako hocu da menjam mail usera, to je onda new usera
 function editUserData(input){
@@ -146,8 +225,6 @@ function deleteUser(input){
 		dodaj("User is not registered in data base.");
 	}
 }
-
-
 
 //					**************
 // 				ADMINISTRACIJA KORISNIKA 
@@ -240,7 +317,7 @@ function usernameCheck(input, txtField, errp){
 				newUser.username = false;
 				return false;		
 	}else{
-		var response = ajaxCall("username", input);	
+		var response = ajaxCall("username_check", input);	
 		if(response == "*2"){			//email na postoji u bazi
 				document.getElementById(errp).innerHTML = "Username is available.";
 				document.getElementById(errp).style.color = "green";

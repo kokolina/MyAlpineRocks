@@ -35,21 +35,13 @@ if (isset($_POST['email']) && isset($_POST['password'])) {
         } else {
             $_SESSION['imgPath'] = "../public/images/noPhoto.jpg";
 	     }	
-	     $tokenstr = strval(date('W')).$_SESSION['username'];
+	     $tokenstr = strval(date('W')).$_SESSION['username'].mt_rand(10, 100);
 	     $token = md5($tokenstr);
 	     $_SESSION['token'] = $token;
-	     output_add_rewrite_var("token", $token);
-	     
-	     /*	     
-	     var_dump($_SESSION);
-	     echo "<br><br>";
-	     var_dump($_REQUEST);
-	     */
-	     
+	     output_add_rewrite_var("token", $token);	     
 	     include "../templates/main_template.php";	
     }
-}
-elseif (isset($_REQUEST['email'])) {			//AJAX calls ::::  JS provera da li je mail registrovan prilikom logovanja
+} elseif (isset($_REQUEST['email'])) {			//AJAX calls ::::  JS provera da li je mail registrovan prilikom logovanja
 	$inputValue = UsersFrontEndController::test_input($_REQUEST['email']);
 	UsersFrontEndController::isEmailRegistered($inputValue);
 } else {

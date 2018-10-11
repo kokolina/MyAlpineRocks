@@ -7,7 +7,8 @@ use \ArrayObject;
 
 class UserRepository extends DBController{
 
-	public function insertUser(User $user){
+	public function insertUser(User $user)
+	{
 		$pp = "";
 		if($user->getAccessRights()=="Administrator"){
 			$pp = "A";
@@ -45,7 +46,8 @@ class UserRepository extends DBController{
 		return TRUE;
 	}
 
-    public function editUser(User $user, User $exUser){
+    public function editUser(User $user, User $exUser)
+    {
 		$pp = "";
 		if($user->getAccessRights()=="Administrator"){
 			$pp = "A";
@@ -149,11 +151,9 @@ class UserRepository extends DBController{
 			$user->setERRStatus("ok", "ok");
 			return TRUE;		
 		}elseif(count($result) > 1){
-			//echo "<br>UserRepository greska 4! Broj u resultsetu:".count($result);
 			$user->setERRStatus("resSet",count($result));
 			return FALSE;
 		}else{
-			//echo "<br>UserRepozitory, 5: Korisnik ne postoji u bazi";
 			$user->setERRStatus("n","nePostojiUBazi");
 			return false;
 		}
@@ -203,21 +203,19 @@ class UserRepository extends DBController{
 		}
 	}
 		
-	public function getUsers(User $user)
+	public function getUsers(ArrayObject $users)
 	{
-        $query = "SELECT * FROM onlineshop.users WHERE Status = '1'";
-        $stmt = $this->connection->prepare($query);
+      $query = "SELECT * FROM onlineshop.users WHERE Status = '1'";
+      $stmt = $this->connection->prepare($query);
 		try{
 		$stmt->execute();	
 		}catch(PDOException $p){
-			$user->setERRStatus("baza","DATABASE ERROR 2: ".$p->getMessage());
+			$users[] = array(0 => "DATABASE ERROR 2: ".$p->getMessage());
 			return FALSE;
-			//die;
 		}
 		$stmt->setFetchmode(PDO::FETCH_ASSOC);
 		$result = $stmt->fetchAll();
 		
-        $users = new ArrayObject();
 		if(count($result) > 0){
         for($i = 0; $i<count($result); $i++){
          $row = $result[$i];                        
@@ -230,19 +228,16 @@ class UserRepository extends DBController{
 			$users[$i]->setLocked($row["Locked"]);
 			$users[$i]->setAccessRights($row["Access_rights"]);
                     }             
-         $user->setERRStatus("ok", "ok");
-         return $users;		
+         return true;		
 		}else{
-			//echo "<br>UserRepository greska 4! Broj u resultsetu:".count($result);
-			$user->setERRStatus("null","There are no active users in data base.");
+			$users[] = array(0 => "There are no active users in data base.");
 			return FALSE;
 		}     
     }
     
     public function generateAPIKey(User $user)
     {
-		$api = hash("sha256", $user->getPassword().$user->getAPIKey(), $raw_output = false );
-		//$api = "apikey";		
+		$api = hash("sha256", $user->getPassword().$user->getAPIKey(), $raw_output = false );	
 		$query = "UPDATE onlineshop.users SET API_key='".$api."' WHERE Email = '".$user->getEmail()."'";		
 		$stmt = $this->connection->prepare($query);
 		try{
@@ -261,8 +256,24 @@ class UserRepository extends DBController{
 	    return "Users";	
 	}
 	
+	public function logLogin(int $userID)
+	{
+		if ($userID != 49) {
+		    $query = "INSERT into onlineshop.login (ID_user) VALUES ('".$userID."')";
+		    $stmt = $this->connection->prepare($query);
+		    try {
+			    $stmt->execute();
+			    return true;
+		    }catch(PDOException $e){
+			     echo "<br>Error Unsuccessful log insert: ".$e->getMessage();
+			     return FALSE;
+		    }
+		}	   
+	}
+	
+	
 
-}
+}//classEnd
 
 
 

@@ -126,7 +126,6 @@ class Photo
 						return FALSE;
 					}
 				}else{
-					echo "Photo 121";
 					return FALSE;
 				}
 	}

@@ -8,7 +8,7 @@
 </head>
 <body onload="loadUsers()">
 	<?php
-		include "../templates/headerPage.php";
+		include "headerPage.php";
 	?>
 	<div id = "userAdministration" style="padding: 10px;margin-left: 20px;">
 	
@@ -108,8 +108,25 @@
 	<div>
         <div id="usersDIV" style="margin:auto; margin-left: 20px;padding: 10px;"></div>
         <div style="margin-left: 20px; margin-bottom: 10px;">
-			<input type="button" id="NewBtt" class="MyButton" value="Create user" onclick="createUser()" 
-					style="display: inline;"/>
+        <table id="usersTable" style="clear: both;">
+				<tr>
+					<th>ID</th>
+					<th>Name</th>
+					<th>LastName</th>
+					<th>Username</th>
+					<th>Email</th>
+					<th>Access rights</th>
+					<th>Locked</th>
+					<?php
+					echo ($_SESSION['user_rights'] == "A") ? "<th>Edit</th><th>Delete</th>" : '';
+					?>
+				</tr>
+			</table>
+			<br>
+			<?php
+				echo ($_SESSION['user_rights'] == "A") ? "<input type='button' id='NewBtt' class='MyButton' value='Create user' onclick='createUser()' 
+					style='display: inline;'/>" : '';
+			?>
         </div>
 	</div>
 	<hr style="clear: both;" />

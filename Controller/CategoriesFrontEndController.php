@@ -42,9 +42,18 @@ public static function insertCategory() {
 
 //OVDE IMA GRESAKA, JER NE ZNAM DA UPRAVLJAM HTML ELEMENTIMA IZ PHP-A...SAV KOD U ELSE JE LOS, ALI POSTO IMAM KONTROLE NA FORMI NE BI TREBALO NI DA UDJEM U ELSE
 public static function editCategory() {
+	
+	//var_dump($_POST); die();
+	
 	$n = $o = $nadKat = "";
 	if (isset($_POST['idCategory_edit'])) {
-		$id = CategoriesFrontEndController::test_input_KAT($_POST['idCategory_edit']);
+		if (is_numeric($_POST['idCategory_edit'])) {
+		    $id = $_POST['idCategory_edit'];
+		} else {
+		    echo "<script>document.getElementById('errName_edit').innerHTML = 'Category ID is not valid (not integer).';
+			document.getElementById('newCategory').style.display = 'inline';</script>";
+			return FALSE;
+		}
 	} else {
 		echo "<script>alert('Error while loading categories data. Try again.');
 			document.getElementById('editCategory').style.display = 'none';</script>";
@@ -64,10 +73,17 @@ public static function editCategory() {
 		echo '<script>document.getElementById("editCategory").style.display = "inline"</script>';
 		return;	
 	}
-	$pCatID = CategoriesFrontEndController::test_input_KAT($_POST['parentCategory_edit']);
 	$pCat = new Category();
-	$pCat->setID($pCatID);
-	
+	$pCatID = CategoriesFrontEndController::test_input_KAT($_POST['parentCategory_edit']);
+	if ($pCatID === 'default') {
+       $pCat->setID(0);
+	} elseif (is_numeric($pCatID)) {
+       $pCat->setID($pCatID);
+	} else {
+	    echo "<script>document.getElementById('errName_edit').innerHTML = 'Parent category ID is not valid (not integer).';
+			document.getElementById('newCategory').style.display = 'inline';</script>";
+			return FALSE;
+	}	
 	$category = new Category();	
 	$category->setID($id);
 	$category->setName($n);
@@ -77,15 +93,25 @@ public static function editCategory() {
 	
 	if ($category->editCategory($category)) {		
 		include "../templates/categories_template.php";
-	} else {			
+	} else {		
 		include "../templates/categories_template.php";
 		$msg = $category->getErr();
-		echo "<script>alert('$msg');</script>";	
+		echo "<script>alert('$msg');</script>";
+		echo "<script>document.getElementById('errName_edit').innerHTML = '".$msg."';
+			document.getElementById('newCategory').style.display = 'inline';</script>";	
 	}
 }
 	
-public static function test_input_KAT($data) {
- 		 $data = trim($data);  
+public static function test_input_KAT($data) {	
+
+if (is_object($data)) {
+	var_dump($data);
+	echo "<br><br>";
+	debug_print_backtrace();
+	die();
+
+}
+	    $data = trim($data);  
   		 $data = stripslashes($data); 
   		 $data = htmlspecialchars($data);
   		 $data = addslashes($data);

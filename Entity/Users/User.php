@@ -1,6 +1,9 @@
 <?php
 namespace Myalpinerocks;
 
+use \JsonSerializable;
+use \ArrayObject;
+
 class User{
 	
 	public $ID, $name, $lastName, $username, $email, $password, $locked, $accessRights, $status, $APIKey = "";
@@ -9,14 +12,16 @@ class User{
 	
 	//NE POSTOJI KORISNIK BEZ EMAILA!!! kao ali ajde...
 	
-	function __construct(string $e){
+	function __construct(string $e)
+	{
 		$this->uRepository = new UserRepository();
 		$this->email = $e;
 		$this->err = new UserERR("","");
 		
 	}
 	
-	public function getUser(User $user, array $columnValuePairs){
+	public function getUser(User $user, array $columnValuePairs)
+	{
 		$this->uRepository->openDataBaseConnection();
 		if($this->uRepository->getUser($user,$columnValuePairs)){
 			$this->uRepository->closeDataBaseConnection();
@@ -28,23 +33,25 @@ class User{
 			
 	}
 	
-	public function logIn(){
+	public function logIn()
+	{
 		$testUser = new User($this->email);
 		
 		$this->uRepository->openDataBaseConnection();
 		
 		if($this->uRepository->getUser($testUser, array("Email" => $testUser->getEmail()))) {
 			$sgn = false;
-			if($testUser->locked != 0){
-				if($testUser->password == $this->password){
+			if($testUser->getLocked() != 0){
+				if($testUser->getPassword() === $this->password){
 					$this->uRepository->unlockUser($this);
-					$this->ID = $testUser->ID;
-					$this->name = $testUser->name;
-					$this->lastName = $testUser->lastName;
-					$this->username = $testUser->username;
-					$this->locked = $testUser->locked;
-					$this->accessRights = $testUser->accessRights;
+					$this->ID = $testUser->getID();
+					$this->name = $testUser->getName();
+					$this->lastName = $testUser->getLastName();
+					$this->username = $testUser->getUsername();
+					$this->locked = $testUser->getLocked();
+					$this->accessRights = $testUser->getAccessRights();
 					$this->err = $testUser->getERRStatus();
+					$this->uRepository->logLogin($this->getID());
 					$sgn = true;
 				}else{					
 					$this->setERRStatus("pass", "Wrong password presented");
@@ -64,15 +71,18 @@ class User{
 		return $sgn;		
 	}
 	 
-	public function lockUser(){
+	public function lockUser()
+	{
 		$this->uRepository->lockUser($this);
 	}
 	
-	public function unlockUser(){
+	public function unlockUser()
+	{
 		$this->uRepository->unlockUser($this);
 	}
 	
-	public function newUser(){
+	public function newUser()
+	{
 		//Fja vraca TRUE ako u bazi nema aktivnog korisnika sa datim usernameom i emailom i ako upise korisnika u bazu
 		//proveri da li ima u bazi po mailu i po usernameu
 		$testEmail = $testUsername = FALSE;
@@ -124,7 +134,8 @@ class User{
 		
 	}
 	
-	public function editUser(){
+	public function editUser()
+	{
 		//proveri da li postoji u bazi
 		//ako da, promeni podatke o korisniku
 		$this->uRepository->openDataBaseConnection();
@@ -150,12 +161,13 @@ class User{
 		}	
 	}
 	
-  	public function getUsers(){
-            $this->uRepository->openDataBaseConnection();
-            $users = $this->uRepository->getUsers($this);
-            $this->uRepository->closeDataBaseConnection();
-            return $users;
-        }
+  	public function getUsers(ArrayObject $userArray)
+  	{       
+       $this->uRepository->openDataBaseConnection();
+       $sgn = $this->uRepository->getUsers($userArray);
+       $this->uRepository->closeDataBaseConnection();
+       return $sgn;
+   }
     
  	public function deleteUser(User $user){
  		$this->uRepository->openDataBaseConnection();

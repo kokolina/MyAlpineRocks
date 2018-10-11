@@ -1,6 +1,8 @@
 <?php
 namespace Myalpinerocks;
 
+use \ArrayObject;
+
 class UsersFrontEndController
 {
 	
@@ -266,20 +268,14 @@ public static function isEmailRegistered($email)
 public static function loadUsers()
 {
 	$testUser = new User($_SESSION['email']);
-	$userArray = $testUser->getUsers();
-	if (count($userArray)>0) {
-			$output = "<table><tr><th>ID</th><th>Name</th><th>Lastname</th><th>Username</th><th>Email</th><th>Access rights</th>
-			<th>Locked</th><th>Edit</th><th>Delete</th></tr>";
-			$editImg = "<a href = '#izmenaKorisnika'><img class = 'Ikonica' src = '../public/images/edit.png'/></a>";
-			$deleteImg = "<a href = '#brisanjeKorisnika'><img class = 'Ikonica' src = '../public/images/delete.ico'/></a>";
-			for($i = 0; $i<count($userArray); $i++) {				
-				$output = $output."<tr><td>".$userArray[$i]->getID()."</td><td>".$userArray[$i]->getName()."</td><td>".$userArray[$i]->getLastName()."</td><td>".$userArray[$i]->getUsername()."</td><td>".$userArray[$i]->getEmail()."</td><td>".$userArray[$i]->getAccessRights()."</td><td>".$userArray[$i]->getLocked().
-				"</td><td onclick = editUserData('".$userArray[$i]->getID()."')>".$editImg."</td><td onclick = deleteUser('".$userArray[$i]->getID()."')>".$deleteImg."</td></tr>";
-				
-			}
-			echo $output."</table>";
+	$userArray = new ArrayObject();
+	$sgn = $testUser->getUsers($userArray);
+	if (count($userArray)>0 && $sgn) {			
+			$str = '{"user":"'.$_SESSION['user_rights'].'","Users":'.json_encode($userArray, 110).'}';
+			echo $str;			
 		} else {	
-			echo "There are no active users in database.";			
+			$str = '{"user":"'.$_SESSION['user_rights'].'","Users":'.json_encode(array(0 => "error",1 => "Empty result. Error 444.")).'}';
+			echo $str;;			
 		}
 }
 
@@ -324,27 +320,10 @@ public static function askForAPI($passwordAPI)
 	} else {
 		echo '{"code": "err", "msg":"Wrong password!", "key":"'.null.'"}';
 	}
-	$code = $q ? "OK" : "err";
-	
-	
-}
 }
 
-// http://php.net/manual/en/language.oop5.php 
+}//classEnd
 
 
-class MyMSG{
-	private $string = "";
-	
-	function __construct($str) {
-		$this->string = $str;
-	}	
-	function dodaj($str) {
-		$this->string = $this->string."\n".$str;
-	}
-	function printOut() {
-		return $this->string;		
-	}
-}
 
 ?>

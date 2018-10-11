@@ -71,7 +71,7 @@ class Category implements JsonSerializable
 		    CategoriesFrontEndController::test_input_KAT($cat1->getID()) == $cat2->getID() && 
 		    CategoriesFrontEndController::test_input_KAT($cat1->getName()) == $cat2->getName() && 
 		    CategoriesFrontEndController::test_input_KAT($cat1->getDescription())== $cat2->getDescription() && 
-		    CategoriesFrontEndController::test_input_KAT($cat1->getParentCategory())== $cat2->getParentCategory()
+		    CategoriesFrontEndController::test_input_KAT($cat1->getParentCategory()->getID())== $cat2->getParentCategory()->getID()
 		    ) ? TRUE : FALSE;
 	}
 	

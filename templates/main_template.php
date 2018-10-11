@@ -19,22 +19,11 @@
 		<div class="Menu" id="BackEnd_Users">
 			<?php 
 				if($_SESSION['user_rights'] == 'A'){
-					echo "<script>
-						var users = document.getElementById('BackEnd_Users');
-						var link = document.createElement('a');
-						link.innerHTML = 'Users';
-						var attCls = document.createAttribute('class');
-						attCls.value = 'Menu';
-						var att = document.createAttribute('href');
-						att.value = 'main_users.php';
-						link.setAttributeNode(att);
-						link.setAttributeNode(attCls);						
-						users.appendChild(link);
-					</script>";
+					echo "<a href= 'main_users.php' class='Menu'>Users</a>";
 				}			
 			?>		
 		</div>
 	</div>
-	<script src="../public/js/login.js"></script>
+	<script type="text/javascript" src="../public/js/User.js"></script>
 </body>
 </html>

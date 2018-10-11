@@ -18,7 +18,8 @@ function ajaxCall_cat(requestKeyName, requestKeyValue){
 		}catch(e){
 			return false;
 		}
-		ajax.open("POST", "main_categories.php?"+requestKeyName+"="+requestKeyValue, false);
+		token = document.getElementById("token").innerHTML;
+		ajax.open("POST", "main_categories.php?"+requestKeyName+"="+requestKeyValue+"&token="+token, false);
 		ajax.send();
 		return response;
 }
@@ -29,8 +30,7 @@ function loadCategories(){
 	if(k.err == "*1"){
 		// neka greska
 	}else if(k.err == "*2"){
-		//neka greska sa bazom
-		
+		//neka greska sa bazom		
 	}else{
 		var tab = document.getElementById("catTable");
 		
