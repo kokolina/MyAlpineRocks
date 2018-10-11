@@ -324,6 +324,4 @@ public static function askForAPI($passwordAPI)
 
 }//classEnd
 
-
-
 ?>

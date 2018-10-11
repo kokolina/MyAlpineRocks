@@ -212,6 +212,7 @@ function deleteUser(input){
 					//obrisi sliku iz foldera
 					odg = ajaxCall("PHOTO_DEL", input);
 					alert("User is deleted.\n"+odg);
+					document.getElementById("usersTable").innerHTML = "<tr><th>ID</th><th>Name</th><th>LastName</th><th>Username</th><th>Email</th><th>Access rights</th><th>Locked</th><th>Edit</th><th>Delete</th></tr>";
 					loadUsers();
 				}else if(odg == "2"){
 					alert("You can not erase yourself from user registry");

@@ -25,7 +25,6 @@ class UserRepository extends DBController{
 		try{
 			$stmt->execute();
 		}catch(PDOException $e){
-			echo "<br>Error UserRepositoru 1: ".$e->getMessage();
 			$user->setERRStatus("baza",$e->getMessage());
 			return FALSE;
 		}
@@ -39,7 +38,6 @@ class UserRepository extends DBController{
 			$result1 = $result[0];
 			$user->setID($result1["ID"]);
 		}catch(PDOException $e){
-			echo "<br>Error UserRepositoru 1: ".$e->getMessage();
 			$user->setERRStatus("baza",$e->getMessage());
 			return FALSE;
 		}
@@ -77,11 +75,10 @@ class UserRepository extends DBController{
 			
 			$this->connection->commit();
 		}catch(PDOException $e){
-			echo "<br>Error UserRepositoru 1: ".$e->getMessage();
 			$user->setERRStatus("baza",$e->getMessage());
 			return FALSE;
 		}
-		$user->setERRStatus("ok", "User data are changed.");
+		$user->setERRStatus("ok", "User data is changed.");
 		return TRUE;
 		
 	}

@@ -1,7 +1,6 @@
 <?php
 namespace Myalpinerocks;
 
-use \JsonSerializable;
 use \ArrayObject;
 
 class User{
@@ -16,7 +15,7 @@ class User{
 	{
 		$this->uRepository = new UserRepository();
 		$this->email = $e;
-		$this->err = new UserERR("","");
+		$this->err = array();
 		
 	}
 	
@@ -200,8 +199,7 @@ class User{
 		}else{
 			return FALSE;
 		}
-	}
-	
+	}	
 	
 	//    setters
    public function setID(int $i){
@@ -234,8 +232,14 @@ class User{
 		$this->APIKey = $ak;
 	}
 	public function setERRStatus(string $i, string $p){
-		$this->err->kod = $i;
-		$this->err->msg = $this->err->msg." ".$p;
+		foreach ($this->err as $kod => $msg) {
+          $p.=" >> ".$msg;	
+	   }		
+	   $this->err = array($i => $p);		
+		/**
+		    $this->err->kod = $i;
+          $this->err->msg = $this->err->msg." ".$p;		
+		  */
 	}
 	public function setStatus(int $i){
 		$this->status = $i;
@@ -272,26 +276,23 @@ class User{
 	public function getERRStatus(){
 		return $this->err;
 	}
-	public function getErrKod(){
-		return $this->err->kod;
+	public function getErrKod(){     
+      foreach ($this->err as $i => $msg) {
+          return $i;
+      }		
+		//return $this->err->kod;
 	}
-	public function getErrMsg(){
-		return $this->err->msg;
+	public function getErrMsg(){   
+      foreach ($this->err as $i => $msg) {
+          return $msg;
+      }		
+		//return $this->err->msg;
 	}
 	public function getStatus(){
 		return $this->status;
 	}
 		
-}
-
-class UserERR{
-	public $kod, $msg = "";
-	
-	function __construct($k, $p){
-		$this->kod = $k;
-		$this->msg = $p;
-	}
-	
+} //classEnd
 	
 	/*KODOVI:
 	n - ne postoji u bazi
@@ -300,6 +301,6 @@ class UserERR{
 	*/
 	
 	
-}
+
 
 ?>

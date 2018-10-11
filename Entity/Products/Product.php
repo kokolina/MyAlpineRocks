@@ -85,16 +85,11 @@ class Product implements JsonSerializable
 			if (!$this->areDataEqual($oldProduct)) {
 				$this->repository->prepareStatement_editProduct($this, $oldProduct, $queryArray);
 				$quest = FALSE;
-			}
-			//echo "POSLE 1: <br>";var_dump($queryArray);
+			}			
 			if (!$this->areCategoriesEqual($oldProduct)) {
 				$this->repository->prepareStatement_editCategoriesOfProduct($this, $oldProduct, $queryArray);
 				$quest = FALSE;
-			}
-			//echo "<br><br>POSLE 2: <br>";var_dump($queryArray);
-			//die("123");
-				
-			
+			}			
 			if ($quest) {
 				$this->setErr("You didn't change any data.");
 				return FALSE;

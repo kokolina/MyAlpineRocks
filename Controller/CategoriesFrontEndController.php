@@ -38,13 +38,8 @@ public static function insertCategory() {
 		include "../templates/categories_template.php";
 	}		
 	}
-
-
 //OVDE IMA GRESAKA, JER NE ZNAM DA UPRAVLJAM HTML ELEMENTIMA IZ PHP-A...SAV KOD U ELSE JE LOS, ALI POSTO IMAM KONTROLE NA FORMI NE BI TREBALO NI DA UDJEM U ELSE
 public static function editCategory() {
-	
-	//var_dump($_POST); die();
-	
 	$n = $o = $nadKat = "";
 	if (isset($_POST['idCategory_edit'])) {
 		if (is_numeric($_POST['idCategory_edit'])) {
@@ -103,15 +98,7 @@ public static function editCategory() {
 }
 	
 public static function test_input_KAT($data) {	
-
-if (is_object($data)) {
-	var_dump($data);
-	echo "<br><br>";
-	debug_print_backtrace();
-	die();
-
-}
-	    $data = trim($data);  
+       $data = trim($data);  
   		 $data = stripslashes($data); 
   		 $data = htmlspecialchars($data);
   		 $data = addslashes($data);
