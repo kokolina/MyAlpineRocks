@@ -130,7 +130,7 @@
         </div>
 	</div>
 	<hr style="clear: both;" />
-	<p id="pracenje"></p>
+	<p id="errorReport"></p>
 	 <script type="text/javascript" src="../public/js/User.js"></script>
 </body>
 </html>

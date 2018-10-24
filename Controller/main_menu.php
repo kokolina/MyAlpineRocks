@@ -5,12 +5,8 @@ if (!isset($_SESSION)) {
     $s = session_start();	    
 }
     include_once "../db/db_config.php";
-    include_once "../db/DBController.php";
-    include_once "../Entity/Users/UserRepository.php";
-    include_once "../Entity/Users/User.php";	
-    require_once "../Entity/Photo/Photo.php";
-    include_once "UsersFrontEndController.php";
-
+    include "../vendor/autoload.php";
+    
 //user login case	
 if (isset($_POST['email']) && isset($_POST['password'])) {
 	 $user = UsersFrontEndController::loginUser();	
@@ -41,7 +37,7 @@ if (isset($_POST['email']) && isset($_POST['password'])) {
 	     output_add_rewrite_var("token", $token);	     
 	     include "../templates/main_template.php";	
     }
-} elseif (isset($_REQUEST['email'])) {			//AJAX calls ::::  JS provera da li je mail registrovan prilikom logovanja
+} elseif (isset($_REQUEST['email'])) {			//AJAX calls ::::  JS checks if mail is registered when user types it in (onchange event)
 	$inputValue = UsersFrontEndController::test_input($_REQUEST['email']);
 	UsersFrontEndController::isEmailRegistered($inputValue);
 } else {

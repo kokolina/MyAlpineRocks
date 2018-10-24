@@ -38,7 +38,7 @@ public static function insertCategory() {
 		include "../templates/categories_template.php";
 	}		
 	}
-//OVDE IMA GRESAKA, JER NE ZNAM DA UPRAVLJAM HTML ELEMENTIMA IZ PHP-A...SAV KOD U ELSE JE LOS, ALI POSTO IMAM KONTROLE NA FORMI NE BI TREBALO NI DA UDJEM U ELSE
+//there is bad code here (and in all controller files) in else blocks. Since I have controls on the form, code in else should never be executed (?) 
 public static function editCategory() {
 	$n = $o = $nadKat = "";
 	if (isset($_POST['idCategory_edit'])) {

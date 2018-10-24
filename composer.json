@@ -1,0 +1,8 @@
+{
+    "autoload" : {
+        "psr-4" : {
+            "Myalpinerocks\\" : ["db/", "Entity/Products", "Entity/Categories", "Entity/Photo", "Entity/Users", "Controller", "api", "api/category", "api/product"]
+        }
+    }
+
+}

@@ -51,12 +51,11 @@ function isEmailFormatOk(email, txtField, errPTab){
 function isEmailRegistered(input, txtField, errPTab){
 		var response = ajaxCall("Controller/main_menu.php", "email", input);
 		
-		if(response == "*2"){			//email na postoji u bazi
+		if(response == "*2"){			
 				document.getElementById(errPTab).innerHTML = "Email is not registered.";
 				document.getElementById(txtField).focus();
-				//document.getElementById("email").value = "";
 				return false;
-		}else if(response.substr(0,2) == "*1"){			//email postoji u bai
+		}else if(response.substr(0,2) == "*1"){			
 				document.getElementById(errPTab).innerHTML = "";
 				return true;								
 		}else {

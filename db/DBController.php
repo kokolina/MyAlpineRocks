@@ -16,9 +16,8 @@ public final function openDataBaseConnection()
 		$s = $GLOBALS['serverName'];
 		$this->connection = new PDO("mysql:host = $s; dbname = onlineshop", $GLOBALS['dbUser'], $GLOBALS['dbPass']);
 		$this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-		//echo "Konektovali smo se na bazu $db_name";
 	}catch(PDOException $e){
-		echo "<br>Greska u konekciji sa bazom: " . $e->getMessage();
+		echo "<br>Error: unsuccessful connection to database. " . $e->getMessage();
 		}
 }
 
@@ -27,7 +26,7 @@ public function closeDataBaseConnection()
 	try{
 		$this->connection=NULL;
 	}catch(PDOException $e){
-		echo "<br>Greska u zatvaranju konekcije: " . $e->getMessage();
+		echo "<br>Error: database connection not closed. " . $e->getMessage();
 	}
 }
 
@@ -47,7 +46,6 @@ public function vratiIDPoslednjegSloga(string $table)
 				return 0;
 			}
 	}catch(PDOException $e){
-		//bilo bi super da su mi sve klase nasledile neku klasu XX koja ima metodu za dodavanje gresaka
 		echo $e->getMessage();
 	}
 }

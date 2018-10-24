@@ -3,13 +3,12 @@ namespace Myalpinerocks;
 
 use \ArrayObject;
 
-class User{
+class User
+{
 	
 	public $ID, $name, $lastName, $username, $email, $password, $locked, $accessRights, $status, $APIKey = "";
 	private $uRepository;
 	public $err = "";
-	
-	//NE POSTOJI KORISNIK BEZ EMAILA!!! kao ali ajde...
 	
 	function __construct(string $e)
 	{
@@ -82,8 +81,6 @@ class User{
 	
 	public function newUser()
 	{
-		//Fja vraca TRUE ako u bazi nema aktivnog korisnika sa datim usernameom i emailom i ako upise korisnika u bazu
-		//proveri da li ima u bazi po mailu i po usernameu
 		$testEmail = $testUsername = FALSE;
 		
 		$testUser = new User($this->email);
@@ -96,11 +93,9 @@ class User{
 			}elseif($testUser->getErrKod()== "ok"){
 				$this->setERRStatus("errMail", "User email is already registered.");
 				$testEmail = FALSE;
-				//return false;
 			}else{
-				$this->setERRStatus("err???", "Problem u proveri maila");
+				$this->setERRStatus("err", "Problem when checking email");
 				$testEmail = FALSE;
-				//return FALSE;
 			}
 		
 		$this->uRepository->getUser($testUser, array("Username" => $this->getUsername()));
@@ -110,16 +105,10 @@ class User{
 			}elseif($testUser->getErrKod()== "ok"){
 				$this->setERRStatus("errMail", "Username already registered.");
 				$testUsername = FALSE;
-				//return FALSE;
 			}else{
 				$testUsername = FALSE;
-				$this->setERRStatus("nije ok", "Nesto ne valja 1.");
-				//return FALSE;
+				$this->setERRStatus("error", "Msg 1.");
 			}
-		//ako u bazi nema AKTIVNOG naloga sa istim mailom ili usernameom upisi u bazu; 
-		//u suprotnom samo vrati false, a greska je vec upisana u korisnika
-		
-		
 		if($testEmail == TRUE && $testUsername == TRUE){
 			if($this->uRepository->insertUser($this)){
 				$this->setERRStatus("ok", "New user saved.");
@@ -135,12 +124,10 @@ class User{
 	
 	public function editUser()
 	{
-		//proveri da li postoji u bazi
-		//ako da, promeni podatke o korisniku
 		$this->uRepository->openDataBaseConnection();
-		$testUser = new User($this->getEmail()); 				//postojeci korisnik u bazi
+		$testUser = new User($this->getEmail()); 				
 		if($this->uRepository->getUser($testUser, array("Email" => $testUser->getEmail()))){
-			if($this->getLocked() == 3 && $testUser->getLocked() != 0){		//ovo je provera za slucaj kada korisnik kog menjam ima locked=1 ili 2, pa da to ostane nepromenjeno u bazi ako vec nisam odlucila da ga zakljucam namerno
+			if($this->getLocked() == 3 && $testUser->getLocked() != 0){		
 				$this->setLocked($testUser->getLocked());
 			}
 			if($this->getPassword() == "no change"){
@@ -236,10 +223,6 @@ class User{
           $p.=" >> ".$msg;	
 	   }		
 	   $this->err = array($i => $p);		
-		/**
-		    $this->err->kod = $i;
-          $this->err->msg = $this->err->msg." ".$p;		
-		  */
 	}
 	public function setStatus(int $i){
 		$this->status = $i;
@@ -280,13 +263,11 @@ class User{
       foreach ($this->err as $i => $msg) {
           return $i;
       }		
-		//return $this->err->kod;
 	}
 	public function getErrMsg(){   
       foreach ($this->err as $i => $msg) {
           return $msg;
       }		
-		//return $this->err->msg;
 	}
 	public function getStatus(){
 		return $this->status;
@@ -294,13 +275,7 @@ class User{
 		
 } //classEnd
 	
-	/*KODOVI:
-	n - ne postoji u bazi
-	baza - neki problem sa bazom
-	rezSet - u bazi postoji vise od 1 korisnika sa istim mailom. U poruci je broj u result setu
-	*/
-	
-	
+
 
 
 ?>

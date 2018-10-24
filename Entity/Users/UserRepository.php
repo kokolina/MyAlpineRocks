@@ -28,7 +28,7 @@ class UserRepository extends DBController{
 			$user->setERRStatus("baza",$e->getMessage());
 			return FALSE;
 		}
-		//vrati ID korisnika kog sam upravo unela u bazu - da mogu profilnu sliku da nazovem kao ID
+		//naming the profile photo file as user ID
 		$query = "SELECT * FROM onlineshop.users ORDER BY ID DESC LIMIT 1";
 		$stmt = $this->connection->prepare($query);
 		try{
@@ -46,19 +46,19 @@ class UserRepository extends DBController{
 
     public function editUser(User $user, User $exUser)
     {
-		$pp = "";
+		$userRights = "";
 		if($user->getAccessRights()=="Administrator"){
-			$pp = "A";
+			$userRights = "A";
 		}elseif($user->getAccessRights()== "Writer"){
-			$pp = "W";
+			$userRights = "W";
 		}else{
-			$pp = "R";
+			$userRights = "R";
 		}
 		
 		$userPass = $user->getPassword()===$exUser->getPassword() ? $user->getPassword() : hash("sha256", $user->getPassword(), $raw_output = false);		
 		$query = "UPDATE onlineshop.users SET Name='".$user->getName()."', Lastname='".$user->getLastName()."', Email=
 		'".$user->getEmail()."', Username='".$user->getUsername()."', Password='".$userPass."', Access_rights=
-		'".$pp."', Locked='".$user->getLocked()."' WHERE Email='".$user->getEmail()."' AND ID = '".$user->getID()."'";
+		'".$userRights."', Locked='".$user->getLocked()."' WHERE Email='".$user->getEmail()."' AND ID = '".$user->getID()."'";
 		
 		$queryLog = "INSERT INTO onlineshop.users_log (ID_user, Name, Lastname, Email, Username, Password, Access_rights, Locked, Status, ID_admin) VALUES 
 		('".$exUser->getID()."','".$exUser->getName()."','".$exUser->getLastName()."','".$exUser->getEmail()."','".$exUser->getUsername()."','"
@@ -75,7 +75,7 @@ class UserRepository extends DBController{
 			
 			$this->connection->commit();
 		}catch(PDOException $e){
-			$user->setERRStatus("baza",$e->getMessage());
+			$user->setERRStatus("database ",$e->getMessage());
 			return FALSE;
 		}
 		$user->setERRStatus("ok", "User data is changed.");
@@ -151,7 +151,7 @@ class UserRepository extends DBController{
 			$user->setERRStatus("resSet",count($result));
 			return FALSE;
 		}else{
-			$user->setERRStatus("n","nePostojiUBazi");
+			$user->setERRStatus("n","noSuchRecordInDatabase");
 			return false;
 		}
 	}

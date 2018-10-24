@@ -26,18 +26,15 @@ function ajaxCall_prod(requestKeyName, requestKeyValue, PHPfile){
 		return response;
 }
 
-
 function loadProducts(){
 	var response = ajaxCall_prod("load", true, "main_products.php");
 	var k = JSON.parse(response)
 	if(k.Products[0] == "*1"){
-		//tabela je prazna
 		var p = document.createElement("p");
 		p.innerHTML = "No products in depository.";
 		p.setAttribute("class","err");
 		document.getElementById("productsDIV").appendChild(p);
 	}else if(k.Products[0] == "*2"){
-		//neka greska sa bazom
 		var p = document.createElement("p");
 		p.innerHTML = "Call the admin.  "+k.Products[1];
 		p.setAttribute("class","err");
@@ -154,11 +151,10 @@ function addProduct(){
 	document.getElementById("editProduct").style.display = "none";
 	
 }
-//fills the form for editing product data
+//fills in the form for editing product data
 function editProduct(id){
 	document.getElementById("newProduct").style.display = "none";
-	document.getElementById("editProduct").style.display = "inline";
-	
+	document.getElementById("editProduct").style.display = "inline";	
 	
 	var response = ajaxCall_prod("editProduct", id, "main_products.php");
 	var pr = JSON.parse(response);  //returns product data, without data about categroies of product
@@ -215,17 +211,11 @@ function priceCheck(c){
 	}
 }
 
-function dodajProPracenje(str){
-	document.getElementById("err_pro").innerHTML = document.getElementById("err_pro").innerHTML+"\n"+str;
-}
-//funkcija uzima id input file taga
 function photoCheck_product(idFile){
 	var photos = document.getElementById(idFile).files;
 	var brF = 0; brS = 0;
 	if(photos.length > 0){
-		//za svaku sliku, proveri format, velicinu
-		for(i=0; i<photos.length; i++){
-			
+		for(i=0; i<photos.length; i++){			
 			var photoFormats = [".jpg", ".png", ".jpeg", ".gif"];
 			for(j=0; j<photoFormats.length; j++){
 				var sFormat = photos[i].name.substr(photos[i].name.length - photoFormats[j].length, photos[i].name.length);
@@ -242,14 +232,14 @@ function photoCheck_product(idFile){
 		if(brF == photos.length){
 			document.getElementById("err_"+idFile).innerHTML = "";
 			}else{
-				document.getElementById("err_"+idFile).innerHTML = "Slike nisu odgovarajuceg formata.";
+				document.getElementById("err_"+idFile).innerHTML = "Wrong photo format.";
 				document.getElementById("err_"+idFile).style.color = "red";
 				document.getElementById(idFile).value = "";
 			}
 		if(brS == photos.length){
 			document.getElementById("err_"+idFile).innerHTML = "";
 			}else{
-				document.getElementById("err_"+idFile).innerHTML = "Slike nisu odgovarajuce velicine.";
+				document.getElementById("err_"+idFile).innerHTML = "Size of photo is too large.";
 				document.getElementById("err_"+idFile).style.color = "red";
 				document.getElementById(idFile).value = "";
 			}
@@ -262,7 +252,7 @@ function photoCheck_product(idFile){
 }
 
 function deletePhoto(id, path){
-	if(confirm("Da li zelite da obrisete sliku?")){		
+	if(confirm("Do you want to delete photo?")){		
 		var filename = path.substring(path.lastIndexOf("/"));
 		var folderPath = path.substring(0,path.lastIndexOf("/"));
 		var foldername = folderPath.substring(folderPath.lastIndexOf("/"));

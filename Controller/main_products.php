@@ -5,14 +5,9 @@ use \Myalpinerocks\Photo;
 if (!isset($_SESSION)) {
     $s = session_start();	    
 }	
-	include_once "../db/db_config.php";    
-	include_once "../Entity/Photo/Photo.php";
-	include_once "../db/DBController.php";
-	include_once "../Entity/Categories/CategoryRepository.php";
-	include_once "../Entity/Categories/Category.php";
-	include_once "../Entity/Products/ProductsRepository.php";
-	include_once "../Entity/Products/Product.php";
-	include_once "ProductsFrontEndController.php";
+
+include_once "../db/db_config.php";    
+include "../vendor/autoload.php";
 	
 if (!isset($_SESSION['username']) || !isset($_REQUEST['token']) || $_REQUEST['token'] !== $_SESSION['token']) {
 
@@ -34,14 +29,14 @@ if (isset($_POST['submit_newProduct'])) {
 } elseif (isset($_REQUEST['loadCategories'])) {
     ProductsFrontEndController::getCategories();
 } elseif (isset($_REQUEST['editProduct'])) {		
-    $ulaz = $_REQUEST['editProduct'];
-    ProductsFrontEndController::loadProduct($ulaz);
+    $data = $_REQUEST['editProduct'];
+    ProductsFrontEndController::loadProduct($data);
 } elseif (isset($_REQUEST['deletePhoto'])) {		
-    $ulaz = $_REQUEST['deletePhoto'];	
-    echo Photo::deletePhotoP($ulaz) ? "1" : "0";    
+    $data = $_REQUEST['deletePhoto'];	
+    echo Photo::deletePhotoP($data) ? "1" : "0";    
 } elseif (isset($_REQUEST['deleteProduct'])) {
-    $ulaz = $_REQUEST['deleteProduct'];
-    ProductsFrontEndController::deleteProduct($ulaz);
+    $data = $_REQUEST['deleteProduct'];
+    ProductsFrontEndController::deleteProduct($data);
 } elseif (isset($_REQUEST['logout'])) {
     session_unset();
     session_destroy();

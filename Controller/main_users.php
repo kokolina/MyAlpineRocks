@@ -6,11 +6,7 @@
 	    $s = session_start();	    
     }
     include_once "../db/db_config.php";	 
-    include_once "../db/DBController.php";
-    include_once "../Entity/Users/UserRepository.php";
-    include_once "../Entity/Users/User.php";	
-    require_once "../Entity/Photo/Photo.php";
-    include_once "UsersFrontEndController.php";
+    include "../vendor/autoload.php";
     
     if (!isset($_SESSION['username']) || !isset($_REQUEST['token']) || $_REQUEST['token'] !== $_SESSION['token']) {       
         session_destroy();
@@ -26,12 +22,12 @@ if (isset($_POST['name_new'])) {
 } elseif (isset($_POST['name_edit'])) {
     UsersFrontEndController::editUserData();
     include_once "../templates/users_template.php";	
-} elseif (isset($_REQUEST['email'])) {			//AJAX calls ::::  JS provera da li je mail registrovan prilikom logovanja
+} elseif (isset($_REQUEST['email'])) {			//AJAX calls ::::  JS checks if email is registered when user tries to login 
 	$inputValue = UsersFrontEndController::test_input($_REQUEST['email']);
 	UsersFrontEndController::isEmailRegistered($inputValue);
-} elseif (isset($_REQUEST['loadUsers'])) {			//ucitavanje korisnika u tabelu 
+} elseif (isset($_REQUEST['loadUsers'])) {
     UsersFrontEndController::loadUsers();
-} elseif (isset($_REQUEST['ID'])) {		//vraca korisnika po ID-u u obliku JSON za usecase izmena korisnika
+} elseif (isset($_REQUEST['ID'])) {		
 	$inputValue = UsersFrontEndController::test_input($_REQUEST['ID']);
 	UsersFrontEndController::loadUser($inputValue);
 } elseif (isset($_REQUEST['DEL'])) {

@@ -30,12 +30,12 @@ class ProductsRepository extends DBController
 					return $products;
 				} else {
 					$products[] = "*1";
-					return $products; //Tabela je prazna
+					return $products; //Empty table
 				}				
 			} catch (PDOException $e) {
 				$products[0] = "*2";
 				$products[1] = $e->getMessage();
-				return $products; //greska 
+				return $products; 
 			}
 	}
 		
@@ -52,7 +52,7 @@ class ProductsRepository extends DBController
 				$result = $stmt->fetchAll();				
 				if (count($result)>0) {
 					for($i = 0; $i<count($result);$i++) {
-						$kat = $result[$i]; //primer rezultata: 2=>women's; Name=>women's; 1=>1; ID_category=>1; 0=>1; ID_product=>1  (sa navodnicima) 
+						$kat = $result[$i]; 
 						$category = new Category();
 						$category->setName($kat["Name"]);
 						$category->setID($kat["ID_category"]);
@@ -60,11 +60,11 @@ class ProductsRepository extends DBController
 					}					
 					return TRUE;
 				} else {
-					return FALSE; //Tabela je prazna
+					return FALSE; //Empty table
 				}				
 			} catch (PDOException $e) {
 				echo $e->getMessage();
-				return false; //greska 
+				return false;  
 			}			
 	}
 	
@@ -120,7 +120,6 @@ class ProductsRepository extends DBController
 
     public function getProduct(array $columnValuePairs, Product $product)
 	{
-		//$query = "SELECT * FROM onlineshop.products WHERE $column = '$value' and Status = '1'";
 		$query = "SELECT * FROM onlineshop.products WHERE"; 
 		$i = 0; 
 		foreach ($columnValuePairs as $column => $value) {
@@ -144,12 +143,12 @@ class ProductsRepository extends DBController
 				} else {
 					$msg = (count($result) < 1) ? "Empty result." : "DB inconsistence."; 
 					$product->setErr($msg);
-					return FALSE; //Tabela je prazna
+					return FALSE; //Empty table
 				}
 				
 			} catch (PDOException $e) {
 				$product->setErr($e->getMessage());
-				return FALSE; //greska 
+				return FALSE;  
 			}
 		if ($this->getCategoriesOfProduct($product)) {			
 			return TRUE;
@@ -162,7 +161,6 @@ class ProductsRepository extends DBController
 	public function prepareStatement_editProduct(Product $newProduct, Product $oldProduct, ArrayObject $queryArray)
 	{
 		$queryArray[] = "UPDATE onlineshop.products SET Name = '".$newProduct->getName()."', Description = '".$newProduct->getDescription()."', Price = '".$newProduct->getPrice()."' WHERE ID = '".$newProduct->getID()."'";
-		
 		$queryArray[] = "INSERT INTO onlineshop.products_log (ID_product,Name, Description, Price,Status,ID_admin) 
 			SELECT P.ID, P.Name, P.Description, P.Price, P.Status, Kor.ID FROM onlineshop.products P, onlineshop.users Kor
 			WHERE P.ID = '".$newProduct->getID()."' AND Kor.ID = '".$newProduct->getID_admin()."'";		
@@ -170,23 +168,23 @@ class ProductsRepository extends DBController
 	
 	public function prepareStatement_editCategoriesOfProduct(Product $newProduct, Product $oldProduct, ArrayObject $queryArray)
 	{
-		$k1 = $newProduct->getCategories(); 	$k2 = $oldProduct->getCategories();	
-			
-		//nadji one koje treba da insertujes
+		$k1 = $newProduct->getCategories(); 	$k2 = $oldProduct->getCategories();	  //$k1- array of categories of new version of product         $k2- array of categories of old product	
+		
+		//finding those category_product pairs we should insert 
 		for($i = 0; $i< count($k1); $i++) {
-			$sgn = TRUE;		//novi je, insertuj ga
+			$sgn = TRUE;		//new pair, insert it
 			for($j=0; $j<count($k2); $j++) {
 				if ($k1[$i]->getID() == $k2[$j]->getID()) {
-					$sgn = FALSE;		//nije nov, nalazio se u starom
+					$sgn = FALSE;		//existing pair, don't insert
 				}
 			}
-			if ($sgn) {		//da li k1[$i] postoji u $k2 nizu
+			if ($sgn) {		//if there is k1[$i] in $k2[]
 				$queryArray[] = "INSERT INTO onlineshop.product_category (ID_category, ID_product) 
 						VALUES ('".$k1[$i]->getID()."','".$newProduct->getID()."')";		
 			}
 		}
 		
-		//nadji one koje treba da disable-ujes
+		//finding those that should be disabled
 		for($i = 0; $i<count($k2); $i++) {
 			$sgn = TRUE;
 			for($j=0; $j<count($k1); $j++) {

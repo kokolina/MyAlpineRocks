@@ -52,12 +52,11 @@ function isEmailFormatOk(email, txtField, errPTab){
 function isEmailRegistered(input, txtField, errPTab){
 		var response = ajaxCall("email", input);
 		
-		if(response == "*2"){			//email na postoji u bazi
+		if(response == "*2"){			
 				document.getElementById(errPTab).innerHTML = "Email is not registered.";
 				document.getElementById(txtField).focus();
-				//document.getElementById("email").value = "";
 				return false;
-		}else if(response.substr(0,2) == "*1"){			//email postoji u bai
+		}else if(response.substr(0,2) == "*1"){			
 				document.getElementById(errPTab).innerHTML = "";
 				return true;								
 		}else {
@@ -155,17 +154,15 @@ function loadUsers(){
 			return false;		
 		}          
 } 
-//Funkcija se pokrece na pritisak na olovku u tabeli, prikazuje formu za izmenu podataka o useru
-//ako hocu da menjam mail usera, to je onda new usera
+
 function editUserData(input){
 	var response = ajaxCall("ID",input);
 	if(response == "*2"){
-		dodaj("Error! User doesn't exist in database.(User.js 92)");
+		alert("Error! User doesn't exist in database.(User.js 92)");
 	}else{
 		document.getElementById("createNewUser").style.display = "none";
 		document.getElementById("editUserDIV").style.display = "inline";
 		
-		//definisanje starog usera - userEdit	
 		userEdit = JSON.parse(response);
 		document.getElementById("UserID_edit").value = input;		//!!! nije iz baze nego input
 		document.getElementById("name_edit").value = userEdit.name;
@@ -186,7 +183,6 @@ function editUserData(input){
 		}	else{
 			document.getElementById('lockedFalse').checked = true;
 		}
-		//definisanje novog(izmenjenog usera) newUser , kao i kod unosa
 		newUser = {
 		name: true,
 		lastname :true,
@@ -201,7 +197,7 @@ function editUserData(input){
 		
 	}
 }
-//funkcija prihvata ID usera i brise ga iz baze zajedno sa profilnom slikom; ako admin zeli da obrise sam sebe to ne dozvoljava
+
 function deleteUser(input){
 	var response = ajaxCall("ID", input);
 	var user  = JSON.parse(response);
@@ -223,15 +219,10 @@ function deleteUser(input){
 		}
 		
 	}else{
-		dodaj("User is not registered in data base.");
+		alert("User is not registered in data base.");
 	}
 }
 
-//					**************
-// 				ADMINISTRACIJA KORISNIKA 
-// 					*************
-
-//na pritisak dugmeta new user prikazuje formu za unos podataka o novom useru
 function createUser(){
 	document.getElementById("editUserDIV").style.display = "none";
 	document.getElementById("createNewUser").style.display = "inline";
@@ -301,8 +292,7 @@ function accessRightsCheck(input, errP){
 		document.getElementById(errP).innerHTML = "";
 	}	
 }
-//provera username-a kod unosa novog usera ili izmene: da li je zauzet. Objekat userEdit cuva stare vrednosti koje su ucitane iz baze
-//Objekat userNovi se upisuje u bazu
+
 function usernameCheck(input, txtField, errp){
 	if(typeof userEdit != "undefined" && txtField == 'username_edit'){
 		if(input == userEdit.username){
@@ -325,7 +315,7 @@ function usernameCheck(input, txtField, errp){
 				newUser.username = input;
 				return true;
 		}else if(response.substr(0,2) == "*1"){			//email postoji u bai
-				document.getElementById(errp).innerHTML = "Username is already taken.";
+				document.getElementById(errp).innerHTML = "Username is already in use.";
 				document.getElementById(errp).style.color = "red";	
 				document.getElementById(txtField).value = "";	
 				document.getElementById(txtField).focus();	
@@ -336,8 +326,7 @@ function usernameCheck(input, txtField, errp){
 				newUser.username = false;
 				return false;
 			}
-	}
-	
+	}	
 }
 
 function passwordCompexityCheck(input, txtField, errP, errRetypedPassword){
@@ -368,8 +357,7 @@ function passwordCompexityCheck(input, txtField, errP, errRetypedPassword){
                                     return false;
                             }
                         }
-		}else{
-			
+		}else{			
 			document.getElementById(errP).innerHTML = "Password must contain numbers and characters";
 			document.getElementById(txtField).focus();
 			document.getElementById(txtField).value = "";
@@ -403,7 +391,7 @@ function passwordRetypeCheck(input, txtField, errP){
 			return false;
 		}
 	}else{
-			document.getElementById(errP).innerHTML  = "Please, fiel";
+			document.getElementById(errP).innerHTML  = "Please, fill in the field.";
 			newUser.pass2 = input;
 	}
 	
@@ -411,9 +399,7 @@ function passwordRetypeCheck(input, txtField, errP){
 
 function photoCheck(inputValue, fileSelect, errP){
 	var photo = document.getElementById(fileSelect).files;
-	//provera da li je izabran file
 	if(photo.length > 0){
-		//provera da li je file photo [".jpg", ".png", ".jpeg", ".gif"]
 		document.getElementById(errP).innerHTML = "FAJL JE IZABRAN";
 		var photoFormats = [".jpg", ".png", ".jpeg", ".gif"];
 		var sgn = false;
@@ -426,7 +412,7 @@ function photoCheck(inputValue, fileSelect, errP){
 		if(sgn){				
 				//provera velicine filea
 				if(photo[0].size>5000000){
-				document.getElementById(errP).innerHTML = "Izabrana photo je veca od dozvoljenih 5MB.";
+				document.getElementById(errP).innerHTML = "Photo size exceeds allowed 5MB.";
 				newUser.photo = false;
 				return false;
 						}else{							
@@ -435,56 +421,52 @@ function photoCheck(inputValue, fileSelect, errP){
 							return true;
 						}
 		}else{
-			document.getElementById(errP).innerHTML = "Izabrani fajl nije photo ('.jpg', '.png', 'jpeg', '.gif')";
+			document.getElementById(errP).innerHTML = "File is not in allowed photo format ('.jpg', '.png', 'jpeg', '.gif')";
 			newUser.photo = false;
 			return false;
 		}		
 	}else{
 		newUser.photo = false;
-		document.getElementById(errP).innerHTML = "Izaberite profilnu sliku.";
+		document.getElementById(errP).innerHTML = "Please chose profile photo.";
 		return false;
 	}
 	
 }
 
-//svi ovi parametri objekta newUser treba da se popune inputnim podacima dok user popunjava formu (onchange eventi)
-//i onda ja na kraju proverim da li su svi razliciti. Objekat User se pravi kada kliknemo btt "Novi user", i svi atributi su mu false
 function submit_newUser(){	
 	var a = newUser.name; var b = newUser.lastname; var c = newUser.email; var d = newUser.username; 
 	var e = newUser.accessRights; var f = newUser.pass1; var g = newUser.pass2; var h = newUser.photo;
-	if(a != false && b != false && c != false && d != false && e != false && f != false && g != false && h!= false){
-		
+	if(a != false && b != false && c != false && d != false && e != false && f != false && g != false && h!= false){		
 		document.getElementById("createNewUserFRM").submit();
 		return true;
 		
 	}else if(a == false){
-		document.getElementById("errName_new").innerHTML = "Unesite name.";
+		document.getElementById("errName_new").innerHTML = "Insert name.";
 		return false;
 	}else if(b == false){
-		document.getElementById("errLastname_new").innerHTML = "Unesite lastname.";
+		document.getElementById("errLastname_new").innerHTML = "Insert lastname.";
 		return false;
 	}else if(c == false){
-		document.getElementById("errMail_new").innerHTML = "Unesite e-mail.";
+		document.getElementById("errMail_new").innerHTML = "Insert e-mail.";
 		return false;
 	}else if(e == false){
-		document.getElementById("errAccessRights_new").innerHTML = "Izaberite prava pristupa.";
+		document.getElementById("errAccessRights_new").innerHTML = "Choose access rights.";
 		return false;
 	}else if(d == false){
-		document.getElementById("errUsername_new").innerHTML = "Unesite username.";
+		document.getElementById("errUsername_new").innerHTML = "Insert username.";
 		return false;
 	}else if(f == false){
-		document.getElementById("errPass1_new").innerHTML = "Unesite lozinku.";
+		document.getElementById("errPass1_new").innerHTML = "Insert password.";
 		return false;
 	}else if(g == false){
-		document.getElementById("errPass2_new").innerHTML = "Ponewte lozinku.";
+		document.getElementById("errPass2_new").innerHTML = "Insert the same password again.";
 		return false;
 	}else if(h == false){
-		document.getElementById("errUserImg_new").innerHTML = "Izaberite profilnu sliku.";
+		document.getElementById("errUserImg_new").innerHTML = "Choose a profile photo.";
 		return false;
 	}else{
-		dodaj("Neka greska<br>"+newUser.name+" <br>"+newUser.lastname+"<br> "
-		+newUser.email+" <br>"+newUser.accessRights+"<br>"+newUser.username+" <br>"+newUser.pass1+"<br>"+newUser.pass2);
-	return false;
+		alert("User data not saved.");
+	   return false;
 	}
 }
 
@@ -497,33 +479,32 @@ function submit_editUser(){
 		return true;
 		
 	}else if(a == false){
-		document.getElementById("errIme_edit").innerHTML = "Unesite name.";
+		document.getElementById("errIme_edit").innerHTML = "Insert name.";
 		return false;
 	}else if(b == false){
-		document.getElementById("errPrezname_edit").innerHTML = "Unesite lastname.";
+		document.getElementById("errPrezname_edit").innerHTML = "Insert lastname.";
 		return false;
 	}else if(c == false){
-		document.getElementById("errMail_edit").innerHTML = "Unesite e-mail.";
+		document.getElementById("errMail_edit").innerHTML = "Insert e-mail.";
 		return false;
 	}else if(e == false){
-		document.getElementById("errAccessRights_edit").innerHTML = "Izaberite prava pristupa.";
+		document.getElementById("errAccessRights_edit").innerHTML = "Choose access rights.";
 		return false;
 	}else if(d == false){
-		document.getElementById("errUsername_edit").innerHTML = "Unesite username.";
+		document.getElementById("errUsername_edit").innerHTML = "Insert username.";
 		return false;
 	}else if(f == false){
-		document.getElementById("errPass1_edit").innerHTML = "Unesite lozinku.";
+		document.getElementById("errPass1_edit").innerHTML = "Insert password.";
 		return false;
 	}else if(g == false){
-		document.getElementById("errPass2_edit").innerHTML = "Ponewte lozinku.";
+		document.getElementById("errPass2_edit").innerHTML = "Insert the same password again.";
 		return false;
 	}else if(h == false){
-		document.getElementById("errUserImg_edit").innerHTML = "Izaberite profilnu sliku.";
+		document.getElementById("errUserImg_edit").innerHTML = "Choose profile photo.";
 		return false;
 	}else{
-		dodaj("Neka greska<br>"+newUser.name+" <br>"+newUser.lastname+"<br> "
-		+newUser.email+" <br>"+newUser.accessRights+"<br>"+newUser.username+" <br>"+newUser.pass1+"<br>"+newUser.pass2);
-	return false;
+		alert("User data are not saved.");
+	   return false;
 	}
 }
 
@@ -582,14 +563,5 @@ function getAPI(){
     OKbutton.addEventListener("click", quit, false);
     OKbutton.setAttribute("class", "MyButton");
     
-	document.body.appendChild(psw_prompt);
-	
-	
-}
-
-
-//koristim je za pracenje izvrsenja programa. treba je se otarasiti!
-function dodaj(x){
-	document.getElementById("pracenje").innerHTML = document.getElementById("pracenje").innerHTML+"<br>"+x;
-	//document.getElementById("createNewUserFRM").submit();
+	document.body.appendChild(psw_prompt);	
 }

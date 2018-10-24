@@ -139,7 +139,7 @@ class CategoryRepository extends DBController
 			$this->closeDataBaseConnection();
 			return TRUE;		
 		}elseif (count($result) > 1) {			
-			$category->setErr("Vise od jednog u bazi: ".count($result));
+			$category->setErr("More than one record in database: ".count($result));
 			$this->closeDataBaseConnection();
 			return FALSE;
 		}else{
@@ -173,11 +173,11 @@ class CategoryRepository extends DBController
 					}
 					return $str;
 				}else{
-					return '"err":"*1"'; //Tabela je prazna
+					return '"err":"*1"'; //Empty table
 				}
 
 			} catch (PDOException $e) {
-				return '"err":"*2"'; //greska 
+				return '"err":"*2"';  
 			}
 			$this->closeDataBaseConnection();
 	}

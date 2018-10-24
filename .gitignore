@@ -4,3 +4,5 @@ DBScript.php
 
 # ignore temp files made by BlueFish editor on sherpa
 *~
+#ignore external packages
+vendor/

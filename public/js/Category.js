@@ -28,9 +28,15 @@ function loadCategories(){
 	var response = ajaxCall_cat("load", true);
 	var k = JSON.parse(response);
 	if(k.err == "*1"){
-		// neka greska
+		var p = document.createElement("p");
+		p.innerHTML = "Error!.";
+		p.setAttribute("class","err");
+		document.getElementById("categoryDIV").appendChild(p);
 	}else if(k.err == "*2"){
-		//neka greska sa bazom		
+		var p = document.createElement("p");
+		p.innerHTML = "Database error.";
+		p.setAttribute("class","err");
+		document.getElementById("categoryDIV").appendChild(p);	
 	}else{
 		var tab = document.getElementById("catTable");
 		
@@ -187,8 +193,6 @@ function deleteCategory(){
 	
 }
 
-
-
 function check_categoryTitle(name){
 	if(name == ""){
 		document.getElementById("nameErr_new").innerHTML = "Insert name of the category.";
@@ -200,10 +204,6 @@ function check_categoryTitle(name){
 		newCategory.name = true;
 	}
 	
-}
-
-function dodajKatPracenje(str){
-	document.getElementById("err_cat").innerHTML = document.getElementById("err_cat").innerHTML+"\n"+str;
 }
 
 

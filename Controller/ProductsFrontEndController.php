@@ -33,10 +33,8 @@ class ProductsFrontEndController
 		}
 		if ($_POST['productPrice_new']) {
 			$price = ProductsFrontEndController::test_input_PR($_POST['productPrice_new']);
-			//provera da li je broj
 			if (is_numeric($price)) {
-					//round funkcija mozda moze da se iskoristi
-					$c = round($price,2);
+				$price = round($price,2);
 			} else {
 				echo "Not a number";
 				return FALSE;
@@ -99,10 +97,8 @@ class ProductsFrontEndController
 		}
 		if ($_POST['productPrice_edit']) {
 			$price = ProductsFrontEndController::test_input_PR($_POST['productPrice_edit']);
-			//provera da li je broj
 			if (is_numeric($price)) {
-					//round funkcija mozda moze da se iskoristi
-					$c = round($price,2);
+					$price = round($price,2);
 			} else {
 				echo "not a number";
 				return FALSE;
@@ -121,25 +117,23 @@ class ProductsFrontEndController
 		$product->setPrice($price);		
 		$product->setID_admin($_SESSION['user_ID']);
 		
-		//proveriti da li je korisnik nacinio neku izmenu
+		//check if user made any change
 		$productInDB = new Product();
 		$productInDB->setID($product->getID());
 		$productInDB->getProduct(array("ID" => $productInDB->getID()));
 		$equal = $product->isEqual($productInDB);
 
 		if ($equal && $_FILES["productPhoto_edit"]['tmp_name'][0] == "") {
-			//obavesti korisnika da nije nacinio izmenu i nista
-					
+		//inform user that he made no change of data
+		include_once	"../templates/products_template.php"; die();		
 		}else {
 			if (!$equal) {
 				$sgn = $product->editProduct();
-				echo $sgn ? "" : "Transakcija upisa u bazu nije izvrsena.";
+				echo $sgn ? "" : "DB insert was not done.";
 			}			
 			if ($_FILES["productPhoto_edit"]['tmp_name'][0] != "") {
-				//dodaj sliku u folder
 				$destinationFolder = "../public/images/imagesProducts/".$product->getID()."_/";
 				$msgOut = "";
-				//prebrojati vec postojece slike u folderu
 				if (!file_exists($destinationFolder)) {
 					mkdir($destinationFolder);
 				}

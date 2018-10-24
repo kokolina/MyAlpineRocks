@@ -11,17 +11,7 @@ class Photo
    	$this->name = $name; 
    }
 	
-	/**
-	* 
-	* @param undefined $fileInputTagName  name of file inut tag <input type=file>
-	* @param undefined $destinationFolder destination folder
-	* @param undefined $photoName  name of the photo (without extension)
-	* @param undefined $msgOut  some string variable to keep error messages
-	* @param undefined $selectedFileNo  order no of input file in array -if file input tag allows multiple file selection;
-	* 									insert "000" if file input tag does NOT allow multiple file selection
-	* 
-	* @return TRUE/FALSE
-	*/
+	
 	public static function photoUpload(string $fileInputTagName, string $destinationFolder, string $photoName, string $msgOut, string $selectedFileNo)
 	{	
 			$sgn = TRUE;
@@ -36,7 +26,7 @@ class Photo
 			//proveri velicinu fajla
 			$size = $_FILES[$fileInputTagName]['size'][$selectedFileNo];
 			if($size > 5000000){
-				$msgOut = "Photo exceedes allowed 5MB.";
+				$msgOut = "Photo exceeds allowed 5MB.";
 				$sgn = FALSE;
 				return FALSE;
 			}			
@@ -88,8 +78,8 @@ class Photo
 					return FALSE;
 				}				
 	}
-	//funkciju koristim za nalazenje slike proizvoda koja je obelezena najvecim brojem, da bih dodala sledecu.
-	//Slike proizvoda obelezavam brojevima
+	//function is used to find last inserted photo, so the ID of next one to add could be formed.
+	//product photo's names are numbers
 	public static function getLastPhotoNumber(string $destinationFolder)
 	{
 		$filesArray = scandir($destinationFolder);
@@ -107,7 +97,6 @@ class Photo
 	{
 		$photoNamesArray[] = NULL;		
 		$allFiles = glob($sourceFolder."*.*");   // ".$id."_
-		//napravi samo cist niz slika, jer ako u nizu nisu samo slike, pravi mi problem kod pravljenja JSON-a..da li treba zagrada ili zarez itd.
 		for($i=0; $i<count($allFiles); $i++){
 			if(substr($allFiles[$i],-4) == ".jpg"){
 				$photoNamesArray[$i] = $allFiles[$i];

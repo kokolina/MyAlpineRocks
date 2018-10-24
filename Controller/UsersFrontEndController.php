@@ -42,14 +42,10 @@ public static function test_input($data)
   	return $data;
 }
 
-//funkcija koja validira ulazne podatke kod unosa novog korisnika i poziva dalje klasu Korisnik da unese novog korisnika
 public static function createNewUser()
 {
 	$name = $lastname = $email = $accessRights = $username = $password = $password_2 = "";
-	//validiraj unete podatke ponovo
-	//napravi korisnika
-	//proveri da li postoji u bazi po mail-u i username-u 
-	//insertuj u bazu
+	
 	if (!empty($_POST['name_new'])) {
 			$name = UsersFrontEndController::test_input($_POST['name_new']);
 		} else {
@@ -129,10 +125,10 @@ public static function createNewUser()
 
 public static function deletePhoto($targetFolder, $fileName)
 {
-	//sve profilne slike su mi jpg format jer ih tako namestim kod uploada
+	//all profile photos are .jpg because it is forced that way when uploading
 	$targetFileName = $targetFolder.$fileName.".jpg";
 	if (file_exists($targetFileName)) {
-					//OBRISI FILE
+					//DELETE FILE
 					if (unlink($targetFileName)) {
 						return TRUE;
 					} else {
@@ -146,14 +142,10 @@ public static function deletePhoto($targetFolder, $fileName)
 public static function editUserData()
 {
 	$ID = $name = $lastname = $email = $accessRights = $username = $password = $password_2  = $locked = "";
-	//validiraj unete podatke ponovo
-	//napravi korisnika
-	//proveri da li postoji u bazi po mail-u i username-u 
-	//insertuj u bazu
+	
 	if (!empty($_POST['name_edit'])) {
 			$name = UsersFrontEndController::test_input($_POST['name_edit']);
 		} else {
-			//potencijalno includujem stranicu, prikazem div za unos, popunim polja i prikazem poruku...suvise koda :(
 			echo "<script>document.getElementById('errName_edit').innerHTML = 'Please insert name.';
 			document.getElementById('editUserDIV').style.display = 'inline';</script>";
 			return FALSE;
@@ -252,7 +244,6 @@ public static function editUserData()
 		if ($_FILES['profilePhoto_edit']['name'] != "" ) {
 		$msg = "";
 		echo Photo::photoUpload("profilePhoto_edit","../public/images/",$ID,$msg,"single") ? "" : "ERROR MSG BEFC :: ".$msg;
-		//die("123");
 		}
 	} else {
 		echo "ERROR MSG BEFC::40 ".$user->getErrMsg();
@@ -285,7 +276,7 @@ public static function loadUser($userID)
 	if ($testUser->getUser($testUser, array("ID" => $userID))) {
 		echo json_encode($testUser);	
 		} else {	
-			echo "*2";			//email ne postoji u bazi
+			echo "*2"; //no email in database
 		}
 }
 
@@ -294,7 +285,7 @@ public static function deleteUser($userID)
 	if ($userID == $_SESSION['user_ID']) {
 		echo "2";
 	} else {
-			$admin = new User($_SESSION['email']); //koristim admin-a samo da bih napravila obj. korisnik kog treba napuniti iz baze i pregaziti adminov mail
+			$admin = new User($_SESSION['email']); //admin user is used just for making an User object. getUser() function will write requested user's data into the object
 			$admin->getUser($admin, array("ID" => $userID));
 			echo $admin->deleteUser($admin) ? "1" : "0";			
 	}	
