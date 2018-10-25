@@ -1,6 +1,7 @@
 # ignore DBController.php because of login credentials
 db/db_config.php
 DBScript.php
+.php_cs.cache
 
 # ignore temp files made by BlueFish editor on sherpa
 *~

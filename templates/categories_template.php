@@ -8,8 +8,8 @@
 </head>
 <body onload="loadCategories()">
 	<?php
-		include "headerPage.php";
-	?>
+        include "headerPage.php";
+    ?>
 	<div id="newCategory" style="display: none;">
 		<fieldset>
 			<legend>NEW CATEGORY DATA</legend>
@@ -58,22 +58,22 @@
 					<th>Description</th>
 					<th>Parent category</th>
 					<?php
-					echo ($_SESSION['user_rights'] == "R") ? "" :
-					'<th>Edit</th>
+                    echo ($_SESSION['user_rights'] == "R") ? "" :
+                    '<th>Edit</th>
 					<th>Delete</th>';
-					?>
+                    ?>
 				</tr>
 			</table>
 			
 			
 		</div>
 		<?php
-		echo ($_SESSION['user_rights'] == "R") ? "" :
-		'<div style="margin-left: 20px; margin-bottom: 10px;">
+        echo ($_SESSION['user_rights'] == "R") ? "" :
+        '<div style="margin-left: 20px; margin-bottom: 10px;">
 				<input type="button" id="NewBtt" class="MyButton" value="New category" onclick="addCategory()" style="display: inline;"/><br />
 				<p id="err_cat"></p>
 	    </div>';
-	?>
+    ?>
     </div>
     <script type="text/javascript" src="../public/js/Category.js"></script>
 	<script type="text/javascript" src="../public/js/User.js"></script>

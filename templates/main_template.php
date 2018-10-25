@@ -17,11 +17,11 @@
 			<a href= "main_products.php" class="Menu">Products</a>
 		</div>
 		<div class="Menu" id="BackEnd_Users">
-			<?php 
-				if($_SESSION['user_rights'] == 'A'){
-					echo "<a href= 'main_users.php' class='Menu'>Users</a>";
-				}			
-			?>		
+			<?php
+                if ($_SESSION['user_rights'] == 'A') {
+                    echo "<a href= 'main_users.php' class='Menu'>Users</a>";
+                }
+            ?>		
 		</div>
 	</div>
 	<script type="text/javascript" src="../public/js/User.js"></script>
