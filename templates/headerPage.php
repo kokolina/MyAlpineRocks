@@ -9,7 +9,7 @@
 				<a href="main_products.php">Products</a>
 				</li>
 				<?php	echo ($_SESSION['user_rights'] != "A") ? "" :
-					'<li>
+                    '<li>
 					<a href="main_users.php">Users</a>
 					</li>';?>
 			</ul>

@@ -8,8 +8,8 @@
 </head>
 <body onload="loadProducts()" >
 	<?php
-		include "headerPage.php";
-	?>
+        include "headerPage.php";
+    ?>
 	<div>		
 	</div>
 	<div id="newProduct" style="display: none;">
@@ -71,12 +71,12 @@
 	<div>
 		<div id="productsDIV" style="margin:auto; margin-left: 20px;padding: 10px;">
 		<?php
-		echo ($_SESSION['user_rights'] == "R") ? "" :
-		'<span style="float: left;">
+        echo ($_SESSION['user_rights'] == "R") ? "" :
+        '<span style="float: left;">
 			<input type="button" id="NewBtt" class="MyButton" value="New product" onclick="addProduct()" style="display: inline;"/><br />
 			<p id="err_cat"></p>
 		</span>';
-		?>
+        ?>
 			<table id="productsTable" style="clear: both;">
 				<tr>
 					<th>ID</th>
@@ -86,10 +86,10 @@
 					<th>Parent category</th>
 					<th>Photos</th>
 					<?php
-					echo ($_SESSION['user_rights'] == "R") ? "" :
-					'<th>Edit</th>
+                    echo ($_SESSION['user_rights'] == "R") ? "" :
+                    '<th>Edit</th>
 					<th>Delete</th>';
-					?>
+                    ?>
 				</tr>
 			</table>
 			

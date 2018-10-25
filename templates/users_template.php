@@ -8,8 +8,8 @@
 </head>
 <body onload="loadUsers()">
 	<?php
-		include "headerPage.php";
-	?>
+        include "headerPage.php";
+    ?>
 	<div id = "userAdministration" style="padding: 10px;margin-left: 20px;">
 	
 		<div id="createNewUser" style="display: none;">
@@ -118,15 +118,15 @@
 					<th>Access rights</th>
 					<th>Locked</th>
 					<?php
-					echo ($_SESSION['user_rights'] == "A") ? "<th>Edit</th><th>Delete</th>" : '';
-					?>
+                    echo ($_SESSION['user_rights'] == "A") ? "<th>Edit</th><th>Delete</th>" : '';
+                    ?>
 				</tr>
 			</table>
 			<br>
 			<?php
-				echo ($_SESSION['user_rights'] == "A") ? "<input type='button' id='NewBtt' class='MyButton' value='Create user' onclick='createUser()' 
+                echo ($_SESSION['user_rights'] == "A") ? "<input type='button' id='NewBtt' class='MyButton' value='Create user' onclick='createUser()' 
 					style='display: inline;'/>" : '';
-			?>
+            ?>
         </div>
 	</div>
 	<hr style="clear: both;" />
