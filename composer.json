@@ -3,8 +3,5 @@
         "psr-4" : {
             "Myalpinerocks\\" : ["db/", "Entity/Products", "Entity/Categories", "Entity/Photo", "Entity/Users", "Controller", "api", "api/category", "api/product"]
         }
-    },
-    "require-dev": {
-        "friendsofphp/php-cs-fixer": "^2.13"
     }
 }
