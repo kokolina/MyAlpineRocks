@@ -23,18 +23,27 @@ class User
     
     public $status;
     
-    public $APIKey = "";
+    public $APIKey;
     private $uRepository;
-    public $err = "";
+    public $err;
     
-    public function __construct(string $e)
+    public function __construct(string $e = "")
     {
         $this->uRepository = new UserRepository();
         $this->email = $e;
-        $this->err = array();
+        $this->err = [];
+        $this->ID = 0;
+        $this->name = "";
+        $this->lastName = "";
+        $this->username = "";
+        $this->password = "";
+        $this->locked = 0;
+        $this->status = 0;
+        $this->accessRights = "R";        
+        $this->APIKey = "";
     }
     
-    public function getUser(User $user, array $columnValuePairs)
+    public function getUser(User $user, array $columnValuePairs) : bool
     {
         $this->uRepository->openDataBaseConnection();
         if ($this->uRepository->getUser($user, $columnValuePairs)) {
@@ -46,13 +55,13 @@ class User
         }
     }
     
-    public function logIn()
+    public function logIn() : bool
     {
         $testUser = new User($this->email);
         
         $this->uRepository->openDataBaseConnection();
         
-        if ($this->uRepository->getUser($testUser, array("Email" => $testUser->getEmail()))) {
+        if ($this->uRepository->getUser($testUser, ["Email" => $testUser->getEmail()])) {
             $sgn = false;
             if ($testUser->getLocked() != 0) {
                 if ($testUser->getPassword() === $this->password) {
@@ -84,17 +93,17 @@ class User
         return $sgn;
     }
      
-    public function lockUser()
+    public function lockUser() : bool
     {
-        $this->uRepository->lockUser($this);
+        return $this->uRepository->lockUser($this);
     }
     
-    public function unlockUser()
+    public function unlockUser() : bool
     {
-        $this->uRepository->unlockUser($this);
+        return $this->uRepository->unlockUser($this);
     }
     
-    public function newUser()
+    public function newUser() : bool
     {
         $testEmail = $testUsername = false;
         
@@ -102,7 +111,7 @@ class User
         
         $this->uRepository->openDataBaseConnection();
         
-        $this->uRepository->getUser($testUser, array("Email" => $testUser->getEmail()));
+        $this->uRepository->getUser($testUser, ["Email" => $testUser->getEmail()]);
         if ($testUser->getErrKod()=="n") {
             $testEmail = true;
         } elseif ($testUser->getErrKod()== "ok") {
@@ -113,7 +122,7 @@ class User
             $testEmail = false;
         }
         
-        $this->uRepository->getUser($testUser, array("Username" => $this->getUsername()));
+        $this->uRepository->getUser($testUser, ["Username" => $this->getUsername()]);
         
         if ($testUser->getErrKod()=="n") {
             $testUsername = true;
@@ -127,20 +136,21 @@ class User
         if ($testEmail == true && $testUsername == true) {
             if ($this->uRepository->insertUser($this)) {
                 $this->setERRStatus("ok", "New user saved.");
+                $this->uRepository->closeDataBaseConnection();
                 return true;
             }
         } else {
             $this->setERRStatus("not ok", "Something is wrong 2.");
+            $this->uRepository->closeDataBaseConnection();
             return false;
         }
-        $this->uRepository->closeDataBaseConnection();
     }
     
-    public function editUser()
+    public function editUser() : bool
     {
         $this->uRepository->openDataBaseConnection();
         $testUser = new User($this->getEmail());
-        if ($this->uRepository->getUser($testUser, array("Email" => $testUser->getEmail()))) {
+        if ($this->uRepository->getUser($testUser, ["Email" => $testUser->getEmail()])) {
             if ($this->getLocked() == 3 && $testUser->getLocked() != 0) {
                 $this->setLocked($testUser->getLocked());
             }
@@ -159,7 +169,7 @@ class User
         }
     }
     
-    public function getUsers(ArrayObject $userArray)
+    public function getUsers(ArrayObject $userArray) : bool
     {
         $this->uRepository->openDataBaseConnection();
         $sgn = $this->uRepository->getUsers($userArray);
@@ -167,7 +177,7 @@ class User
         return $sgn;
     }
     
-    public function deleteUser(User $user)
+    public function deleteUser(User $user) : bool
     {
         $this->uRepository->openDataBaseConnection();
         if ($this->uRepository->deleteUser($user)) {
@@ -179,9 +189,9 @@ class User
         }
     }
     
-    public function validatePassword(string $password)
+    public function validatePassword(string $password) : bool
     {
-        $this->getUser($this, array("Email" => $this->getEmail()));
+        $this->getUser($this, ["Email" => $this->getEmail()]);
         
         if ($this->getPassword() === hash("sha256", $password, $raw_output = false)) {
             return true;
@@ -190,9 +200,9 @@ class User
         }
     }
     
-    public function generateAPIKey()
+    public function generateAPIKey() : bool
     {
-        if ($this->getUser($this, array("Email" => $this->getEmail()))) {
+        if ($this->getUser($this, ["Email" => $this->getEmail()])) {
             $this->uRepository->openDataBaseConnection();
             $sgn = $this->uRepository->generateAPIKey($this);
             $this->uRepository->closeDataBaseConnection();
@@ -237,7 +247,7 @@ class User
     {
         $this->accessRights = $i;
     }
-    public function setAPIKey(string $ak = null)
+    public function setAPIKey(string $ak)
     {
         $this->APIKey = $ak;
     }
@@ -246,7 +256,7 @@ class User
         foreach ($this->err as $kod => $msg) {
             $p.=" >> ".$msg;
         }
-        $this->err = array($i => $p);
+        $this->err = [$i => $p];
     }
     public function setStatus(int $i)
     {
@@ -254,60 +264,61 @@ class User
     }
     
     //    getters
-    public function getID()
+    public function getID() : int
     {
         return $this->ID;
     }
-    public function getName()
+    public function getName() : string
     {
         return $this->name;
     }
-    public function getLastName()
+    public function getLastName() : string
     {
         return $this->lastName;
     }
-    public function getUsername()
+    public function getUsername() : string
     {
         return $this->username;
     }
-    public function getPassword()
+    public function getPassword() : string
     {
         return $this->password;
     }
-    public function getLocked()
+    public function getLocked() : int
     {
         return $this->locked;
     }
-    public function getEmail()
+    public function getEmail() : string
     {
         return $this->email;
     }
-    public function getAccessRights()
+    public function getAccessRights() : string
     {
         return $this->accessRights;
     }
-    public function getAPIKey()
+    public function getAPIKey() : string
     {
         return $this->APIKey;
     }
-    public function getERRStatus()
+    public function getERRStatus() : array
     {
         return $this->err;
     }
-    public function getErrKod()
+    public function getErrKod() : string
     {
         foreach ($this->err as $i => $msg) {
             return $i;
         }
     }
-    public function getErrMsg()
+    public function getErrMsg() : string
     {
         foreach ($this->err as $i => $msg) {
             return $msg;
         }
     }
-    public function getStatus()
+    public function getStatus() : int
     {
         return $this->status;
     }
-} //classEnd
+}
+

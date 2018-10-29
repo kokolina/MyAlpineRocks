@@ -110,6 +110,7 @@ function loadCategories(){
 function addCategory(){
 	document.getElementById("editCategory").style.display = "none";
 	document.getElementById("newCategory").style.display = "inline";
+	document.getElementById("errorMessage").innerHTML = "";
 	
 	var nadKtSelectTab = document.getElementById("parentCategory_new");
 	var response = ajaxCall_cat("load", true);
@@ -144,6 +145,7 @@ function editCategory(){
 	document.getElementById("newCategory").style.display = "none";
 	document.getElementById("errName_edit").innerHTML = "";
 	document.getElementById("errDescription_edit").innerHTML = "";
+	document.getElementById("errorMessage").innerHTML = "";
 	
 	kat = getCategory(this.id);
 	
@@ -164,8 +166,7 @@ function editCategory(){
 			nadKtSelectTab.appendChild(opt);
 		}
 	}
-	kat.Parent_category == "0" ? nadKtSelectTab.value = "default"  : nadKtSelectTab.value = kat.Parent_category;
-	
+	kat.Parent_category == "0" ? nadKtSelectTab.value = "default"  : nadKtSelectTab.value = kat.Parent_category;	
 }
 
 function getCategory(id){

@@ -19,9 +19,17 @@ class Category implements JsonSerializable
     public function __construct()
     {
         $this->repository = new CategoryRepository();
+        $this->ID = 0;
+        $this->name = "";
+        $this->description = "";
+        $this->parentCategory = 0;
+        $this->ID_user = 0;
+        $this->date = "";
+        $this->status = 0;   
+        $this->err = "";
     }
     
-    public static function constructWithID(int $id)
+    public static function constructWithID(int $id) : Category
     {
         $instance = new self();
         $instance->repository = new CategoryRepository();
@@ -29,22 +37,22 @@ class Category implements JsonSerializable
         return $instance;
     }
     
-    public function getCategories(ArrayObject $catArray)
+    public function getCategories(ArrayObject $catArray) : string  //returns json string
     {
         return $this->repository->getCategories($catArray);
     }
     
-    public function getCategory(string $param, string $value)
+    public function getCategory(string $param, string $value) : bool
     {
         return $this->repository->getCategory($this, $param, $value);
     }
     
-    public function insertCategory(Category $category)
+    public function insertCategory(Category $category) : bool
     {
         return $this->repository->insertCategory($category);
     }
     
-    public function editCategory()
+    public function editCategory() : bool
     {
         $oldCategory = new Category();
                 
@@ -60,7 +68,7 @@ class Category implements JsonSerializable
         }
     }
     
-    public function deleteCategory()
+    public function deleteCategory() : bool
     {
         if ($this->repository->getCategory($this, "ID", $this->getID())) {
             if (!$this->repository->hasSubProducts($this)) {
@@ -74,58 +82,58 @@ class Category implements JsonSerializable
         }
     }
 
-    public function areCategoriesEqual(Category $cat1, Category $cat2)
+    public function areCategoriesEqual(Category $catFromDB, Category $inputCategory) : bool
     {
         return (
-            CategoriesFrontEndController::test_input_KAT($cat1->getID()) == $cat2->getID() &&
-            CategoriesFrontEndController::test_input_KAT($cat1->getName()) == $cat2->getName() &&
-            CategoriesFrontEndController::test_input_KAT($cat1->getDescription())== $cat2->getDescription() &&
-            CategoriesFrontEndController::test_input_KAT($cat1->getParentCategory()->getID())== $cat2->getParentCategory()->getID()
+            CategoriesFrontEndController::test_input($catFromDB->getID()) == $inputCategory->getID() &&
+            CategoriesFrontEndController::test_input($catFromDB->getName()) == $inputCategory->getName() &&
+            CategoriesFrontEndController::test_input($catFromDB->getDescription())== $inputCategory->getDescription() &&
+            CategoriesFrontEndController::test_input($catFromDB->getParentCategory()->getID())== $inputCategory->getParentCategory()->getID()
             ) ? true : false;
     }
     
-    public function jsonSerialize()
+    public function jsonSerialize() : array
     {
         return get_object_vars($this);
     }
    
     //    getters
-    public function getID()
+    public function getID() : int
     {
         return $this->ID;
     }
 
-    public function getName()
+    public function getName() : string
     {
         return $this->name;
     }
 
-    public function getDescription()
+    public function getDescription() : string
     {
         return $this->description;
     }
 
-    public function getParentCategory()
+    public function getParentCategory() : Category
     {
         return $this->parentCategory;
     }
 
-    public function getID_user()
+    public function getID_user() : int
     {
         return $this->ID_user;
     }
 
-    public function getDate()
+    public function getDate() : string
     {
         return $this->date;
     }
 
-    public function getStatus()
+    public function getStatus() : int
     {
         return $this->status;
     }
 
-    public function getErr()
+    public function getErr() : string
     {
         return $this->err;
     }

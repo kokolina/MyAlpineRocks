@@ -1,55 +1,14 @@
 <?php
 namespace Myalpinerocks;
 
-class ProductsFrontEndController
+class ProductsFrontEndController extends BaseController
 {
-    public static function test_input_PR($data)
-    {
-        $data = trim($data);
-        $data = stripslashes($data);
-        $data = htmlspecialchars($data);
-        $data = addslashes($data);
-        return $data;
-    }
-    
+
     public static function insertProduct()
     {
         $product = new Product();
-        if (isset($_POST['productName_new'])) {
-            $name = ProductsFrontEndController::test_input_PR($_POST['productName_new']);
-        } else {
-            echo "<script>document.getElementById('errName_new').innerHTML = 'Insert name of product';
-			document.getElementById('newProduct').style.display = 'inline';</script>";
-            return false;
-        }
-        if (isset($_POST['productDescription_new'])) {
-            $description = ProductsFrontEndController::test_input_PR($_POST['productDescription_new']);
-        } else {
-            echo "<script>document.getElementById('errDescription_new').innerHTML = 'Insert product description';
-			document.getElementById('newProduct').style.display = 'inline';</script>";
-            return false;
-        }
-        if ($_POST['productPrice_new']) {
-            $price = ProductsFrontEndController::test_input_PR($_POST['productPrice_new']);
-            if (is_numeric($price)) {
-                $price = round($price, 2);
-            } else {
-                echo "Not a number";
-                return false;
-            }
-        }
-        
-        if (isset($_POST['categoryOfProduct_new'])) {
-            foreach ($_POST['categoryOfProduct_new'] as $kat) {
-                $category = new Category();
-                $category->setID($kat);
-                $product->addCategory($category);
-            }
-        }
-        $product->setName($name);
-        $product->setDescription($description);
-        $product->setPrice($price);
-        $product->setID_admin($_SESSION['user_ID']);
+        $product = self::parseProductForm('productName_new', 'productDescription_new', 'productPrice_new', 'categoryOfProduct_new', $product);   
+            
         $sgn = $product->insertProduct();
         
         if ($sgn && $_FILES["productPhoto_new"]['tmp_name'][0] != "") {
@@ -62,6 +21,7 @@ class ProductsFrontEndController
                 Photo::photoUpload("productPhoto_new", $targetFolder, $photoName, $msg, $i);
             }
         }
+        echo self::renderTemplate("../templates/products_template.php");	
     }
     
     public static function editProduct()
@@ -69,75 +29,82 @@ class ProductsFrontEndController
         $product = new Product();
 
         if (isset($_POST['IDProduct_edit'])) {
-            $id = ProductsFrontEndController::test_input_PR($_POST['IDProduct_edit']);
+            $id = ProductsFrontEndController::test_input($_POST['IDProduct_edit']);
         } else {
-            echo "<script>document.getElementById('errName_edit').innerHTML = 'ERROR! PRODUCT ID IS NOT LOADED';
-			document.getElementById('editProduct').style.display = 'inline';</script>";
-            return false;
+            echo self::renderTemplate("../templates/products_template.php", ["errorMessage" => "Invalid request. Form not identified."]);	
+            return;
         }
-        if (isset($_POST['productName_edit'])) {
-            $name = ProductsFrontEndController::test_input_PR($_POST['productName_edit']);
+        $product->setID($id);
+        
+        $product = self::parseProductForm('productName_edit', 'productDescription_edit', 'productPrice_edit', 'categoryOfProduct_edit', $product);
+        
+        //check if user made any change
+        $productInDB = new Product();
+        $productInDB->setID($product->getID());
+        $productInDB->getProduct(["ID" => $productInDB->getID()]);
+        $equal = $product->isEqual($productInDB);
+
+        if ($equal && $_FILES["productPhoto_edit"]['tmp_name'][0] == "") {
+            echo self::renderTemplate("../templates/products_template.php", ["errorMessage" => "Invalid request. No changes were made."]);	
+            return;
+        }
+        if (!$equal) {
+            $sgn = $product->editProduct();
+            echo $sgn ? "" : self::renderTemplate("../templates/products_template.php", ["errorMessage" => "Unsuccessful update."]);
+        }
+        if ($_FILES["productPhoto_edit"]['tmp_name'][0] != "") {
+            $destinationFolder = "../public/images/imagesProducts/".$product->getID()."_/";
+            $msgOut = "";
+            if (!file_exists($destinationFolder)) {
+                mkdir($destinationFolder);
+            }
+            $lastPhotoNumber = Photo::getLastPhotoNumber($destinationFolder);
+            for ($i = 0; $i < count($_FILES["productPhoto_edit"]['tmp_name']); $i++) {
+                Photo::photoUpload("productPhoto_edit", $destinationFolder, $lastPhotoNumber+$i+1, $msgOut, $i);
+            }
+        }
+        echo self::renderTemplate("../templates/products_template.php");
+    }
+    
+    public static function parseProductForm(string $nameField, string $descriptionField, string $priceField, string $categoriesFiled, Product $product)
+    {
+        if (isset($_POST[$nameField])) {
+            $name = ProductsFrontEndController::test_input($_POST[$nameField]);
         } else {
-            echo "<script>document.getElementById('errName_edit').innerHTML = 'Insert name of product';
-			document.getElementById('editProduct').style.display = 'inline';</script>";
-            return false;
+            echo self::renderTemplate("../templates/products_template.php", ["errorMessage" => "Invalid request. Product name field is missing."]);	
+            return;
         }
-        if (isset($_POST['productDescription_edit'])) {
-            $description = ProductsFrontEndController::test_input_PR($_POST['productDescription_edit']);
+        if (isset($_POST[$descriptionField])) {
+            $description = ProductsFrontEndController::test_input($_POST[$descriptionField]);
         } else {
-            echo "<script>document.getElementById('errDescription_edit').innerHTML = 'Insert product description';
-			document.getElementById('editProduct').style.display = 'inline';</script>";
-            return false;
+            echo self::renderTemplate("../templates/products_template.php", ["errorMessage" => "Invalid request. Product description field is missing."]);	
+            return;
         }
-        if ($_POST['productPrice_edit']) {
-            $price = ProductsFrontEndController::test_input_PR($_POST['productPrice_edit']);
+        if ($_POST[$priceField]) {
+            $price = ProductsFrontEndController::test_input($_POST[$priceField]);
             if (is_numeric($price)) {
                 $price = round($price, 2);
             } else {
-                echo "not a number";
-                return false;
+                echo self::renderTemplate("../templates/products_template.php", ["errorMessage" => "Invalid request. Price field is not a number."]);
+                return;
             }
-        }
-        if (isset($_POST['categoryOfProduct_edit'])) {
-            foreach ($_POST['categoryOfProduct_edit'] as $kat) {
+        }        
+        if (isset($_POST[$categoriesFiled])) {
+            foreach ($_POST[$categoriesFiled] as $kat) {
                 $category = new Category();
                 $category->setID($kat);
                 $product->addCategory($category);
             }
+        } else {
+            echo self::renderTemplate("../templates/products_template.php", ["errorMessage" => "Invalid request. Categories field is missing."]);
+            return;
         }
-        $product->setID($id);
         $product->setName($name);
         $product->setDescription($description);
         $product->setPrice($price);
         $product->setID_admin($_SESSION['user_ID']);
         
-        //check if user made any change
-        $productInDB = new Product();
-        $productInDB->setID($product->getID());
-        $productInDB->getProduct(array("ID" => $productInDB->getID()));
-        $equal = $product->isEqual($productInDB);
-
-        if ($equal && $_FILES["productPhoto_edit"]['tmp_name'][0] == "") {
-            //inform user that he made no change of data
-            include_once	"../templates/products_template.php";
-            die();
-        } else {
-            if (!$equal) {
-                $sgn = $product->editProduct();
-                echo $sgn ? "" : "DB insert was not done.";
-            }
-            if ($_FILES["productPhoto_edit"]['tmp_name'][0] != "") {
-                $destinationFolder = "../public/images/imagesProducts/".$product->getID()."_/";
-                $msgOut = "";
-                if (!file_exists($destinationFolder)) {
-                    mkdir($destinationFolder);
-                }
-                $lastPhotoNumber = Photo::getLastPhotoNumber($destinationFolder);
-                for ($i = 0; $i < count($_FILES["productPhoto_edit"]['tmp_name']); $i++) {
-                    Photo::photoUpload("productPhoto_edit", $destinationFolder, $lastPhotoNumber+$i+1, $msgOut, $i);
-                }
-            }
-        }
+        return $product;
     }
         
     public static function getProducts()
@@ -152,7 +119,7 @@ class ProductsFrontEndController
     {
         $product = new Product();
         $product->setID($id);
-        $product->getProduct(array("ID" => $id));
+        $product->getProduct(["ID" => $id]);
         echo json_encode($product);
     }
     

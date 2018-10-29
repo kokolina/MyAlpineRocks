@@ -7,7 +7,7 @@ use \ArrayObject;
 
 class UserRepository extends DBController
 {
-    public function insertUser(User $user)
+    public function insertUser(User $user) : bool
     {
         $pp = "";
         if ($user->getAccessRights()=="Administrator") {
@@ -36,7 +36,7 @@ class UserRepository extends DBController
             $stmt->setFetchmode(PDO::FETCH_ASSOC);
             $result = $stmt->fetchAll();
             $result1 = $result[0];
-            $user->setID($result1["ID"]);
+            $user->setID($result1["ID"] ?? 0);
         } catch (PDOException $e) {
             $user->setERRStatus("baza", $e->getMessage());
             return false;
@@ -44,7 +44,7 @@ class UserRepository extends DBController
         return true;
     }
 
-    public function editUser(User $user, User $exUser)
+    public function editUser(User $user, User $exUser) : bool
     {
         $userRights = "";
         if ($user->getAccessRights()=="Administrator") {
@@ -82,7 +82,7 @@ class UserRepository extends DBController
         return true;
     }
     
-    public function deleteUser(User $user)
+    public function deleteUser(User $user) : bool
     {
         $this->connection->beginTransaction();
         
@@ -101,7 +101,6 @@ class UserRepository extends DBController
             
             $this->connection->commit();
         } catch (PDOException $e) {
-            echo "<br>Error UserRepositoru 1: ".$e->getMessage();
             $user->setERRStatus("baza", $e->getMessage());
             $this->connection->rollback();
             return false;
@@ -110,7 +109,7 @@ class UserRepository extends DBController
         return true;
     }
     
-    public function getUser(User $user, array $columnValuePairs)
+    public function getUser(User $user, array $columnValuePairs) : bool
     {
         $query = "SELECT * FROM onlineshop.users WHERE ";
         $i = 0;
@@ -133,16 +132,16 @@ class UserRepository extends DBController
         
         if (count($result) == 1) {
             $result1 = $result[0];
-            $user->setID($result1["ID"]);
-            $user->setName($result1["Name"]);
-            $user->setLastName($result1["Lastname"]);
-            $user->setUsername($result1["Username"]);
-            $user->setEmail($result1["Email"]);
-            $user->setPassword($result1["Password"]);
-            $user->setLocked($result1["Locked"]);
-            $user->setAccessRights($result1["Access_rights"]);
-            $user->setAPIKey($result1["API_key"]);
-            $user->setStatus($result1["Status"]);
+            $user->setID($result1["ID"] ?? 0);
+            $user->setName($result1["Name"] ?? "");
+            $user->setLastName($result1["Lastname"] ?? "");
+            $user->setUsername($result1["Username"] ?? "");
+            $user->setEmail($result1["Email"] ?? "");
+            $user->setPassword($result1["Password"] ?? "");
+            $user->setLocked($result1["Locked"] ?? 0);
+            $user->setAccessRights($result1["Access_rights"] ?? "R");
+            $user->setAPIKey($result1["API_key"] ?? "");
+            $user->setStatus($result1["Status"] ?? 0);
             $user->setERRStatus("ok", "ok");
             return true;
         } elseif (count($result) > 1) {
@@ -154,16 +153,14 @@ class UserRepository extends DBController
         }
     }
         
-    public function lockUser(User $user)
+    public function lockUser(User $user) : bool
     {
         $query = "UPDATE onlineshop.users SET Locked = Locked-1 WHERE Locked>0 AND Email = '".$user->getEmail()."' AND Status = '1'";
         $stmt = $this->connection->prepare($query);
         try {
             $stmt->execute();
         } catch (PDOException $e) {
-            echo "<br>Error UserRepositoru 1: ".$e->getMessage();
-            
-            return false;
+           return false;
         }
         
         $query = "SELECT Locked FROM onlineshop.users WHERE Email = '".$user->getEmail()."' AND Status = '1'";
@@ -171,13 +168,11 @@ class UserRepository extends DBController
         try {
             $stmt->execute();
         } catch (PDOException $e) {
-            echo "<br>Error UserRepositoru 2: ".$e->getMessage();
             return false;
         }
         $stmt->setFetchmode(PDO::FETCH_ASSOC);
         $result = $stmt->fetchAll();
         if (count($result)!=1) {
-            echo "<br>UserRepository error 3! Number in resultset:".count($result);
             return false;
         } else {
             $row=$result[0];
@@ -186,26 +181,26 @@ class UserRepository extends DBController
         }
     }
     
-    public function unlockUser(User $user)
+    public function unlockUser(User $user) : bool
     {
         $query = "UPDATE onlineshop.users SET Locked = 3 WHERE Email = '".$user->getEmail()."' AND Status = '1'";
         $stmt = $this->connection->prepare($query);
         try {
             $stmt->execute();
+            return true;
         } catch (PDOException $e) {
-            echo "<br>Error UserRepositoru 1: ".$e->getMessage();
             return false;
         }
     }
         
-    public function getUsers(ArrayObject $users)
+    public function getUsers(ArrayObject $users) : bool
     {
         $query = "SELECT * FROM onlineshop.users WHERE Status = '1'";
         $stmt = $this->connection->prepare($query);
         try {
             $stmt->execute();
         } catch (PDOException $p) {
-            $users[] = array(0 => "DATABASE ERROR 2: ".$p->getMessage());
+            $users[] = [0 => "DATABASE ERROR 2: ".$p->getMessage()];
             return false;
         }
         $stmt->setFetchmode(PDO::FETCH_ASSOC);
@@ -214,31 +209,30 @@ class UserRepository extends DBController
         if (count($result) > 0) {
             for ($i = 0; $i<count($result); $i++) {
                 $row = $result[$i];
-                $users[$i] = new User($row['Email']);
-                $users[$i]->setID($row['ID']);
-                $users[$i]->setName($row["Name"]);
-                $users[$i]->setLastName($row["Lastname"]);
-                $users[$i]->setUsername($row["Username"]);
-                $users[$i]->setPassword($row["Password"]);
-                $users[$i]->setLocked($row["Locked"]);
-                $users[$i]->setAccessRights($row["Access_rights"]);
+                $users[$i] = new User($row['Email'] ?? "");
+                $users[$i]->setID($row['ID'] ?? 0);
+                $users[$i]->setName($row["Name"] ?? "");
+                $users[$i]->setLastName($row["Lastname"] ?? "");
+                $users[$i]->setUsername($row["Username"] ?? "");
+                $users[$i]->setPassword($row["Password"] ?? "");
+                $users[$i]->setLocked($row["Locked"] ?? 0);
+                $users[$i]->setAccessRights($row["Access_rights"] ?? "R");
             }
             return true;
         } else {
-            $users[] = array(0 => "There are no active users in data base.");
+            $users[] = [0 => "There are no active users in data base."];
             return false;
         }
     }
     
-    public function generateAPIKey(User $user)
+    public function generateAPIKey(User $user) : bool
     {
         $api = hash("sha256", $user->getPassword().$user->getAPIKey(), $raw_output = false);
-        $query = "UPDATE onlineshop.users SET API_key='".$api."' WHERE Email = '".$user->getEmail()."'";
+        $query = "UPDATE onlineshop.users SET API_key='".$api."' WHERE Email = '".$user->getEmail()."' AND ID = ".$user->getID();
         $stmt = $this->connection->prepare($query);
         try {
             $stmt->execute();
         } catch (PDOException $e) {
-            echo "<br>Error UserRepositoru 240: ".$e->getMessage();
             return false;
         }
         $user->setAPIKey($api);
@@ -250,7 +244,7 @@ class UserRepository extends DBController
         return "Users";
     }
     
-    public function logLogin(int $userID)
+    public function logLogin(int $userID) : bool
     {
         if ($userID != 49) {
             $query = "INSERT into onlineshop.login (ID_user) VALUES ('".$userID."')";
@@ -259,9 +253,9 @@ class UserRepository extends DBController
                 $stmt->execute();
                 return true;
             } catch (PDOException $e) {
-                echo "<br>Error Unsuccessful log insert: ".$e->getMessage();
                 return false;
             }
         }
+        return true;
     }
-}//classEnd
+}

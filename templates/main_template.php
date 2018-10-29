@@ -4,7 +4,7 @@
 	<title>Online Shop</title>
 	<meta name="" content="">
 	<link rel="icon" href="../public/images/sheep-icon-16-23819.png" type="image/x-icon"/>
-	<link rel="stylesheet" href="../design/WebShopKostaDesign.css"/>
+	<link rel="stylesheet" href="../design/Design.css"/>
 </head>
 <body >
 	<?php include "../templates/headerPage.php";?>

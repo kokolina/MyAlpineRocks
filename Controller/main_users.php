@@ -1,5 +1,5 @@
 <?php
-    use \Myalpinerocks\UsersFrontEndController;
+use \Myalpinerocks\UsersFrontEndController;
 use \Myalpinerocks\Photo;
 
 if (!isset($_SESSION)) {
@@ -18,10 +18,8 @@ if (!isset($_SESSION)) {
 
 if (isset($_POST['name_new'])) {
     UsersFrontEndController::createNewUser();
-    include_once "../templates/users_template.php";
 } elseif (isset($_POST['name_edit'])) {
     UsersFrontEndController::editUserData();
-    include_once "../templates/users_template.php";
 } elseif (isset($_REQUEST['email'])) {			//AJAX calls ::::  JS checks if email is registered when user tries to login
     $inputValue = UsersFrontEndController::test_input($_REQUEST['email']);
     UsersFrontEndController::isEmailRegistered($inputValue);

@@ -40,12 +40,12 @@ class CategoryRestHandler extends Rest
     {
         $category = new Category();
         $category->getCategory("ID", $id);
-        if ($category->getID() === null) {
+        if ($category->getID() === 0) {
             $statusCode = 404;
             $this->responseData["myalpine.rocks"]['error'] = 'Category not found!';
         } else {
             $statusCode = 200;
-            $this->responseData["category"] = array("ID" => $category->getID(), "name" => $category->getName(), "description" => $category->getDescription());
+            $this->responseData["category"] = ["ID" => $category->getID(), "name" => $category->getName(), "description" => $category->getDescription()];
         }
         //SEND RESPONSE
         $this->serverRespond($this->responseData, $statusCode);
@@ -66,7 +66,7 @@ class CategoryRestHandler extends Rest
         $category->setDescription($data["Description"]);
                     
         if ($category->insertCategory($category)) {
-            $this->responseData["myalpine.rocks"]["ok"] = 'Category saved.';
+            $this->responseData["myalpine.rocks"]["ok"] = 'Category saved. Category ID '.$category->getID();
             $this->serverRespond($this->responseData, 200);
         } else {
             $this->responseData["myalpine.rocks"]["error"] = 'Category was not saved. '.$category->getErr();
@@ -109,7 +109,7 @@ class CategoryRestHandler extends Rest
         }
     }
     
-    public function deleteCategory($data)
+    public function deleteCategory($data) : bool
     {
         $category = new Category();
         $category->setID($data['ID']);
@@ -124,8 +124,7 @@ class CategoryRestHandler extends Rest
         }
     }
     
-    //RESPONSE DATA HAS TO BE AN ARRAY
-    public function encodeHtml(ArrayObject $responseData)
+    public function encodeHtml(ArrayObject $responseData) : string
     {
         $htmlResponse = "<table border='1'><tr><td>Rb</td><td>ID</td><td>Name</td><td>Description</td></tr>";
         $i = 0;
@@ -148,6 +147,6 @@ class CategoryRestHandler extends Rest
         
         $arrayData = (array)$responseData;
         $this->arrayToXMLNodes($arrayData, $xml);
-        return $xml->asXML();
+        return $xml->asXML();    //asXML() returns both string and bool
     }
 }

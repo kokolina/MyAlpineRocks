@@ -5,7 +5,7 @@ use \ArrayObject;
 
 class ProductsRepository extends DBController
 {
-    public function getProducts()
+    public function getProducts() : ArrayObject
     {
         $products = new ArrayObject();
         $this->openDataBaseConnection();
@@ -18,12 +18,12 @@ class ProductsRepository extends DBController
                 for ($i = 0; $i<count($result);$i++) {
                     $pro = $result[$i];
                     $obj = new Product();
-                    $obj->setID($pro["ID"]);
-                    $obj->setName($pro["Name"]);
-                    $obj->setPrice($pro["Price"]);
-                    $obj->setDescription($pro["Description"]);
-                    $obj->setStatus($pro["Status"]);
-                    $obj->setPhotos($this->getPicturesOfProduct($pro['ID']));
+                    $obj->setID($pro["ID"] ?? 0);
+                    $obj->setName($pro["Name"] ?? "");
+                    $obj->setPrice($pro["Price"] ?? 0);
+                    $obj->setDescription($pro["Description"] ?? "");
+                    $obj->setStatus($pro["Status"] ?? 0);
+                    $obj->setPhotos($this->getPicturesOfProduct($pro['ID'] ?? 0));
                     $this->getCategoriesOfProduct($obj);
                     $products[] = $obj;
                 }
@@ -39,7 +39,7 @@ class ProductsRepository extends DBController
         }
     }
         
-    public function getCategoriesOfProduct(Product $product)
+    public function getCategoriesOfProduct(Product $product) : bool
     {
         $query = "SELECT KP.ID_product, KP.ID_category, K.Name 
 					FROM onlineshop.product_category AS KP 
@@ -54,8 +54,8 @@ class ProductsRepository extends DBController
                 for ($i = 0; $i<count($result);$i++) {
                     $kat = $result[$i];
                     $category = new Category();
-                    $category->setName($kat["Name"]);
-                    $category->setID($kat["ID_category"]);
+                    $category->setName($kat["Name"] ?? "");
+                    $category->setID($kat["ID_category"] ?? "");
                     $product->addCategory($category);
                 }
                 return true;
@@ -63,20 +63,19 @@ class ProductsRepository extends DBController
                 return false; //Empty table
             }
         } catch (PDOException $e) {
-            echo $e->getMessage();
             return false;
         }
     }
     
-    public function getPicturesOfProduct(int $productID)
+    public function getPicturesOfProduct(int $productID) : array
     {
         $photosArray = Photo::getPhotosFromFolder($GLOBALS['path_to_home']."public/images/imagesProducts/".$productID."_/");
         return $photosArray;
     }
     
-    public function insertProduct(Product $product)
+    public function insertProduct(Product $product) : bool
     {
-        $id = $this->vratiIDPoslednjegSloga("products");
+        $id = $this->getLastId("products");
         $product->setID($id+1);
         $query1 = "INSERT INTO onlineshop.products(Name, Description, Price) VALUES ('".$product->getName()."','".$product->getDescription()."','".$product->getPrice()."')";
         $query2 = "INSERT INTO onlineshop.products_log(ID_product,Name, Description, Price,Status,ID_admin) VALUES 
@@ -86,7 +85,7 @@ class ProductsRepository extends DBController
         $kat = $product->getCategories();
         for ($i = 0; $i<count($kat);$i++) {
             $query3 = "INSERT INTO onlineshop.product_category (ID_category, ID_product) VALUES ('".$kat[$i]->getID()."','".$product->getID()."')";
-            $idKP = $this->vratiIDPoslednjegSloga("product_category")+1+$i;
+            $idKP = $this->getLastId("product_category")+1+$i;
             $queryArr[$br] = $query3;
             $br++;
                 
@@ -110,14 +109,14 @@ class ProductsRepository extends DBController
         
             $this->connection->commit();
         } catch (PDOException $e) {
-            echo $e->getMessage();
+            $this->closeDataBaseConnection();
             return false;
         }
         $this->closeDataBaseConnection();
         return true;
     }
 
-    public function getProduct(array $columnValuePairs, Product $product)
+    public function getProduct(array $columnValuePairs, Product $product) : bool
     {
         $query = "SELECT * FROM onlineshop.products WHERE";
         $i = 0;
@@ -133,12 +132,12 @@ class ProductsRepository extends DBController
             $result = $stmt->fetchAll();
             if (count($result) == 1) {
                 $p = $result[0];
-                $product->setID($p['ID']);
-                $product->setName($p['Name']);
-                $product->setDescription($p['Description']);
-                $product->setPrice($p['Price']);
-                $product->setStatus($p['Status']);
-                $product->setPhotos($this->getPicturesOfProduct($p['ID']));
+                $product->setID($p['ID'] ?? 0);
+                $product->setName($p['Name'] ?? "");
+                $product->setDescription($p['Description'] ?? "");
+                $product->setPrice($p['Price'] ?? 0);
+                $product->setStatus($p['Status'] ?? 0);
+                $product->setPhotos($this->getPicturesOfProduct($p['ID'] ?? 0));
             } else {
                 $msg = (count($result) < 1) ? "Empty result." : "DB inconsistence.";
                 $product->setErr($msg);
@@ -151,7 +150,7 @@ class ProductsRepository extends DBController
         if ($this->getCategoriesOfProduct($product)) {
             return true;
         } else {
-            $product->setErr("Prodac has no parent category. ERROR. ");
+            $product->setErr("Product has no parent category. ERROR. ");
             return false;
         }
     }
@@ -218,7 +217,7 @@ class ProductsRepository extends DBController
         $queryArray[] = "UPDATE onlineshop.product_category SET Status = '0' WHERE ID_product = '".$product->getID()."'";
     }
     
-    public function getTableName()
+    public function getTableName() : string
     {
         return "Products";
     }

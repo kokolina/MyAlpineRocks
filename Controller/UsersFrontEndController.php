@@ -3,12 +3,10 @@ namespace Myalpinerocks;
 
 use \ArrayObject;
 
-class UsersFrontEndController
+class UsersFrontEndController extends BaseController
 {
-    public static function loginUser()
+    public static function loginUser() : User
     {
-        $email = $pass = "";
-    
         if (!empty($_POST['email'])) {
             if (filter_var($_POST["email"], FILTER_SANITIZE_EMAIL)== true) {
                 $email = UsersFrontEndController::test_input($_POST['email']);
@@ -17,8 +15,7 @@ class UsersFrontEndController
                 header("Location: ".$GLOBALS['indexPage']);
                 exit;
             }
-        }
-        
+        }        
         if (!empty($_POST['password'])) {
             $pass = UsersFrontEndController::test_input($_POST['password']);
         } else {
@@ -31,97 +28,141 @@ class UsersFrontEndController
         $user->logIn();
         return $user;
     }
-    
-    public static function test_input($data)
-    {
-        $data = trim($data);
-        $data = stripslashes($data);
-        $data = htmlspecialchars($data);
-        $data = addslashes($data);
-        return $data;
-    }
 
     public static function createNewUser()
     {
-        $name = $lastname = $email = $accessRights = $username = $password = $password_2 = "";
+        $user = new User(); 
+        $user = self::parseUserForm('name_new', 'lastname_new', 'email_new', 'access_rights_new', 'username_new', 'password_new_1', 'password_new_2', $user);
+                
+        if ($user->newUser()) {
+        	   $msg = "";
+            $msg = Photo::photoUpload("profilePhoto_new", "../public/images/", $user->getId(), $msg, "single") ? "" : $msg;
+            echo self::renderTemplate("../templates/users_template.php", ["errorMessage" => $msg]);	
+            return;
+        } else {
+            echo self::renderTemplate("../templates/users_template.php", ["errorMessage" => "Error. User not saved.".$user->getErrMsg()]);	
+            return;
+        }
+    }
     
-        if (!empty($_POST['name_new'])) {
-            $name = UsersFrontEndController::test_input($_POST['name_new']);
-        } else {
-            //potencijalno includujem stranicu, prikazem div za unos, popunim polja i prikazem poruku...suvise koda :(
-            echo "<script>document.getElementById('errIme_new').innerHTML = 'Insert name';
-			document.getElementById('createNewUser').style.display = 'inline';</script>";
-            return false;
-        }
-        if (!empty($_POST['lastname_new'])) {
-            $lastname = UsersFrontEndController::test_input($_POST['lastname_new']);
-        } else {
-            echo "<script>document.getElementById('errPrezime_new').innerHTML = 'Insert lastname.';
-			document.getElementById('createNewUser').style.display = 'inline';</script>";
-            return false;
-        }
-        if (!empty($_POST['email_new'])) {
-            if (filter_var($_POST['email_new'], FILTER_SANITIZE_EMAIL)) {
-                $email = UsersFrontEndController::test_input($_POST['email_new']);
+    public static function editUserData()
+    {
+        $user = new User();
+        
+        $user = self::parseUserForm('name_edit', 'lastname_edit', 'email_edit', 'access_rights_edit', 'username_edit', 'password_edit', 'password_edit_1', $user);        
+        
+        if (!empty($_POST['locked'])) {
+            $sgn = UsersFrontEndController::test_input($_POST['locked']);
+            if ($sgn == "locked") {
+                $locked = 0;
             } else {
-                echo "<script>document.getElementById('errEmail_new').innerHTML = 'Email nije validan';
-				document.getElementById('createNewUser').style.display = 'inline';</script>";
-                return false;
+                $locked = 3;
             }
         } else {
-            echo "<script>document.getElementById('errEmail_new').innerHTML = 'Please insert email'; 
-			document.getElementById('createNewUser').style.display = 'inline';</script>";
-            return false;
+            echo self::renderTemplate("../templates/users_template.php", ["errorMessage" => "Invalid request. Field 'locked' not defined."]);	
+            return;	
         }
-        if (!empty($_POST['access_rights_new'])) {
-            $accessRights = UsersFrontEndController::test_input($_POST['access_rights_new']);
+        if (!empty($_POST["UserID_edit"])) {
+            $ID = UsersFrontEndController::test_input($_POST["UserID_edit"]);
         } else {
-            echo "<script>document.getElementById('errAccessRights_new').innerHTML = 'Please chose user access rights';
-			document.getElementById('createNewUser').style.display = 'inline';</script>";
-            return false;
-        }
-        if (!empty($_POST['username_new'])) {
-            $username = UsersFrontEndController::test_input($_POST['username_new']);
+            echo self::renderTemplate("../templates/users_template.php", ["errorMessage" => "Invalid request. Requesting form is not identified."]);	
+            return;	
+        }            
+        $user->setID($ID);
+        $user->setLocked($locked);
+        
+        $msg = "";
+        if ($user->editUser() || $_FILES['profilePhoto_edit']['name']) {
+            if ($_FILES['profilePhoto_edit']['name'] != "") {
+                $msg = Photo::photoUpload("profilePhoto_edit", "../public/images/", $ID, $msg, "single") ? "" : $msg;
+            }
         } else {
-            echo "<script>document.getElementById('errUsername_new').innerHTML = 'Please insert username';
-			document.getElementById('createNewUser').style.display = 'inline';</script>";
-            return false;
+            echo self::renderTemplate("../templates/users_template.php", ["errorMessage" => "Error. User not saved.".$user->getErrMsg()]);	
+            return;
         }
-        if (!empty($_POST['password_new_1'])) {
-            $password = UsersFrontEndController::test_input($_POST['password_new_1']);
+        echo self::renderTemplate("../templates/users_template.php", ["errorMessage" => $msg]);	
+        return;
+    }
+    
+    public static function parseUserForm(string $nameField, string $lastnameField, string $emailField, string $accessRightsField, 
+    										string $usernameField, string $passwordField_1, string $passwordField_2, User $user)
+    {
+        if (!empty($_POST[$nameField])) {
+            $name = UsersFrontEndController::test_input($_POST[$nameField]);
         } else {
-            echo "<script>document.getElementById('errPass1_new').innerHTML = 'Unesite lozinku';
-			document.getElementById('createNewUser').style.display = 'inline';</script>";
-            return false;
+            echo self::renderTemplate("../templates/users_template.php", ["errorMessage" => "Invalid request. Name field is missing."]);	
+            return;
         }
-        if (!empty($_POST['password_new_2'])) {
-            $password_2 = UsersFrontEndController::test_input($_POST['password_new_2']);
+        if (!empty($_POST[$lastnameField])) {
+            $lastname = UsersFrontEndController::test_input($_POST[$lastnameField]);
+        } else {
+            echo self::renderTemplate("../templates/users_template.php", ["errorMessage" => "Invalid request. Lastname field is missing."]);	
+            return;
+        }
+        if (!empty($_POST[$emailField])) {
+            if (filter_var($_POST[$emailField], FILTER_SANITIZE_EMAIL)) {
+                $email = UsersFrontEndController::test_input($_POST[$emailField]);
+            } else {
+                echo self::renderTemplate("../templates/users_template.php", ["errorMessage" => "Invalid request. Email not in valid form."]);	
+                return;
+            }
+        } else {
+            echo self::renderTemplate("../templates/users_template.php", ["errorMessage" => "Invalid request. Email field is missing."]);	
+            return;
+        }
+        if (!empty($_POST[$accessRightsField])) {
+            $accessRights = UsersFrontEndController::test_input($_POST[$accessRightsField]);
+        } else {
+            echo self::renderTemplate("../templates/users_template.php", ["errorMessage" => "Invalid request. User rights field is missing."]);	
+            return;
+        }
+        if (!empty($_POST[$usernameField])) {
+            $username = UsersFrontEndController::test_input($_POST[$usernameField]);
+        } else {
+            echo self::renderTemplate("../templates/users_template.php", ["errorMessage" => "Invalid request. Username field is missing."]);	
+            return;
+        }
+        
+        if (!empty($_POST[$passwordField_1])) {
+            $password = UsersFrontEndController::test_input($_POST[$passwordField_1]);
+            if ($password != "no change") {
+                if (!preg_match('/([A-Z]|[a-z])+[0-9]+/', $password)) {
+                    echo self::renderTemplate("../templates/users_template.php", ["errorMessage" => "Invalid request. Password complexity is weak."]);	
+                    return;
+                }
+            }
+        } else {
+            echo self::renderTemplate("../templates/users_template.php", ["errorMessage" => "Invalid request. Password field is missing."]);	
+            return;
+        }
+        if (!empty($_POST[$passwordField_2])) {
+            $password_2 = UsersFrontEndController::test_input($_POST[$passwordField_2]);
             if ($password_2 != $password) {
-                echo "<script>document.getElementById('errPass2_new').innerHTML = 'Try again! Entered passwords are not same.'</script>";
-                return false;
+                echo self::renderTemplate("../templates/users_template.php", ["errorMessage" => "Invalid request. Passwords do not match."]);	
+                return;	
             }
         } else {
-            echo "<script>document.getElementById('errPass2_new').innerHTML = 'Enter password'</script>";
-            return false;
+            echo self::renderTemplate("../templates/users_template.php", ["errorMessage" => "Invalid request. Password_repeated field is missing."]);	
+            return;	
         }
-        $user = new User($email);
+       
         $user->setName($name);
         $user->setLastName($lastname);
+        $user->setEmail($email);
         $user->setAccessRights($accessRights);
         $user->setUsername($username);
         $user->setPassword($password);
         
-        if ($user->newUser()) {
-            $msg = "";
-            Photo::photoUpload("profilePhoto_new", "../public/images/", $user->getId(), $msg, "single");
-            echo $msg;
-        } else {
-            echo "<script>alert('Greska kod unosa korisnicke slike. ".$msg."');</script>";
-        }
+        return $user;
     }
 
-
-    public static function deletePhoto($targetFolder, $fileName)
+    public static function isEmailRegistered($email)
+    {
+        $testUser = new User($email);
+        echo $testUser->getUser($testUser, ["Email" => $email]) ? "*1" : "*2";
+    }
+    
+    public static function deletePhoto($targetFolder, $fileName) : bool
     {
         //all profile photos are .jpg because it is forced that way when uploading
         $targetFileName = $targetFolder.$fileName.".jpg";
@@ -137,123 +178,6 @@ class UsersFrontEndController
         }
     }
 
-    public static function editUserData()
-    {
-        $ID = $name = $lastname = $email = $accessRights = $username = $password = $password_2  = $locked = "";
-    
-        if (!empty($_POST['name_edit'])) {
-            $name = UsersFrontEndController::test_input($_POST['name_edit']);
-        } else {
-            echo "<script>document.getElementById('errName_edit').innerHTML = 'Please insert name.';
-			document.getElementById('editUserDIV').style.display = 'inline';</script>";
-            return false;
-        }
-        if (!empty($_POST['lastname_edit'])) {
-            $lastname = UsersFrontEndController::test_input($_POST['lastname_edit']);
-        } else {
-            echo "<script>document.getElementById('errLastname_edit').innerHTML = 'Please insert lastname.';
-			document.getElementById('editUserDIV').style.display = 'inline';</script>";
-            return false;
-        }
-        if (!empty($_POST['email_edit'])) {
-            if (filter_var($_POST['email_edit'], FILTER_SANITIZE_EMAIL)) {
-                $email = UsersFrontEndController::test_input($_POST['email_edit']);
-            } else {
-                echo "<script>document.getElementById('errEmail_edit').innerHTML = 'Email format is not valid.';
-				document.getElementById('editUserDIV').style.display = 'inline';</script>";
-                return false;
-            }
-        } else {
-            echo "<script>document.getElementById('errEmail_new').innerHTML = 'Insert user email'; 
-			document.getElementById('editUserDIV').style.display = 'inline';</script>";
-            return false;
-        }
-        if (!empty($_POST['access_rights_edit'])) {
-            $accessRights = UsersFrontEndController::test_input($_POST['access_rights_edit']);
-        } else {
-            echo "<script>document.getElementById('errAccessRights_edit').innerHTML = 'Please chose user type.';
-			document.getElementById('editUserDIV').style.display = 'inline';</script>";
-            return false;
-        }
-        if (!empty($_POST['username_edit'])) {
-            $username = UsersFrontEndController::test_input($_POST['username_edit']);
-        } else {
-            echo "<script>document.getElementById('errUsername_edit').innerHTML = 'Please insert username';
-			document.getElementById('editUserDIV').style.display = 'inline';</script>";
-            return false;
-        }
-        if (!empty($_POST['password_edit'])) {
-            $password = UsersFrontEndController::test_input($_POST['password_edit']);
-            if ($password != "no change") {
-                if (!preg_match('/([A-Z]|[a-z])+[0-9]+/', $password)) {
-                    echo 'Password is not secure enough.';
-                    return false;
-                }
-            }
-        } else {
-            echo "<script>document.getElementById('errPassword1_edit').innerHTML = 'Insert password';
-			document.getElementById('editUserDIV').style.display = 'inline';</script>";
-            return false;
-        }
-        if (!empty($_POST['password_edit_1'])) {
-            $password_2 = UsersFrontEndController::test_input($_POST['password_edit_1']);
-            if ($password_2 != $password) {
-                echo "<script>document.getElementById('errPassword2_edit').innerHTML = 'Entered passwords are not identical';
-				document.getElementById('editUserDIV').style.display = 'inline';</script>";
-                return false;
-            }
-        } else {
-            echo "<script>document.getElementById('errPassword2_edit').innerHTML = 'Insert password';
-			document.getElementById('editUserDIV').style.display = 'inline';</script>";
-            return false;
-        }
-        if (!empty($_POST['locked'])) {
-            $sgn = UsersFrontEndController::test_input($_POST['locked']);
-            if ($sgn == "locked") {
-                $locked = 0;
-            } else {
-                $locked = 3;
-            }
-        } else {
-            echo "<script>document.getElementById('errLocked').innerHTML = 'Please choose one of options bellow.';
-			document.getElementById('editUserDIV').style.display = 'inline';</script>";
-            return false;
-        }
-        if (!empty($_POST["UserID_edit"])) {
-            $ID = UsersFrontEndController::test_input($_POST["UserID_edit"]);
-        } else {
-            echo "<script>document.getElementById('errUserImg_edit').innerHTML = 'Greska sa ID korisnika.';
-			document.getElementById('editUserDIV').style.display = 'inline';</script>";
-            return false;
-        }
-    
-        $user = new User($email);
-        $user->setID($ID);
-        $user->setName($name);
-        $user->setLastName($lastname);
-        $user->setAccessRights($accessRights);
-        $user->setUsername($username);
-        $user->setPassword($password);
-        $user->setLocked($locked);
-    
-        echo $user->getErrMsg();
-    
-        if ($user->editUser() || $_FILES['profilePhoto_edit']['name']) {
-            if ($_FILES['profilePhoto_edit']['name'] != "") {
-                $msg = "";
-                echo Photo::photoUpload("profilePhoto_edit", "../public/images/", $ID, $msg, "single") ? "" : "ERROR MSG BEFC :: ".$msg;
-            }
-        } else {
-            echo "ERROR MSG BEFC::40 ".$user->getErrMsg();
-        }
-    }
-
-    public static function isEmailRegistered($email)
-    {
-        $testUser = new User($email);
-        echo $testUser->getUser($testUser, array("Email" => $email)) ? "*1" : "*2";
-    }
-
     public static function loadUsers()
     {
         $testUser = new User($_SESSION['email']);
@@ -263,16 +187,15 @@ class UsersFrontEndController
             $str = '{"user":"'.$_SESSION['user_rights'].'","Users":'.json_encode($userArray, 110).'}';
             echo $str;
         } else {
-            $str = '{"user":"'.$_SESSION['user_rights'].'","Users":'.json_encode(array(0 => "error",1 => "Empty result. Error 444.")).'}';
+            $str = '{"user":"'.$_SESSION['user_rights'].'","Users":'.json_encode([0 => "error",1 => $userArray[0]]).'}';
             echo $str;
-            ;
         }
     }
 
     public static function loadUser($userID)
     {
         $testUser = new User($_SESSION['email']);
-        if ($testUser->getUser($testUser, array("ID" => $userID))) {
+        if ($testUser->getUser($testUser, ["ID" => $userID])) {
             echo json_encode($testUser);
         } else {
             echo "*2"; //no email in database
@@ -284,8 +207,8 @@ class UsersFrontEndController
         if ($userID == $_SESSION['user_ID']) {
             echo "2";
         } else {
-            $admin = new User($_SESSION['email']); //admin user is used just for making an User object. getUser() function will write requested user's data into the object
-            $admin->getUser($admin, array("ID" => $userID));
+            $admin = new User($_SESSION['email']); //admin user is used just for making an User object. getUser() function will write real user's data into the object
+            $admin->getUser($admin, ["ID" => $userID]);
             echo $admin->deleteUser($admin) ? "1" : "0";
         }
         $_REQUEST['DEL'] = null;
@@ -294,12 +217,13 @@ class UsersFrontEndController
     public static function isUsernameAvailable($username)
     {
         $testUser = new User($_SESSION['email']);
-        echo $testUser->getUser($testUser, array("Username" => $username)) ? "*1" : "*2";
+        echo $testUser->getUser($testUser, ["Username" => $username]) ? "*1" : "*2";
     }
 
     public static function askForAPI($passwordAPI)
     {
-        $user = new User($_SESSION['email']);
+        $user = new User();
+        $user->getUser($user, ["Email" => $_SESSION['email']]);
         $q = $user->validatePassword($passwordAPI);
         if ($q) {
             if ($user->generateAPIKey()) {
@@ -311,4 +235,4 @@ class UsersFrontEndController
             echo '{"code": "err", "msg":"Wrong password!", "key":"'.null.'"}';
         }
     }
-}//classEnd
+}

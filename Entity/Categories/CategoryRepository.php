@@ -7,9 +7,9 @@ use \ArrayObject;
 
 class CategoryRepository extends DBController
 {
-    public function insertCategory(Category $category)
+    public function insertCategory(Category $category) : bool
     {
-        $id = $this->vratiIDPoslednjegSloga("categories");
+        $id = $this->getLastId("categories");
         $category->setID($id+1);
         $this->openDataBaseConnection();
         $this->connection->beginTransaction();
@@ -37,7 +37,7 @@ class CategoryRepository extends DBController
         return true;
     }
 
-    public function editCategory(Category $newCategory)
+    public function editCategory(Category $newCategory) : bool
     {
         $c = $newCategory->getParentCategory()->getID();
         $query1 = "UPDATE onlineshop.categories SET Name = '".$newCategory->getName()."', Description = '".$newCategory->getDescription()."', Parent_category = ".$c." WHERE ID = '".$newCategory->getID()."'";
@@ -67,7 +67,7 @@ class CategoryRepository extends DBController
         return true;
     }
     
-    public function deleteCategory(Category $k)
+    public function deleteCategory(Category $k) : bool
     {
         $query1 =  "INSERT INTO onlineshop.categories_log (ID_category, Name, Description, Parent_category, Status, ID_admin) 
 					SELECT K.ID, K.Name, K.Description, K.Parent_category, K.Status, KO.ID
@@ -108,7 +108,7 @@ class CategoryRepository extends DBController
         return true;
     }
     
-    public function getCategory(Category $category, string $polje, string $vrednost)
+    public function getCategory(Category $category, string $polje, string $vrednost) : bool
     {
         $query = "SELECT * FROM onlineshop.categories WHERE ".$polje." = '".$vrednost."' AND Status = '1'";
         
@@ -126,13 +126,13 @@ class CategoryRepository extends DBController
         
         if (count($result) == 1) {
             $result1 = $result[0];
-            $category->setID($result1["ID"]);
-            $category->setName($result1["Name"]);
-            $category->setDescription($result1["Description"]);
+            $category->setID($result1["ID"] ?? 0);
+            $category->setName($result1["Name"] ?? "");
+            $category->setDescription($result1["Description"] ?? "");
             $pCat = new Category();
-            $pCat->setID($result1["Parent_category"]);
+            $pCat->setID($result1["Parent_category"] ?? 0);
             $category->setParentCategory($pCat);
-            $category->setStatus($result1["Status"]);
+            $category->setStatus($result1["Status"] ?? 0);
             
             $this->closeDataBaseConnection();
             return true;
@@ -147,7 +147,7 @@ class CategoryRepository extends DBController
         }
     }
     
-    public function getCategories(ArrayObject $catArray)
+    public function getCategories(ArrayObject $catArray) : string
     {
         $this->openDataBaseConnection();
         $query = "SELECT * FROM onlineshop.categories WHERE Status='1'";
@@ -160,26 +160,28 @@ class CategoryRepository extends DBController
                 for ($i = 0; $i<count($result);$i++) {
                     $cat = $result[$i];
                     $k = new Category();
-                    $k->setID($cat["ID"]);
-                    $k->setName($cat["Name"]);
-                    $k->setDescription($cat["Description"]);
+                    $k->setID($cat["ID"] ?? 0);
+                    $k->setName($cat["Name"] ?? "");
+                    $k->setDescription($cat["Description"] ?? "");
                     $parent = new Category();
-                    $parent->setID($cat["Parent_category"]);
+                    $parent->setID($cat["Parent_category"] ?? 0);
                     $k->setParentCategory($parent);
-                    $k->setStatus($cat["Status"]);
+                    $k->setStatus($cat["Status"] ?? 0);
                     $catArray[] = $k;
                 }
+                $this->closeDataBaseConnection();
                 return $str;
             } else {
+                $this->closeDataBaseConnection();
                 return '"err":"*1"'; //Empty table
             }
         } catch (PDOException $e) {
+            $this->closeDataBaseConnection();
             return '"err":"*2"';
         }
-        $this->closeDataBaseConnection();
     }
 
-    public function hasSubProducts(Category $category)
+    public function hasSubProducts(Category $category) : bool
     {
         $this->openDataBaseConnection();
         $query = "SELECT * FROM onlineshop.product_category WHERE Status = '1' AND ID_category = '".$category->getID()."'";
@@ -188,17 +190,20 @@ class CategoryRepository extends DBController
             $stmt->execute();
             $result = $stmt->fetchAll();
             if (count($result)>0) {
+                $this->closeDataBaseConnection();
                 return true;
             } else {
+                $this->closeDataBaseConnection();
                 return false; //Empty table
             }
         } catch (PDOException $e) {
-            return $e;
+            $this->closeDataBaseConnection();
+            return false;
         }
-        $this->closeDataBaseConnection();
+        
     }
     
-    public function getTableName()
+    public function getTableName() : string
     {
         return "Categories";
     }
