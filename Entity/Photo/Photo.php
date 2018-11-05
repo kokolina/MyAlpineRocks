@@ -13,7 +13,7 @@ class Photo
     }
     
     
-    public static function photoUpload(string $fileInputTagName, string $destinationFolder, string $photoName, string $msgOut, string $selectedFileNo)
+    public static function photoUpload(string $fileInputTagName, string $destinationFolder, string $photoName, string &$msgOut, string $selectedFileNo) : bool
     {
         $sgn = true;
         $destinationFileName = $destinationFolder.$photoName.".jpg";
@@ -43,7 +43,6 @@ class Photo
                     return false;
                 }
             } catch (Exception $e) {
-                echo "Greska: ".$e->getMessage();
                 $sgn = false;
                 return false;
             }
@@ -68,20 +67,19 @@ class Photo
         }
     }
     
-    public function isPhoto(string $tmpFilePath)
+    public function isPhoto(string $tmpFilePath) : bool
     {
         try {
             $formatCheck = getimagesize($tmpFilePath);
             return ($formatCheck !== false) ? true : false;
         } catch (Exception $e) {
-            echo "Error: ".$e->getMessage();
             return false;
         }
     }
 
     //function is used to find last inserted photo, so the ID of next one to add could be formed.
     //product photo's names are numbers
-    public static function getLastPhotoNumber(string $destinationFolder)
+    public static function getLastPhotoNumber(string $destinationFolder) : int
     {
         $filesArray = scandir($destinationFolder);
         $number = 0;
@@ -96,9 +94,9 @@ class Photo
         return $number;
     }
     //sourceFolder parameter has to end with "/"
-    public static function getPhotosFromFolder(string $sourceFolder)
+    public static function getPhotosFromFolder(string $sourceFolder) : array
     {
-        $photoNamesArray[] = null;
+        $photoNamesArray[] = null;   //if declared as [], it shows empty squares in table for products that have no photos
         $allFiles = glob($sourceFolder."*.*");   // ".$id."_
         for ($i=0; $i<count($allFiles); $i++) {
             if (substr($allFiles[$i], -4) == ".jpg") {
@@ -108,7 +106,7 @@ class Photo
         return $photoNamesArray;
     }
     
-    public static function deletePhotoP(string $path)
+    public static function deletePhotoP(string $path) : bool
     {
         if (file_exists($path)) {
             //DELETE FILE
@@ -123,12 +121,12 @@ class Photo
     }
     
     //    getters
-    public function getPath()
+    public function getPath() : string
     {
         return $this->path;
     }
 
-    public function getName()
+    public function getName() : string
     {
         return $this->name;
     }

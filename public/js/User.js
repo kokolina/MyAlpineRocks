@@ -162,6 +162,7 @@ function editUserData(input){
 	}else{
 		document.getElementById("createNewUser").style.display = "none";
 		document.getElementById("editUserDIV").style.display = "inline";
+		document.getElementById("errorMessage").style.display = "none";
 		
 		userEdit = JSON.parse(response);
 		document.getElementById("UserID_edit").value = input;		//!!! nije iz baze nego input
@@ -226,6 +227,7 @@ function deleteUser(input){
 function createUser(){
 	document.getElementById("editUserDIV").style.display = "none";
 	document.getElementById("createNewUser").style.display = "inline";
+	document.getElementById("errorMessage").style.display = "none";
 	document.getElementById("createNewUserFRM").reset();
 	newUser = {
 		name: false,

@@ -22,7 +22,7 @@ if ($clientEmail != null) {
     exit;
 }
 
-if ($user->getUser($user, array('Email' => $clientEmail))) {
+if ($user->getUser($user, ['Email' => $clientEmail])) {
     $rights = $user->getAccessRights();
     if ($user->getAPIKey() === $clientAPI) {
         //	VIEW

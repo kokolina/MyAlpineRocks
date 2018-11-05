@@ -149,12 +149,14 @@ function addProduct(){
 	
 	document.getElementById("newProduct").style.display = "inline";
 	document.getElementById("editProduct").style.display = "none";
+	document.getElementById("errorMessage").innerHTML = "";
 	
 }
 //fills in the form for editing product data
 function editProduct(id){
 	document.getElementById("newProduct").style.display = "none";
-	document.getElementById("editProduct").style.display = "inline";	
+	document.getElementById("editProduct").style.display = "inline";
+	document.getElementById("errorMessage").innerHTML = "";	
 	
 	var response = ajaxCall_prod("editProduct", id, "main_products.php");
 	var pr = JSON.parse(response);  //returns product data, without data about categroies of product

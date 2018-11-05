@@ -22,14 +22,12 @@ if (isset($_POST["submit_newCategory"])) {
     CategoriesFrontEndController::editCategory();
 } elseif (isset($_REQUEST['load'])) {
     CategoriesFrontEndController::getCategories();
-} elseif (isset($_REQUEST['id'])) {   //popunjavanje formulara za izmenu
-    $id = CategoriesFrontEndController::test_input_KAT($_REQUEST['id']);
-    CategoriesFrontEndController::getCategory($id);
-} elseif (isset($_REQUEST['delete'])) {
-    $del = CategoriesFrontEndController::test_input_KAT($_REQUEST['delete']);
-    CategoriesFrontEndController::deleteCategory($del);
+} elseif (isset($_REQUEST['id'])) { //fills the form for editing category data    
+    CategoriesFrontEndController::getCategory();
+} elseif (isset($_REQUEST['delete'])) {    
+    CategoriesFrontEndController::deleteCategory();
 } elseif (isset($_REQUEST['apiKey'])) {
     CategoriesFrontEndController::getAPIKey();
 } else {
-    include_once "../templates/categories_template.php";
+    echo CategoriesFrontEndController::renderTemplate("../templates/categories_template.php");
 }

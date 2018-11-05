@@ -31,7 +31,7 @@ abstract class DBController
         }
     }
 
-    public function vratiIDPoslednjegSloga(string $table)
+    public function getLastId(string $table)
     {
         $query = "SELECT * FROM onlineshop.".$table." ORDER BY ID DESC LIMIT 1";
         $this->openDataBaseConnection();

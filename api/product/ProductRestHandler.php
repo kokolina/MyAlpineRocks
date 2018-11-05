@@ -49,9 +49,9 @@ class ProductRestHandler extends Rest
     public function getProduct($id)
     {
         $product = new Product();
-        $product->getProduct(array("ID" => $id));
+        $product->getProduct(["ID" => $id]);
         
-        if ($product->getID() === null) {
+        if ($product->getID() === 0) {
             $statusCode = 404;
             $this->responseData["myalpinerocks"]['error'] = 'The product was not found!';
         } else {
@@ -110,7 +110,7 @@ class ProductRestHandler extends Rest
     public function editProduct($data)
     {
         $product = new Product();
-        $product->getProduct(array("ID" => $data["setID"]));
+        $product->getProduct(["ID" => $data["setID"]]);
         $product->setCategoryToNull();
         
         foreach ($data as $key => $value) {
@@ -143,7 +143,7 @@ class ProductRestHandler extends Rest
     {
         $product = new Product();
         $product->setID($data['id']);
-        if ($product->getProduct(array("ID" => $data['id']))) {
+        if ($product->getProduct(["ID" => $data['id']])) {
             if ($product->deleteProduct()) {
                 $this->responseData["myalpine.rocks"]["ok"] = "Product deleted. ";
                 $this->serverRespond($this->responseData, 200);
@@ -159,7 +159,7 @@ class ProductRestHandler extends Rest
         }
     }
     
-    public function encodeHtml(ArrayObject $response)
+    public function encodeHtml(ArrayObject $response) : string
     {
         $htmlResponse = "<table border='1'><tr><td>Rb</td><td>ID</td><td>Name</td>
 		                 <td>Description</td><td>Price</td><td>Parent</td><td>Photos</td></tr>";
@@ -198,14 +198,14 @@ class ProductRestHandler extends Rest
         return $htmlResponse;
     }
     
-    public function encodeXml(ArrayObject $responseData)
+    public function encodeXml(ArrayObject $responseData) 
     {
         // creating object of SimpleXMLElement
         $xml = new SimpleXMLElement('<?xml version="1.0"?><products></products>');
         
         $arrayData = (array)$responseData;
         $this->arrayToXMLNodes($arrayData, $xml);
-        return $xml->asXML();
+        return $xml->asXML();  //asXML() returns both string and bool
     }
     
     public function fillInRequestData_post(ArrayObject $data, ArrayObject $errorResponse)
@@ -240,7 +240,12 @@ class ProductRestHandler extends Rest
         }
         if (isset($_REQUEST['cat'])) {
             $i = 0;
-            foreach ($_REQUEST['cat'] as $key => $value) {
+            if(!is_array($_REQUEST['cat'])) {
+				$errorResponse[0]["error"] = 'Category parameter is not valid';
+                $this->serverRespond($errorResponse, 400);
+                exit;
+			}
+		    foreach ($_REQUEST['cat'] as $key => $value) {
                 $c = $this->test_input($value);
                 if (is_numeric($c)) {
                     $data['addCategory'][$i] = (int)$c;
@@ -250,7 +255,8 @@ class ProductRestHandler extends Rest
                     exit;
                 }
                 $i++;
-            }
+            }	
+			
         } else {
             $errorResponse[0]["error"] = 'Category parameter is missing';
             $this->serverRespond($errorResponse, 400);

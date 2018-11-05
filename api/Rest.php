@@ -4,44 +4,20 @@ namespace Myalpinerocks;
 use \SimpleXMLElement;
 use \ArrayObject;
 
-/*
-A simple RESTful webservices base class
-Following class has a couple of methods that can be commonly used in all REStful service handlers.
-One method is used to construct the response and another method is to hold the different
-HTTP status code and its respective messages. Such common methods can be added to this class
-and this can be made a base class for all RESTful handler classes.
-*/
 abstract class Rest
 {
     private $httpVersion = "HTTP/1.1";
     
-    /*
-    $contentType - Request Header parameter �Accept�. The protocol here is, when the request is sent,
-    it should set the Request header parameter �Accept� and send it. The values can be like
-    �application/json� or �application/xml� or �text/html�
-    */
     public function setHttpHeaders($contentType, $statusCode)
     {
         $statusMessage = $this -> getHttpStatusMessage($statusCode);
-        /*
-        The header() function sends a raw HTTP header to a client.It is important to notice that header()
-        must be called before any actual output is sent (kroz pozivanje echo) (In PHP 4 and later, you can use output
-        buffering to solve this problem)
-        */
-        
-        //delete this later
-        //header('Content-Type: application/pdf');
-        // It will be called downloaded.pdf
-        //header('Content-Disposition: attachment; filename="downloaded.pdf"');
-        // The PDF source is in original.pdf. Name of file must not have spaces.
-        //readfile('TheCleanCoder4chapt.pdf');
         header($this->httpVersion. " ". $statusCode ." ". $statusMessage);
         header("Content-Type:". $contentType);
     }
     
-    public function getHttpStatusMessage($statusCode)
+    public function getHttpStatusMessage($statusCode) : string
     {
-        $httpStatus = array(
+        $httpStatus = [
             100 => 'Continue',
             101 => 'Switching Protocols',
             200 => 'OK',
@@ -82,11 +58,12 @@ abstract class Rest
             502 => 'Bad Gateway',
             503 => 'Service Unavailable',
             504 => 'Gateway Timeout',
-            505 => 'HTTP Version Not Supported');
+            505 => 'HTTP Version Not Supported'
+            ];
         return ($httpStatus[$statusCode]) ? $httpStatus[$statusCode] : $status[500];
     }
     
-    public function test_input($data)
+    public function test_input($data) : string
     {
         $data = trim($data);
         $data = stripslashes($data);
@@ -107,7 +84,7 @@ abstract class Rest
         }
     }
     
-    public function encodeJson(ArrayObject $responseData)
+    public function encodeJson(ArrayObject $responseData) : string
     {
         return json_encode($responseData);
     }

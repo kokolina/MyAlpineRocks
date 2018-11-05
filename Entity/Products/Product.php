@@ -11,7 +11,6 @@ class Product implements JsonSerializable
     private $name;
     private $description;
     private $price;
-    private $valuta;
     private $status;
     private $categories;
     private $ID_admin;
@@ -21,15 +20,23 @@ class Product implements JsonSerializable
     public function __construct()
     {
         $this->repository = new ProductsRepository();
+        $this->id = 0;
+        $this->name = "";
+        $this->description = "";
+        $this->price = 0;
+        $this->status = 0;        
+        $this->ID_admin = 0;
+        $this->err = "";
+        $this->categories = [];
         $this->photos = new ArrayObject();
     }
     
-    public function getProducts()
+    public function getProducts() : ArrayObject
     {
         return $this->repository->getProducts();
     }
     
-    public function getProduct(array $paramValue)
+    public function getProduct(array $paramValue) : bool
     {
         $this->repository->openDataBaseConnection();
         $sgn = $this->repository->getProduct($paramValue, $this);
@@ -37,17 +44,17 @@ class Product implements JsonSerializable
         return $sgn;
     }
     
-    public function insertProduct()
+    public function insertProduct() : bool
     {
         return $this->repository->insertProduct($this);
     }
     
     //checks if categories of two products are the same
-    public function areCategoriesEqual(Product $proizvod)
+    public function areCategoriesEqual(Product $product) : bool
     {
         $sgnKat = false;
         $k1 = $this->getCategories();
-        $k2 = $proizvod->getCategories();
+        $k2 = $product->getCategories(); //srb
         if (count($k1) == count($k2)) {
             $br = 0;
             for ($i = 0; $i<count($k1); $i++) {
@@ -66,29 +73,29 @@ class Product implements JsonSerializable
     }
     
     //checks if product data are the same (doesn't check if categories of product are same')
-    public function areDataEqual(Product $proizvod)
+    public function areDataEqual(Product $product) : bool
     {
         $sgnP = false;
-        if (strtolower($this->getName()) == strtolower($proizvod->getName()) &&
-            strtolower($this->getDescription()) == strtolower($proizvod->getDescription()) &&
-            $this->getPrice() == $proizvod->getPrice()) {
+        if (strtolower($this->getName()) == strtolower($product->getName()) &&
+            strtolower($this->getDescription()) == strtolower($product->getDescription()) &&
+            $this->getPrice() == $product->getPrice()) {
             $sgnP = true;
         }
         return $sgnP;
     }
     
     //checks if the product has same data and same categories as product that is passed to method as argument
-    public function isEqual(Product $proizvod)
+    public function isEqual(Product $product) : bool
     {
-        $sgnKat = $this->areCategoriesEqual($proizvod);
-        $sgnP = $this->areDataEqual($proizvod);
+        $sgnKat = $this->areCategoriesEqual($product);
+        $sgnP = $this->areDataEqual($product);
         return($sgnKat&&$sgnP);
     }
         
-    public function editProduct()
+    public function editProduct() : bool
     {
         $oldProduct = new Product();
-        if ($oldProduct->getProduct(array("ID" => $this->getID()), $oldProduct)) {
+        if ($oldProduct->getProduct(["ID" => $this->getID()], $oldProduct)) {
             $queryArray = new ArrayObject();
             $quest = true;
             if (!$this->areDataEqual($oldProduct)) {
@@ -115,13 +122,13 @@ class Product implements JsonSerializable
         }
     }
     
-    public function getPhotosOfProduct()
+    public function getPhotosOfProduct() : bool
     {
         $this->setPhotos($this->repository->getPicturesOfProduct($this->getID()));
         return true;
     }
     
-    public function deleteProduct()
+    public function deleteProduct() : bool
     {
         $queryArray = new ArrayObject();
         $this->repository->prepareStatement_deleteProduct($this, $queryArray);
@@ -138,43 +145,39 @@ class Product implements JsonSerializable
         return get_object_vars($this);
     }
     //    getters
-    public function getID()
+    public function getID() : int
     {
         return $this->id;
     }
-    public function getName()
+    public function getName() : string
     {
         return $this->name;
     }
-    public function getDescription()
+    public function getDescription() : string
     {
         return $this->description;
     }
-    public function getPrice()
+    public function getPrice() : float
     {
         return $this->price;
     }
-    public function getValuta()
-    {
-        return $this->valuta;
-    }
-    public function getStatus()
+    public function getStatus() : int
     {
         return $this->status;
     }
-    public function getCategories()
+    public function getCategories() : array
     {
         return $this->categories;
     }
-    public function getID_admin()
+    public function getID_admin() : int
     {
         return $this->ID_admin;
     }
-    public function getErr()
+    public function getErr() : string
     {
         return $this->err;
     }
-    public function getPhotos()
+    public function getPhotos() : array
     {
         return $this->photos;
     }
@@ -195,22 +198,13 @@ class Product implements JsonSerializable
     {
         $this->price = $i;
     }
-    public function setValuta(string $i)
-    {
-        $this->valuta = new Valuta($i);
-    }
     public function setCategoryToNull()
     {
         $this->categories = null;
     }
     public function addCategory(Category $i)
     {
-        if (is_a($i, "\Myalpinerocks\Category")) {
-            $this->categories[] = $i;
-            return true;
-        } else {
-            return false;
-        }
+        $this->categories[] = $i;
     }
     public function setStatus(int $i)
     {

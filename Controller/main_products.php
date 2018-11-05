@@ -18,11 +18,9 @@ output_add_rewrite_var("token", $_SESSION['token']);
 
 $GLOBALS['path_to_home'] = '../';
 if (isset($_POST['submit_newProduct'])) {
-    ProductsFrontEndController::insertProduct();
-    include_once	"../templates/products_template.php";
+    ProductsFrontEndController::insertProduct();    
 } elseif (isset($_POST['submit_editProduct'])) {
-    ProductsFrontEndController::editProduct();
-    include_once	"../templates/products_template.php";
+    ProductsFrontEndController::editProduct();    
 } elseif (isset($_REQUEST['load'])) {
     ProductsFrontEndController::getProducts();
 } elseif (isset($_REQUEST['loadCategories'])) {
@@ -41,5 +39,5 @@ if (isset($_POST['submit_newProduct'])) {
     session_destroy();
     return true;
 } else {
-    include_once	"../templates/products_template.php";
+    echo ProductsFrontEndController::renderTemplate("../templates/products_template.php");
 }

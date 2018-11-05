@@ -4,12 +4,13 @@
 	<title>Online Shop</title>
 	<meta name="" content=""/>
 	<link rel="icon" href="../public/images/sheep-icon-16-23819.png" type="image/x-icon"/>
-	<link rel="stylesheet" href="../design/WebShopKostaDesign.css"/>
+	<link rel="stylesheet" href="../design/Design.css"/>
 </head>
 <body onload="loadUsers()">
 	<?php
         include "headerPage.php";
-    ?>
+   ?>
+   <p id="errorMessage" class="errorMessage"><?php echo isset($errorMessage) ? htmlspecialchars($errorMessage) : ""?></p>
 	<div id = "userAdministration" style="padding: 10px;margin-left: 20px;">
 	
 		<div id="createNewUser" style="display: none;">
